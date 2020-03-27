@@ -25,3 +25,16 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
+## Docker
+Followed [this](https://mherman.org/blog/dockerizing-an-angular-app/) tutorial.
+
+To build the image:
+`docker build -t IMAGE_NAME -f Dockerfile-{dev|prod} .`
+
+### Development
+So changes take effect while you update files use volumes
+`docker run --name=CONTAINER_NAME -d -p 4200:4200 --rm -v ${PWD}:/app IMAGE_NAME`
+
+### Production
+`docker run --name=CONTAINER_NAME -d -p 80:80 IMAGE_NAME`
