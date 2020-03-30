@@ -13,7 +13,7 @@ Each milestone has a set of deliverables linked to it and the respective documen
 This documentation includes: reports, contracts, code and API documentation and possibly presentations.
 
 The deployment is done using Docker containers, automated with the help of Jenkins.
-The solution is built using Jakarta (formerly known as JavaEE) and uses technologies such as: PostgreSQL (for persistence), Kafka (for streaming and logging), JUnit and possibly Selenium (for testing), ElectronJS (for desktop UI) and AngularJS (for web UI), Blender (for video rendering).
+The solution is built using Jakarta (formerly known as JavaEE) and uses technologies such as: PostgreSQL (for persistence), Kafka (for streaming and logging), JUnit and possibly Selenium (for testing), Unity Engine (for desktop UI) and AngularJS (for web UI).
 
 ## Authors
 
@@ -37,6 +37,7 @@ To do this, we aim to provide an online system capable of streaming the individu
 But there is a twist. 
 In order to “gamify” the concept, instead of simply streaming the live video captured by the players’ devices, we will stream a customizable avatar of themselves with the help of Orbbec (a Kinect-like device) that will replicate all the moves made by users. 
 This way, players will not only be able to play with their dear friends but will also practice with other players while maintaining their anonymity.
+Also, by analysing the movements on the server, we are able to detect special combinations that trigger actions like 'Pause Game' and others.
 
 ## Instructions on how to run the code
 
