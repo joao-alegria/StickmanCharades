@@ -1,23 +1,23 @@
 package es_g54.api;
 
 import javax.annotation.security.DeclareRoles;
-import javax.servlet.annotation.HttpConstraint;
-import javax.servlet.annotation.ServletSecurity;
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 /**
  *
  * @author joaoalegria
  */
 @Path("/session")
-//@DeclareRoles({ "foo", "bar", "kaz" })
-//@ServletSecurity(@HttpConstraint(rolesAllowed = "foo"))
+@DeclareRoles({"user"})
 public class Session {
     
     /**
@@ -25,14 +25,16 @@ public class Session {
      * @return 
      */
     @GET
-    public Response getAllSessions(){
+    @RolesAllowed({"user"})
+    public Response getAllSessions(@Context SecurityContext securityContext){
         return Response
                 .ok("ping")
                 .build();
     }
     
     @POST
-    public Response createNewSession(){
+    @RolesAllowed({"user"})
+    public Response createNewSession(@Context SecurityContext securityContext){
         return Response
                 .ok("ping")
                 .build();
@@ -40,7 +42,8 @@ public class Session {
     
     @GET
     @Path("/{sessionId}")
-    public Response getSessionInfo(@PathParam("sessionId") Integer sessionId){
+    @RolesAllowed({"user"})
+    public Response getSessionInfo(@PathParam("sessionId") Integer sessionId, @Context SecurityContext securityContext){
         return Response
                 .ok("ping")
                 .build();
@@ -53,7 +56,8 @@ public class Session {
      */
     @POST
     @Path("/{sessionId}")
-    public Response joinOrLeaveSession(@PathParam("sessionId") Integer sessionId){
+    @RolesAllowed({"user"})
+    public Response joinOrLeaveSession(@PathParam("sessionId") Integer sessionId, @Context SecurityContext securityContext){
         return Response
                 .ok("ping")
                 .build();
@@ -66,7 +70,8 @@ public class Session {
      */
     @PUT
     @Path("/{sessionId}")
-    public Response updateOrStartSession(@PathParam("sessionId") Integer sessionId){
+    @RolesAllowed({"user"})
+    public Response updateOrStartSession(@PathParam("sessionId") Integer sessionId, @Context SecurityContext securityContext){
         return Response
                 .ok("ping")
                 .build();
@@ -74,7 +79,8 @@ public class Session {
     
     @DELETE
     @Path("/{sessionId}")
-    public Response deleteSession(@PathParam("sessionId") Integer sessionId){
+    @RolesAllowed({"user"})
+    public Response deleteSession(@PathParam("sessionId") Integer sessionId, @Context SecurityContext securityContext){
         return Response
                 .ok("ping")
                 .build();
