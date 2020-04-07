@@ -27,6 +27,28 @@ public class SimpleSkeletonAvatar : MonoBehaviour {
         nuitrack.JointType.RightAnkle
     };
 
+    string[] jointsInfoStr = new string[] {
+        "Head",
+        "Neck",
+        "LeftCollar",
+        "Torso",
+        "Waist",
+        "LeftShoulder",
+        "RightShoulder",
+        "LeftElbow",
+        "RightElbow",
+        "LeftWrist",
+        "RightWrist",
+        "LeftHand",
+        "RightHand",
+        "LeftHip",
+        "RightHip",
+        "LeftKnee",
+        "RightKnee",
+        "LeftAnkle",
+        "RightAnkle"
+    };
+
     nuitrack.JointType[,] connectionsInfo = new nuitrack.JointType[,] { 
         //Right and left collars are currently located at the same point, that's why we use only 1 collar,
         //it's easy to add rightCollar, if it ever changes
@@ -52,19 +74,27 @@ public class SimpleSkeletonAvatar : MonoBehaviour {
 
     GameObject[] connections;
     Dictionary<nuitrack.JointType, GameObject> joints;
+    public Dictionary<string, Vector3> exportJoints;
 
     void Start() {
         CreateSkeletonParts();
     }
 
+    public Dictionary<string, Vector3> ExportJoints() {
+        return exportJoints;
+    }
+
     void CreateSkeletonParts() {
         joints = new Dictionary<nuitrack.JointType, GameObject>();
+        exportJoints = new Dictionary<string, Vector3>();
 
         for (int i = 0; i < jointsInfo.Length; i++) {
             if (jointPrefab != null) {
                 GameObject joint = Instantiate(jointPrefab, transform, true);
                 joint.SetActive(false);
                 joints.Add(jointsInfo[i], joint);
+                //Vector3 jointPos = joint.GetComponent<Transform>().position;
+                exportJoints.Add(jointsInfoStr[i], joint.transform.position);
             }
         }
 
@@ -93,6 +123,7 @@ public class SimpleSkeletonAvatar : MonoBehaviour {
             if (j.Confidence > 0.5f) {
                 joints[jointsInfo[i]].SetActive(true);
                 joints[jointsInfo[i]].transform.position = new Vector2(j.Proj.X * Screen.width, Screen.height - j.Proj.Y * Screen.height);
+                exportJoints[jointsInfoStr[i]] = joints[jointsInfo[i]].transform.position;
             }
             else {
                 joints[jointsInfo[i]].SetActive(false);
