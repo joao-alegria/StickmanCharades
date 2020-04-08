@@ -35,7 +35,7 @@ public class AuthenticationMechanism implements HttpAuthenticationMechanism {
 
                 logger.info("login");
 
-                String authorizationHeader = request.getHeader("Authorization");
+                String authorizationHeader = request.getHeader("Authorization"); // this should be a character array
                 if (authorizationHeader == null) {
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     try (PrintWriter writer = response.getWriter()) {
@@ -45,9 +45,12 @@ public class AuthenticationMechanism implements HttpAuthenticationMechanism {
                     return AuthenticationStatus.SEND_FAILURE;
                 }
 
-                CredentialValidationResult credValResult = identityStore.validate(
-                        new BasicAuthenticationCredential(authorizationHeader.substring(6))
+                BasicAuthenticationCredential credentials = new BasicAuthenticationCredential(
+                        authorizationHeader.substring(6)
                 );
+                CredentialValidationResult credValResult = identityStore.validate(credentials);
+                credentials.clear();
+
                 if (credValResult.getStatus() == CredentialValidationResult.Status.VALID) {
                     session = request.getSession();
                     session.setAttribute("principal", credValResult.getCallerPrincipal());

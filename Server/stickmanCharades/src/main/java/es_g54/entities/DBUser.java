@@ -1,13 +1,13 @@
 package es_g54.entities;
 
+import es_g54.api.entities.UserData;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -34,13 +34,13 @@ public class DBUser implements Serializable {
     private byte[] password;
 
     @ManyToMany(mappedBy = "users", cascade = CascadeType.PERSIST)
-    private Set<DBGroup> groups;
+    private Set<DBRole> groups;
 
     public DBUser() {}
 
-    public DBUser(String username, String email, byte[] salt, byte[] password) {
-        this.username = username;
-        this.email = email;
+    public DBUser(UserData userData, byte[] salt, byte[] password) {
+        this.username = userData.getUsername();
+        this.email = userData.getEmail();
         this.salt = salt;
         this.password = password;
         this.groups = new HashSet<>();
@@ -89,18 +89,18 @@ public class DBUser implements Serializable {
     public Set<String> getGroups() {
         Set<String> stringGroups = new HashSet<>();
 
-        for (DBGroup group : groups) {
+        for (DBRole group : groups) {
             stringGroups.add(group.getName());
 
         }
         return stringGroups;
     }
 
-    public void setGroups(Set<DBGroup> groups) {
+    public void setGroups(Set<DBRole> groups) {
         this.groups = groups;
     }
 
-    public void addGroup(DBGroup group) {
+    public void addGroup(DBRole group) {
         groups.add(group);
     }
 }

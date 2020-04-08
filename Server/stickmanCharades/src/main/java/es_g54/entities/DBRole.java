@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class DBGroup implements Serializable {
+public class DBRole implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,9 +24,9 @@ public class DBGroup implements Serializable {
     @ManyToMany
     private Set<DBUser> users;
 
-    public DBGroup() {}
+    public DBRole() {}
 
-    public DBGroup(String name) {
+    public DBRole(String name) {
         this.name = name;
         this.users = new HashSet<>();
     }
@@ -53,5 +53,9 @@ public class DBGroup implements Serializable {
 
     public void setUsers(Set<DBUser> users) {
         this.users = users;
+    }
+
+    public void addUser(DBUser user) {
+        users.add(user);
     }
 }

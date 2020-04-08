@@ -36,7 +36,7 @@ public class AuthIdentityStore implements IdentityStore {
             em.close();
         }
 
-        logger.info("salt to verify");
+        logger.info("user retrieved on identity store");
         logger.info(Arrays.toString(user.getPassword()));
         logger.info(Arrays.toString(user.getSalt()));
 
