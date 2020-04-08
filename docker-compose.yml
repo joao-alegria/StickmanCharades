@@ -2,11 +2,13 @@ version: "3.7"
 
 services:
     app:
-        build: ./app
+        build:
+            context: ./Server/stickmanCharades
+            dockerfile: Dockerfile-prod
         ports:
             - 8080:8080
-            - 4848:4848  # payara
-            #- 9990:9990  # wildfly
+            - 4848:4848
+           #- 9009:9009 # debug port
         depends_on:
             - db
             - kafka-zookeeper
