@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <h1>My First Heading</h1>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script>
+        var wsocket = new SockJS('http://localhost:8080/game/skeletons');
+        var client = Stomp.over(wsocket);
+        client.connect({}, function (frame) {
+            client.subscribe('/session/banana', function (message) {
+                console.log(message)
+            });
+        });
+    </script>
+</body>
+
+</html>

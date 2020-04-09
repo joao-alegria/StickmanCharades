@@ -4,16 +4,14 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
-import static javax.persistence.CascadeType.ALL;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 /**
  *
@@ -23,18 +21,20 @@ import javax.persistence.OneToMany;
 public class DBUser implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(unique = true)
     private String username;
     
-    @ManyToOne
-    @JoinColumn
-    private DBUser myself;
-    
-    @OneToMany(cascade=ALL, mappedBy="myself")
-    private Set<DBUser> friends;
+    @ManyToMany(cascade={CascadeType.ALL})
+    @JoinTable(name="ME_FRIEND",
+            joinColumns={@JoinColumn(name="ME_ID")},
+            inverseJoinColumns={@JoinColumn(name="FRIEND_ID")})
+    private Set<DBUser> byMe = new HashSet<DBUser>();
+
+    @ManyToMany(mappedBy="byMe")
+    private Set<DBUser> byOthers = new HashSet<DBUser>();
 
     @Column(unique = true)
     private String email;
@@ -56,7 +56,6 @@ public class DBUser implements Serializable {
         this.salt = salt;
         this.password = password;
         this.groups = new HashSet<>();
-        this.myself=this;
     }
 
     public Long getId() {
@@ -118,14 +117,17 @@ public class DBUser implements Serializable {
     }
 
     public Set<DBUser> getFriends() {
-        return friends;
+        Set<DBUser> mergedSet=new HashSet();
+        mergedSet.addAll(byMe);
+        mergedSet.addAll(byOthers);
+        return mergedSet;
     }
     
     public void addFriend(DBUser friend){
-        friends.add(friend);
+        byMe.add(friend);
     }
     
     public void removeFriend(DBUser friend){
-        friends.remove(friend);
+        byMe.remove(friend);
     }
 }

@@ -1,18 +1,18 @@
-version: "3.7"
+version: "3.3"
 
 services:
     app:
         build:
-            context: ./Server/stickmanCharades
-            dockerfile: Dockerfile-prod
+            context: ./Server
+            dockerfile: Dockerfile
         ports:
             - 8080:8080
-            - 4848:4848
+            # - 4848:4848
            #- 9009:9009 # debug port
         depends_on:
             - db
-            - kafka-zookeeper
-            - kafka-broker
+            - zookeeper
+            - kafka
 
     db:
         image: postgres:9.6.17
@@ -21,30 +21,42 @@ services:
         volumes:
             - db-data:/var/lib/postgresql/data
 
-    kafka-zookeeper:
+    # kafka:
+    #     image: spotify/kafka
+    #     environment:
+    #         ADVERTISED_HOST: "docker-machine ip \"docker-machine active\""
+    #         ADVERTISED_PORT: 9092
+    #     ports:
+    #         - "9092:9092"
+    #         - "2181:2181"
+
+    zookeeper:
         image: wurstmeister/zookeeper:3.4.6
         ports:
             - 2181:2181
-    kafka-broker:
+    kafka:
         image: wurstmeister/kafka:2.12-2.4.0
         ports:
-            - 9092:9092
+            - "9092:9092"
+        expose:
+            - "9093"
         environment:
-            KAFKA_ADVERTISED_HOST_NAME: localhost
-            KAFKA_ZOOKEEPER_CONNECT: kafka-zookeeper:2181
+            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+            KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+            KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
         depends_on:
-            - kafka-zookeeper
+            - zookeeper
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
 
-    web:
-        build: ./web
-        ports:
-            - 80:80
-        depends_on:
-            - app
-        volumes:
-            - ./web # for develpment only
+    # web:
+    #     build: ./web
+    #     ports:
+    #         - 80:80
+    #     depends_on:
+    #         - app
+    #     volumes:
+    #         - ./web # for develpment only
 
 volumes:
     db-data:

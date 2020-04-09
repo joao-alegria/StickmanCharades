@@ -1,15 +1,16 @@
 package es_g54.api;
 
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
+import es_g54.repository.SessionRepository;
+import es_g54.services.SessionService;
+import java.security.Principal;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -19,26 +20,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin(origins = "*")
 public class SessionRest {
+    
+    @Autowired
+    private SessionRepository sr;
+    
+    @Autowired
+    private SessionService ss;
 
     @GetMapping(value="/session")
-    public Response getAllSessions(@Context SecurityContext securityContext){
-        return Response
-                .ok("ping")
-                .build();
+    public JSONObject getAllSessions(Principal principal){
+        return ss.getAllSession(principal.getName());
     }
     
     @PostMapping(value="/session")
-    public Response createNewSession(@Context SecurityContext securityContext){
-        return Response
-                .ok("ping")
-                .build();
+    public JSONObject createNewSession(Principal principal){
+        return ss.createNewSession(principal.getName());
     }
     
     @GetMapping(value="/session/{sessionId}")
-    public Response getSessionInfo(@PathVariable Integer sessionId, @Context SecurityContext securityContext){
-        return Response
-                .ok("ping")
-                .build();
+    public JSONObject getSessionInfo(@PathVariable Long sessionId, Principal principal){
+        return ss.getSessionInfo(principal.getName(), sessionId);
     }
     
     /**
@@ -47,10 +48,8 @@ public class SessionRest {
      * @return 
      */
     @PostMapping(value="/session/{sessionId}")
-    public Response joinOrLeaveSession(@PathVariable Integer sessionId, @Context SecurityContext securityContext){
-        return Response
-                .ok("ping")
-                .build();
+    public JSONObject joinOrLeaveSession(@PathVariable Long sessionId, Principal principal){
+        return ss.joinOrLeaveSession(principal.getName(), sessionId, 0);
     }
     
     /**
@@ -59,16 +58,12 @@ public class SessionRest {
      * @return 
      */
     @PutMapping(value="/session/{sessionId}")
-    public Response updateOrStartSession(@PathVariable Integer sessionId, @Context SecurityContext securityContext){
-        return Response
-                .ok("ping")
-                .build();
+    public JSONObject updateOrStartSession(@PathVariable Long sessionId, Principal principal){
+        return ss.updateSession(principal.getName(), sessionId, new JSONObject());
     }
     
     @DeleteMapping(value="/session/{sessionId")
-    public Response deleteSession(@PathVariable Integer sessionId, @Context SecurityContext securityContext){
-        return Response
-                .ok("ping")
-                .build();
+    public JSONObject deleteSession(@PathVariable Long sessionId, Principal principal){
+        return ss.deleteSession(principal.getName(), sessionId);
     }
 }

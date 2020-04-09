@@ -7,6 +7,7 @@ import es_g54.utils.PasswordHashing;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
+import java.util.List;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,13 +57,14 @@ public class UserRest {
 //        EntityManager em = emf.createEntityManager();
 //        em.getTransaction().begin();
 
+        List<DBGroup> listUserGroup=ur.getGroup();
         DBGroup userGroup;
-
-//        try {
-            userGroup=ur.getGroup();
-//        } catch (NoResults ex) {
-//            userGroup = new DBGroup("user");
-//        }
+        
+        if(listUserGroup.isEmpty()){
+            userGroup = new DBGroup("user");
+        }else {
+            userGroup = listUserGroup.get(0);
+        }
 
         user.addGroup(userGroup);
 
