@@ -7,6 +7,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 /**
@@ -21,10 +22,17 @@ public class Consumer<K,V> implements Runnable{
     private SimpMessagingTemplate smt;
     
     private volatile boolean done = false;
-    
+
+    @Value("${KAFKA_HOST}")
+    private String KAFKA_HOST;
+
+    @Value("${KAFKA_PORT}")
+    private String KAFKA_PORT;
+
     public Consumer(String[] topics,SimpMessagingTemplate smt) {
         this.properties = new Properties();
-        properties.put("bootstrap.servers", "kafka:9092");
+
+        properties.put("bootstrap.servers", KAFKA_HOST + ":" + KAFKA_PORT);
         properties.put("group.id", "es_g54");
         properties.put("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
         properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");

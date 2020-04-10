@@ -15,10 +15,10 @@ import javax.persistence.ManyToMany;
  * @author joaoalegria
  */
 @Entity
-public class DBGroup implements Serializable {
+public class DBRole implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
@@ -27,9 +27,9 @@ public class DBGroup implements Serializable {
     @ManyToMany
     private Set<DBUser> users;
 
-    public DBGroup() {}
+    public DBRole() {}
 
-    public DBGroup(String name) {
+    public DBRole(String name) {
         this.name = name;
         this.users = new HashSet<>();
     }
@@ -56,5 +56,9 @@ public class DBGroup implements Serializable {
 
     public void setUsers(Set<DBUser> users) {
         this.users = users;
+    }
+
+    public void addUser(DBUser user) {
+        users.add(user);
     }
 }

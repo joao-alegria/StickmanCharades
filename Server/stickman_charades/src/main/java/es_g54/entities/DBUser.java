@@ -1,5 +1,7 @@
 package es_g54.entities;
 
+import es_g54.api.entities.UserData;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,12 +24,28 @@ import javax.persistence.ManyToOne;
 public class DBUser implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true)
     private String username;
     
+    @Column(unique = true)
+    private String email;
+
+    @Column
+    private String password;
+
+    @Column
+    private boolean enabled = true;
+    
+    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    private Set<DBRole> roles;
+
+    @ManyToOne
+    @JoinColumn
+    private DBSession sessionInPlay;
+
     @ManyToMany(cascade={CascadeType.ALL})
     @JoinTable(name="ME_FRIEND",
             joinColumns={@JoinColumn(name="ME_ID")},
@@ -37,30 +55,13 @@ public class DBUser implements Serializable {
     @ManyToMany(mappedBy="byMe")
     private Set<DBUser> byOthers = new HashSet<DBUser>();
 
-    @Column(unique = true)
-    private String email;
-
-    @Column
-    private byte[] salt;
-
-    @Column
-    private byte[] password;
-    
-    @ManyToOne
-    @JoinColumn
-    private DBSession sessionInPlay;
-
-    @ManyToMany(mappedBy = "users", cascade = CascadeType.PERSIST)
-    private Set<DBGroup> groups;
-
     public DBUser() {}
 
-    public DBUser(String username, String email, byte[] salt, byte[] password) {
-        this.username = username;
-        this.email = email;
-        this.salt = salt;
+    public DBUser(UserData userData, String password) {
+        this.username = userData.getUsername();
+        this.email = userData.getEmail();
         this.password = password;
-        this.groups = new HashSet<>();
+        this.roles = new HashSet<>();
     }
 
     public Long getId() {
@@ -87,38 +88,28 @@ public class DBUser implements Serializable {
         this.email = email;
     }
 
-    public byte[] getSalt() {
-        return salt;
-    }
-
-    public void setSalt(byte[] salt) {
-        this.salt = salt;
-    }
-
-    public byte[] getPassword() {
+    public String getPassword() {
         return password;
     }
 
-    public void setPassword(byte[] password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
-    public Set<String> getGroups() {
-        Set<String> stringGroups = new HashSet<>();
-
-        for (DBGroup group : groups) {
-            stringGroups.add(group.getName());
-
-        }
-        return stringGroups;
+    public boolean isEnabled() {
+        return enabled;
     }
 
-    public void setGroups(Set<DBGroup> groups) {
-        this.groups = groups;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
-    public void addGroup(DBGroup group) {
-        groups.add(group);
+    public void setRoles(Set<DBRole> roles) {
+        this.roles = roles;
+    }
+
+    public void addRole(DBRole role) {
+        roles.add(role);
     }
 
     public Set<DBUser> getFriends() {
