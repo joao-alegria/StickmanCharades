@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 
 /**
  *
@@ -44,6 +45,10 @@ public class DBUser implements Serializable {
 
     @Column
     private byte[] password;
+    
+    @ManyToOne
+    @JoinColumn
+    private DBSession sessionInPlay;
 
     @ManyToMany(mappedBy = "users", cascade = CascadeType.PERSIST)
     private Set<DBGroup> groups;
@@ -130,4 +135,14 @@ public class DBUser implements Serializable {
     public void removeFriend(DBUser friend){
         byMe.remove(friend);
     }
+
+    public DBSession getSessionInPlay() {
+        return sessionInPlay;
+    }
+
+    public void setSessionInPlay(DBSession sessionInPlay) {
+        this.sessionInPlay = sessionInPlay;
+    }
+    
+    
 }

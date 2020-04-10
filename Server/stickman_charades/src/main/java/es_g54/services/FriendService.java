@@ -90,10 +90,10 @@ public class FriendService {
         JSONObject jo = new JSONObject();
         List<DBUser> listUser = ur.getUserByUsername(username);
         List<DBUser> listFriend = ur.getUserByUsername(friendname);
-        DBSession session = sr.getSessionById(sessionId);
-        if(!listUser.isEmpty() && !listFriend.isEmpty()){
+        List<DBSession> listSession = sr.getSessionById(username,sessionId);
+        if(!listUser.isEmpty() && !listFriend.isEmpty() && !listSession.isEmpty()){
             if(listUser.get(0).getFriends().contains(listFriend.get(0))){
-                DBGameInvite invite = new DBGameInvite(listUser.get(0), listFriend.get(0), session);
+                DBGameInvite invite = new DBGameInvite(listUser.get(0), listFriend.get(0), listSession.get(0));
                 gir.save(invite);
                 kafkaTemplate.send(friendname, "{\"gameInvite\":{\"friend\":"+username+", \"session\": "+sessionId+"}}");
             }

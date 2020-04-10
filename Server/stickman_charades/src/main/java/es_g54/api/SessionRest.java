@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -29,12 +30,12 @@ public class SessionRest {
 
     @GetMapping(value="/session")
     public JSONObject getAllSessions(Principal principal){
-        return ss.getAllSession(principal.getName());
+        return ss.getAllSessions(principal.getName());
     }
     
     @PostMapping(value="/session")
-    public JSONObject createNewSession(Principal principal){
-        return ss.createNewSession(principal.getName());
+    public JSONObject createNewSession(@RequestBody JSONObject newSession){
+        return ss.createNewSession("joao", newSession);
     }
     
     @GetMapping(value="/session/{sessionId}")
@@ -48,8 +49,8 @@ public class SessionRest {
      * @return 
      */
     @PostMapping(value="/session/{sessionId}")
-    public JSONObject joinOrLeaveSession(@PathVariable Long sessionId, Principal principal){
-        return ss.joinOrLeaveSession(principal.getName(), sessionId, 0);
+    public JSONObject joinOrLeaveSession(@PathVariable Long sessionId, Principal principal, @RequestBody JSONObject action){
+        return ss.joinOrLeaveSession(principal.getName(), sessionId, action);
     }
     
     /**

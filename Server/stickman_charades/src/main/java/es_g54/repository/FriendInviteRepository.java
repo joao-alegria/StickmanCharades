@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FriendInviteRepository extends JpaRepository<DBFriendInvite, Long>{
 
-    @Query(value = "SELECT u FROM DBSession u WHERE (u.inviteCreator.username = :username AND u.inviteTarget.username = :friendname) OR (u.inviteCreator.username = :friendname AND u.inviteTarget.username = :username) AND u.accepted=false")
+    @Query(value = "SELECT u FROM DBFriendInvite u WHERE (u.inviteCreator = :username AND u.inviteTarget = :friendname) OR (u.inviteCreator = :friendname AND u.inviteTarget = :username) AND u.accepted=false")
     public List<DBFriendInvite> getInviteByUsernames(@Param("username") String username, @Param("friendname") String friendname);
 
 }
