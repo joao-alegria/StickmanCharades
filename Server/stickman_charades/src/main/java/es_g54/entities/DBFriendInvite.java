@@ -27,6 +27,9 @@ public class DBFriendInvite implements Serializable{
     @Column
     private Boolean accepted;
 
+    public DBFriendInvite() {
+    }
+    
     public DBFriendInvite(DBUser inviteCreator, DBUser inviteTarget) {
         this.inviteCreator = inviteCreator;
         this.inviteTarget = inviteTarget;

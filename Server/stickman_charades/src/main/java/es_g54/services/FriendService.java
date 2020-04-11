@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import es_g54.repository.GameInviteRepository;
+import java.util.ArrayList;
 
 /**
  *
@@ -58,7 +59,13 @@ public class FriendService {
         List<DBUser> listFriend = ur.getUserByUsername(friendname);
         if(!listUser.isEmpty() && !listFriend.isEmpty()){
             if(!listUser.get(0).getFriends().contains(listFriend.get(0))){
-                List<DBFriendInvite> listInvites = fir.getInviteByUsernames(username, friendname);
+                List<DBFriendInvite> allInvites = fir.getInvitesNotAccepted();
+                List<DBFriendInvite> listInvites = new ArrayList();
+                for(DBFriendInvite tmp : allInvites){
+                    if((tmp.geInviteCreator().getUsername().equals(username) && tmp.getInviteTarget().getUsername().equals(friendname)) || (tmp.geInviteCreator().getUsername().equals(friendname) && tmp.getInviteTarget().getUsername().equals(username))){
+                        listInvites.add(tmp);
+                    }
+                }
                 DBFriendInvite fi;
                 if(listInvites.isEmpty()){
                     fi = new DBFriendInvite(listUser.get(0), listFriend.get(0));
@@ -90,7 +97,7 @@ public class FriendService {
         JSONObject jo = new JSONObject();
         List<DBUser> listUser = ur.getUserByUsername(username);
         List<DBUser> listFriend = ur.getUserByUsername(friendname);
-        List<DBSession> listSession = sr.getSessionById(username,sessionId);
+        List<DBSession> listSession = sr.getSessionById(sessionId);
         if(!listUser.isEmpty() && !listFriend.isEmpty() && !listSession.isEmpty()){
             if(listUser.get(0).getFriends().contains(listFriend.get(0))){
                 DBGameInvite invite = new DBGameInvite(listUser.get(0), listFriend.get(0), listSession.get(0));

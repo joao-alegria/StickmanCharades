@@ -30,6 +30,9 @@ public class DBGameInvite implements Serializable{
     @Column
     private Boolean isActive;
 
+    public DBGameInvite() {
+    }
+    
     public DBGameInvite(DBUser inviteCreator, DBUser inviteTarget, DBSession targetSession) {
         this.inviteCreator = inviteCreator;
         this.inviteTarget = inviteTarget;

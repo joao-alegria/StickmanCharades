@@ -15,10 +15,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SessionRepository extends JpaRepository<DBSession, Long>{
 
-    @Query(value = "SELECT u FROM DBSession u WHERE u.id = :id AND u.creator=:name")
-    public List<DBSession> getSessionById(@Param("name") String name, @Param("id") Long id);
+    @Query(value = "SELECT s FROM DBSession as s WHERE s.id = :id")
+    public List<DBSession> getSessionById(@Param("id") Long id);
 
-    @Query(value = "SELECT u FROM DBSession u WHERE u.creator != :name AND u.isAvailable=true")
+//    @Query(value = "SELECT s FROM DBSession s INNER JOIN DBUser u ON s.creator=u.id WHERE u.username != :name AND  s.isAvailable=true" )
+    @Query(value = "SELECT s FROM DBSession s WHERE s.isAvailable=true" )
     public List<DBSession> getAllSessions(@Param("name") String name);
     
 }

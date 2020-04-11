@@ -30,10 +30,12 @@ public class SessionService {
         Map<Long, Map<String, String>> sessions = new HashMap();
         if(!listSessions.isEmpty()){
             for(DBSession s : listSessions){
-                Map<String, String> details = new HashMap();
-                details.put("creator", s.getCreator().getUsername());
-                details.put("title", s.getTitle());
-                sessions.put(s.getId(), details);
+                if(s.getCreator().getUsername().equals(name)){
+                    Map<String, String> details = new HashMap();
+                    details.put("creator", s.getCreator().getUsername());
+                    details.put("title", s.getTitle());
+                    sessions.put(s.getId(), details);
+                }
             }
         }
         jo.put("sessions", sessions);
@@ -54,7 +56,7 @@ public class SessionService {
 
     public JSONObject getSessionInfo(String name, Long sessionId) {
         JSONObject jo = new JSONObject();
-        List<DBSession> listSessions = sr.getSessionById(name,sessionId);
+        List<DBSession> listSessions = sr.getSessionById(sessionId);
         DBSession session = null;
         if(!listSessions.isEmpty()){
             session=listSessions.get(0);
@@ -66,7 +68,7 @@ public class SessionService {
     public JSONObject joinOrLeaveSession(String name, Long sessionId, JSONObject response) {
         JSONObject jo = new JSONObject();
         String action = (String)response.get("action");
-        List<DBSession> listSessions = sr.getSessionById(name,sessionId);
+        List<DBSession> listSessions = sr.getSessionById(sessionId);
         List<DBUser> listUser=ur.getUserByUsername(name);
         if(!listSessions.isEmpty() && !listUser.isEmpty()){
             DBUser user = listUser.get(0);
@@ -92,7 +94,7 @@ public class SessionService {
 
     public JSONObject updateSession(String name, Long sessionId, JSONObject jsonObject) {
         JSONObject jo = new JSONObject();
-        List<DBSession> listSessions = sr.getSessionById(name,sessionId);
+        List<DBSession> listSessions = sr.getSessionById(sessionId);
         if(!listSessions.isEmpty()){
             DBSession session=listSessions.get(0);
             session.setIsActive(true);
@@ -104,7 +106,7 @@ public class SessionService {
 
     public JSONObject deleteSession(String name, Long sessionId) {
         JSONObject jo = new JSONObject();
-        List<DBSession> listSessions = sr.getSessionById(name,sessionId);
+        List<DBSession> listSessions = sr.getSessionById(sessionId);
         if(!listSessions.isEmpty()){
             DBSession session=listSessions.get(0);
             session.setIsAvailable(false);
@@ -136,14 +138,14 @@ public class SessionService {
             while(this.timeToWait>0){
                 try{
                     Thread.sleep(this.timeToWait);
-                    listSessions = sr.getSessionById(this.creator.getUsername(),sessionId);
+                    listSessions = sr.getSessionById(sessionId);
                     if(!listSessions.isEmpty()){
                         session=listSessions.get(0);
                         this.timeToWait=session.getDurationSeconds()-this.durationSeconds;
                         this.durationSeconds=session.getDurationSeconds();
                     }
                 }catch(InterruptedException ex){
-                    listSessions = sr.getSessionById(this.creator.getUsername(),sessionId);
+                    listSessions = sr.getSessionById(sessionId);
                     if(!listSessions.isEmpty()){
                         session=listSessions.get(0);
                         this.timeToWait=session.getDurationSeconds()-this.durationSeconds;

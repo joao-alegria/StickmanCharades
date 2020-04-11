@@ -38,6 +38,9 @@ public class DBSession implements Serializable {
     @OneToMany(mappedBy="sessionInPlay")
     private Set<DBUser> players;
 
+    public DBSession() {
+    }
+    
     public DBSession(String title, Integer durationSeconds, DBUser creator) {
         this.title=title;
         this.durationSeconds=durationSeconds;
