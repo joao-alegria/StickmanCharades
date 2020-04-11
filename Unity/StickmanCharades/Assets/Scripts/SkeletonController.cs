@@ -2,27 +2,51 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
+using Confluent.Kafka;
 
-public class SkeletonController : MonoBehaviour
-{
-    [Range(0, 6)]
-    public int skeletonCount = 6;         //Max number of skeletons tracked by Nuitrack
+public class SkeletonController : MonoBehaviour {
+    [Range(0, 1)]
+    public int skeletonCount = 1;         //Max number of skeletons tracked by Nuitrack
     [SerializeField] SimpleSkeletonAvatar skeletonAvatar;
 
     List<SimpleSkeletonAvatar> avatars = new List<SimpleSkeletonAvatar>();
 
-    private string path = "Assets/Resources/skeletonExample.txt";
-    private StreamWriter writer;
+    //private string path = "Assets/Resources/skeletonExample.txt";
+    //private StreamWriter writer;
 
-    void OnEnable()
-    {
+    private Dictionary<JointType, string> jointMapping = new Dictionary<JointType, string>();
+
+    private IProducer<int, string> kafkaProducer;
+    private int msgKey = 1;
+
+    void OnEnable() {
         NuitrackManager.SkeletonTracker.OnSkeletonUpdateEvent += OnSkeletonUpdate;
     }
 
-    void Start()
-    {
-        for (int i = 0; i < skeletonCount; i++)
-        {
+    void Start() {
+
+        /* DEBUGGING */
+        SessionData.KafkaTopic = "actor0002";
+        SessionData.KafkaProps = new Dictionary<string, string> {
+            { "group.id","test" },
+            { "bootstrap.servers", "localhost:9092" },
+            { "enable.auto.commit", "false" },
+            { "auto.offset.reset", "latest" }
+        };
+        /* DEBUGGING */
+
+        jointMapping.Add(JointType.Head,"Head"); jointMapping.Add(JointType.Neck,"Neck"); 
+        jointMapping.Add(JointType.LeftCollar,"LeftCollar"); jointMapping.Add(JointType.Torso,"Torso"); 
+        jointMapping.Add(JointType.Waist,"Waist"); jointMapping.Add(JointType.LeftShoulder,"LeftShoulder"); 
+        jointMapping.Add(JointType.RightShoulder,"RightShoulder"); jointMapping.Add(JointType.LeftElbow,"LeftElbow"); 
+        jointMapping.Add(JointType.RightElbow,"RightElbow"); jointMapping.Add(JointType.LeftWrist,"LeftWrist"); 
+        jointMapping.Add(JointType.RightWrist,"RightWrist"); jointMapping.Add(JointType.LeftHand,"LeftHand"); 
+        jointMapping.Add(JointType.RightHand,"RightHand"); jointMapping.Add(JointType.LeftHip,"LeftHip"); 
+        jointMapping.Add(JointType.RightHip,"RightHip"); jointMapping.Add(JointType.LeftKnee,"LeftKnee"); 
+        jointMapping.Add(JointType.LeftAnkle,"LeftAnkle"); jointMapping.Add(JointType.RightKnee,"RightKnee"); 
+        jointMapping.Add(JointType.RightAnkle,"RightAnkle");
+
+        for (int i = 0; i < skeletonCount; i++) {
             GameObject newAvatar = Instantiate(skeletonAvatar.gameObject, transform, true);
             SimpleSkeletonAvatar simpleSkeleton = newAvatar.GetComponent<SimpleSkeletonAvatar>();
             simpleSkeleton.autoProcessing = false;
@@ -31,37 +55,62 @@ public class SkeletonController : MonoBehaviour
 
         NuitrackManager.SkeletonTracker.SetNumActiveUsers(skeletonCount);
 
-        writer = new StreamWriter(path, true);
+        //writer = new StreamWriter(path, true);
+
+        kafkaProducer = new ProducerBuilder<int, string>(SessionData.KafkaProps).Build();
+
+        //GameObject.Find("PreviewCanvas").GetComponent<SkeletonConsumer>().presentActorSkeleton("Hello World!");
     }
 
-    void OnSkeletonUpdate(SkeletonData skeletonData)
-    {
-        for (int i = 0; i < avatars.Count; i++)
-        {
-            if (i < skeletonData.Skeletons.Length)
-            {
-                avatars[i].gameObject.SetActive(true);
-                avatars[i].ProcessSkeleton(skeletonData.Skeletons[i]);
-                //print(GetJoints(i));
-                writer.WriteLine(GetJoints(i));
-            }
-            else
-            {
-                avatars[i].gameObject.SetActive(false);
+    async void OnSkeletonUpdate(SkeletonData skeletonData) {
+        for (int i = 0; i < avatars.Count; i++) {
+            if(avatars[i] != null) {
+                if (i < skeletonData.Skeletons.Length) {
+                    avatars[i].gameObject.SetActive(true);
+                    avatars[i].ProcessSkeleton(skeletonData.Skeletons[i]);
+                    //print(GetJoints(i));
+                    //writer.WriteLine(GetJoints(i));
+                    try { var deliveryReport = await kafkaProducer.ProduceAsync(
+                            SessionData.KafkaTopic, 
+                            new Message<int, string> { Key = msgKey, Value = GetJoints(i) }
+                        );
+                        //print($"delivered to: {deliveryReport.TopicPartitionOffset}");
+
+                    } catch (ProduceException<string, string> e) {
+                        print($"failed to deliver message: {e.Message} [{e.Error.Code}]");
+                    }
+                    msgKey++;
+                } else {
+                    avatars[i].gameObject.SetActive(false);
+                }
             }
         }
     }
 
     string GetJoints(int index) {
 
-        string data = "{";
-        foreach (KeyValuePair<string, UnityEngine.Vector3> kvp in avatars[index].ExportJoints()) {
-            data += string.Format("\"{0}\": [{1}], ", kvp.Key, kvp.Value[0] + "," + kvp.Value[1] + "," + kvp.Value[2] );
-        }
-        data = data.Substring(0, data.Length-2);
-        data += "}";
+        int i;
+        string positions = "{";
+        string orientations = "{";
+        nuitrack.Orientation o;
+        string[] v;
+        foreach (KeyValuePair<nuitrack.JointType, UnityEngine.Vector3> kvp in avatars[index].ExportJoints()) {
+            v = new string[3];
+            for(i=0;i<3;i++) { 
+                if(kvp.Value[i]==0) { v[i] = "0.0"; } 
+                else { v[i] = "" + kvp.Value[i]; }
+            }
+            positions += string.Format("\"{0}\": [{1}], ", jointMapping[kvp.Key], v[0] +","+ v[1] +","+ v[2]);
 
-        string retval = "{\"index\": " + index + " \"data\": " + data + "}"; //string.Format("{\"index\": {0}, \"data\": {1}}", index+"", data);
+            o = CurrentUserTracker.CurrentSkeleton.GetJoint(kvp.Key).Orient;
+            orientations += string.Format("\"{0}\": [{1}], ", jointMapping[kvp.Key], o.Matrix[0] +","+ o.Matrix[1] +","+ o.Matrix[2] +","+ o.Matrix[3] +","+ o.Matrix[4] +","+ o.Matrix[5] +","+ o.Matrix[6] +","+ o.Matrix[7] +","+ o.Matrix[8]);
+        }
+        positions = positions.Substring(0, positions.Length-2);
+        positions += "}";
+        orientations = orientations.Substring(0, orientations.Length-2);
+        orientations += "}";
+        //string retval = "{\"index\": " + index + ", \"positions\": " + positions + "}";
+        string retval = "{\"index\": " + index + ", \"positions\": " + positions + ", \"orientations\": " + orientations + "}";
         return retval;
     }
 }
