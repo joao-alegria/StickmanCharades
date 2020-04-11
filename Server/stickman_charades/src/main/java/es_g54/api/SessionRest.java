@@ -67,4 +67,9 @@ public class SessionRest {
     public JSONObject deleteSession(@PathVariable Long sessionId, Principal principal){
         return ss.deleteSession(principal.getName(), sessionId);
     }
+    
+    @GetMapping("/session/test")
+    public JSONObject teste(Principal principal){
+        return ss.teste();
+    }
 }

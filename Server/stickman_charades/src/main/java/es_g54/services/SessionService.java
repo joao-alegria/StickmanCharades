@@ -4,11 +4,15 @@ import es_g54.entities.DBSession;
 import es_g54.entities.DBUser;
 import es_g54.repository.SessionRepository;
 import es_g54.repository.UserRepository;
+import es_g54.utils.Consumer;
+import es_g54.utils.SkeletonProcessor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,6 +27,25 @@ public class SessionService {
     
     @Autowired
     private UserRepository ur;
+    
+    @Autowired
+    private SimpMessagingTemplate smt;
+    
+    @Autowired
+    private SkeletonProcessor sp;
+    
+    @Value("${KAFKA_HOST}")
+    private String KAFKA_HOST;
+
+    @Value("${KAFKA_PORT}")
+    private String KAFKA_PORT;
+    
+    public JSONObject teste(){
+        JSONObject jo = new JSONObject();
+        jo.put("leftHandOverHand", sp.leftHandOverHead);
+        jo.put("rightHandOverHand", sp.rightHandOverHead);
+        return jo;
+    }
 
     public JSONObject getAllSessions(String name) {
         JSONObject jo = new JSONObject();
@@ -98,8 +121,10 @@ public class SessionService {
         if(!listSessions.isEmpty()){
             DBSession session=listSessions.get(0);
             session.setIsActive(true);
-            Thread t = new Thread(new Session(session.getId(), session.getDurationSeconds(), session.getCreator()));
-            t.start();t.interrupt();
+            Thread c = new Thread(new Consumer(KAFKA_HOST, KAFKA_PORT,String.valueOf(sessionId),smt, sp));
+            Thread s = new Thread(new Session(session.getId(), session.getDurationSeconds(), session.getCreator()));
+            c.start();
+            s.start();
         }
         return jo;
     }
@@ -133,10 +158,11 @@ public class SessionService {
 
         @Override
         public void run() {
+            System.out.println("Started Thread for Session "+this.sessionId);
             List<DBSession> listSessions;
             DBSession session=null;
-            while(this.timeToWait>0){
-                try{
+            try{
+                while(this.timeToWait>0){
                     Thread.sleep(this.timeToWait);
                     listSessions = sr.getSessionById(sessionId);
                     if(!listSessions.isEmpty()){
@@ -144,7 +170,8 @@ public class SessionService {
                         this.timeToWait=session.getDurationSeconds()-this.durationSeconds;
                         this.durationSeconds=session.getDurationSeconds();
                     }
-                }catch(InterruptedException ex){
+                }
+            }catch(InterruptedException ex){
                     listSessions = sr.getSessionById(sessionId);
                     if(!listSessions.isEmpty()){
                         session=listSessions.get(0);
@@ -156,7 +183,6 @@ public class SessionService {
                         }
                     }
                 }
-            }
             
             session.setIsAvailable(false);
             sr.save(session);
