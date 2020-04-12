@@ -27,6 +27,7 @@ public class SimpleSkeletonAvatar : MonoBehaviour {
         nuitrack.JointType.RightAnkle
     };
 
+    /*
     string[] jointsInfoStr = new string[] {
         "Head",
         "Neck",
@@ -48,6 +49,7 @@ public class SimpleSkeletonAvatar : MonoBehaviour {
         "LeftAnkle",
         "RightAnkle"
     };
+    */
 
     nuitrack.JointType[,] connectionsInfo = new nuitrack.JointType[,] { 
         //Right and left collars are currently located at the same point, that's why we use only 1 collar,
@@ -74,19 +76,18 @@ public class SimpleSkeletonAvatar : MonoBehaviour {
 
     GameObject[] connections;
     Dictionary<nuitrack.JointType, GameObject> joints;
-    public Dictionary<string, Vector3> exportJoints;
+    public Dictionary<nuitrack.JointType, Vector3> exportJoints;
+    //public Dictionary<string, Vector3> exportJoints;
+    //public Dictionary<string, nuitrack.Orientation> exportOrientations;
 
     void Start() {
         CreateSkeletonParts();
     }
 
-    public Dictionary<string, Vector3> ExportJoints() {
-        return exportJoints;
-    }
-
     void CreateSkeletonParts() {
         joints = new Dictionary<nuitrack.JointType, GameObject>();
-        exportJoints = new Dictionary<string, Vector3>();
+        exportJoints = new Dictionary<nuitrack.JointType, Vector3>();
+        //exportOrientations = new Dictionary<string, nuitrack.Orientation>();
 
         for (int i = 0; i < jointsInfo.Length; i++) {
             if (jointPrefab != null) {
@@ -94,7 +95,9 @@ public class SimpleSkeletonAvatar : MonoBehaviour {
                 joint.SetActive(false);
                 joints.Add(jointsInfo[i], joint);
                 //Vector3 jointPos = joint.GetComponent<Transform>().position;
-                exportJoints.Add(jointsInfoStr[i], joint.transform.position);
+                exportJoints.Add(jointsInfo[i], joint.transform.position);
+                //exportJoints.Add(jointsInfoStr[i], joint.transform.position);
+                //exportOrientations.Add(jointsInfoStr[i], joint.Orient); 
             }
         }
 
@@ -123,7 +126,9 @@ public class SimpleSkeletonAvatar : MonoBehaviour {
             if (j.Confidence > 0.5f) {
                 joints[jointsInfo[i]].SetActive(true);
                 joints[jointsInfo[i]].transform.position = new Vector2(j.Proj.X * Screen.width, Screen.height - j.Proj.Y * Screen.height);
-                exportJoints[jointsInfoStr[i]] = joints[jointsInfo[i]].transform.position;
+                exportJoints[jointsInfo[i]] = joints[jointsInfo[i]].transform.position;
+                //exportJoints[jointsInfoStr[i]] = joints[jointsInfo[i]].transform.position;
+                //exportOrientations[jointsInfoStr[i]] = joints[jointsInfo[i]].Orient;
             }
             else {
                 joints[jointsInfo[i]].SetActive(false);
@@ -146,4 +151,17 @@ public class SimpleSkeletonAvatar : MonoBehaviour {
             }
         }
     }
+
+    public Dictionary<nuitrack.JointType, Vector3> ExportJoints() {
+        return exportJoints;
+    }
+
+    //public Dictionary<string, Vector3> ExportJoints() {
+    //    return exportJoints;
+    //}
+
+    //public Dictionary<string, nuitrack.Orientation> ExportOrientations() {
+    //    return exportOrientations;
+    //}
+
 }
