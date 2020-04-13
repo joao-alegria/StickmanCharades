@@ -4,7 +4,7 @@ pipeline {
         stage('Test Server') {
             steps {
                 dir('Server/stickman_charades') {
-                    sh 'mvn clean test'
+                    sh 'mvn clean verify'
                 }
             }
         }
@@ -27,10 +27,13 @@ pipeline {
                 branch 'master'
             }
             steps {
-                sh '''
-                    mvn clean package -Dmaven.test.skip=true -DskipTests
-                    docker build -t esp54-server Server/stickman_charades
-                '''
+                dir('Server/stickman_charades') {
+                    sh '''
+                        mvn clean package -Dmaven.test.skip=true
+
+                        docker build -t esp54-server .
+                    '''
+                }
             }
         }
         stage('Build Web') {
@@ -38,7 +41,9 @@ pipeline {
                 branch 'master'
             }
             steps {
-                sh "docker build -t esp54-web --file Dockerfile-prod Angular/stickman-charades"
+                dir('Angular/stickman-charades') {
+                    sh 'docker build -t esp54-web --file Dockerfile-prod .'
+                }
             }
         }
         stage('Build Desktop') {
@@ -55,12 +60,10 @@ pipeline {
             }
             steps {
                 sh '''
-                    exit 0
-                    
-                    docker tag esp54_web 192.168.160.99:5000/esp54-server
+                    mvn clean deploy -Dmaven.test.skip=true
+
+                    docker tag esp54-web 192.168.160.99:5000/esp54-server
                     docker push 192.168.160.99:5000/esp54-server
-                    
-                    # TODO artifacts
                 '''
             }
         }
@@ -70,8 +73,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    exit 0
-                    docker tag esp54_web 192.168.160.99:5000/esp54-web
+                    docker tag esp54-web 192.168.160.99:5000/esp54-web
                     docker push 192.168.160.99:5000/esp54-web
                 '''
             }
