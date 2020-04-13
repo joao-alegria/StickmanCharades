@@ -121,5 +121,71 @@ public class StepsDefs {
         // Write code here that turns the phrase above into concrete actions
 //        throw new cucumber.api.PendingException();
     }
+    
+    @When("I click the invite user as friend button")
+    public void i_click_the_invite_user_as_friend_button() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
+
+    @Then("I should see a form that allows the user to insert another user's username.")
+    public void i_should_see_a_form_that_allows_the_user_to_insert_another_user_s_username() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
+
+    @Given("I'm in the invite user as friend form")
+    public void i_m_in_the_invite_user_as_friend_form() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
+
+    @When("I click the send notification button,")
+    public void i_click_the_send_notification_button() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
+
+    @Then("I should be notified that a message with my friendship request was sent.")
+    public void i_should_be_notified_that_a_message_with_my_friendship_request_was_sent() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
+
+    @When("I'm using the platform and other user accepts my friendship request,")
+    public void i_m_using_the_platform_and_other_user_accepts_my_friendship_request() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
+
+    @Then("I should be notified that that user has accepted my friendship request.")
+    public void i_should_be_notified_that_that_user_has_accepted_my_friendship_request() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
+
+    @Given("I am at the game session lobby,")
+    public void i_am_at_the_game_session_lobby() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
+
+    @Given("I see a friend I want to invite at the friends list,")
+    public void i_see_a_friend_I_want_to_invite_at_the_friends_list() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
+
+    @When("I click the invite button related to that friend")
+    public void i_click_the_invite_button_related_to_that_friend() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
+
+    @Then("I should be notified that a message with the invitation was sent to my friend.")
+    public void i_should_be_notified_that_a_message_with_the_invitation_was_sent_to_my_friend() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
 
 }

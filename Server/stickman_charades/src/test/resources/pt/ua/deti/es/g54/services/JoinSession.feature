@@ -14,4 +14,4 @@ Feature: Users can join a game session
         Given that I am logged in,
         And I see the game session I want in the game session list,
         When I click the join button of that session,
-        Then I should see the game session lobby. 
+        Then I should see the game session lobby
