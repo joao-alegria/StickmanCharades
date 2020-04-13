@@ -114,15 +114,19 @@ public class RiggedAvatar : MonoBehaviour {
         transform.position = torsoPos;
 
         foreach (var riggedJoint in jointsRigged) {
-            //Get joint from the Nuitrack
-            nuitrack.Joint joint = skeleton.GetJoint(riggedJoint.Key);
+            try {
+                //Get joint from the Nuitrack
+                nuitrack.Joint joint = skeleton.GetJoint(riggedJoint.Key);
 
-            ModelJoint modelJoint = riggedJoint.Value;
+                ModelJoint modelJoint = riggedJoint.Value;
 
-            //Calculate the model bone rotation: take the mirrored joint orientation, add a basic rotation of the model bone, invert movement along the Z axis
-            Quaternion jointOrient = Quaternion.Inverse(CalibrationInfo.SensorOrientation) * (joint.ToQuaternion()) * modelJoint.baseRotOffset;
+                //Calculate the model bone rotation: take the mirrored joint orientation, add a basic rotation of the model bone, invert movement along the Z axis
+                Quaternion jointOrient = Quaternion.Inverse(CalibrationInfo.SensorOrientation) * (joint.ToQuaternion()) * modelJoint.baseRotOffset;
 
-            modelJoint.bone.rotation = jointOrient;
+                modelJoint.bone.rotation = jointOrient;
+            } catch {
+                // Ignore IndexOutOfRangeException (it occurs because model has more available joints than those provided by orbbec)
+            }
         }
     }
 

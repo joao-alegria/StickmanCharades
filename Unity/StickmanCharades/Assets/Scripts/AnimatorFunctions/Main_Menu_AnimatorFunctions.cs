@@ -19,7 +19,7 @@ public class Main_Menu_AnimatorFunctions : AnimatorFunctions {
 			changeScene("Options_Menu_Scene");
 		} else if(GameObject.Find("Btn Quit").GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("press")) {
 			print("Quit");
-			EditorApplication.isPlaying = false;
+			//EditorApplication.isPlaying = false;
 			Application.Quit();
 		}
 	}
