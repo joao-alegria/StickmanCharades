@@ -20,7 +20,7 @@ import org.springframework.test.context.TestPropertySource;
  * Each step has referenced on javadoc on what Scenario(s) of which Feature(s) it is used
  */
 @TestPropertySource (locations={"classpath:application-test.properties"}, properties={"KAFKA_HOST=localhost", "KAFKA_PORT=9092"})
-@SpringBootTest (webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest (webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StepsDefs {
 
     private long MAX_WAIT_TIME = 500;
