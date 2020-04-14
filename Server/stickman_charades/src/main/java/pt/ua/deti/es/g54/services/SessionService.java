@@ -121,7 +121,7 @@ public class SessionService {
         if(!listSessions.isEmpty()){
             DBSession session=listSessions.get(0);
             session.setIsActive(true);
-            Thread c = new Thread(new Consumer(KAFKA_HOST, KAFKA_PORT,String.valueOf(sessionId),smt, sp));
+            Thread c = new Thread(new Consumer(KAFKA_HOST, KAFKA_PORT,"esp54_"+String.valueOf(sessionId),smt, sp));
             Thread s = new Thread(new Session(session.getId(), session.getDurationSeconds(), session.getCreator()));
             c.start();
             s.start();
