@@ -59,12 +59,14 @@ pipeline {
                 branch 'master'
             }
             steps {
-                sh '''
-                    mvn clean deploy -Dmaven.test.skip=true
+                dir('Server/stickman_charades') {
+                    sh '''
+                        mvn clean deploy -Dmaven.test.skip=true
 
-                    docker tag esp54-web 192.168.160.99:5000/esp54-server
-                    docker push 192.168.160.99:5000/esp54-server
-                '''
+                        docker tag esp54-web 192.168.160.99:5000/esp54-server
+                        docker push 192.168.160.99:5000/esp54-server
+                    '''
+                }
             }
         }
         stage('Publish Web') {
@@ -72,10 +74,12 @@ pipeline {
                 branch 'master'
             }
             steps {
-                sh '''
-                    docker tag esp54-web 192.168.160.99:5000/esp54-web
-                    docker push 192.168.160.99:5000/esp54-web
-                '''
+                dir('Angular/stickman-charades') {
+                    sh '''
+                        docker tag esp54-web 192.168.160.99:5000/esp54-web
+                        docker push 192.168.160.99:5000/esp54-web
+                    '''
+                }
             }
         }
         stage('Publish Desktop') {

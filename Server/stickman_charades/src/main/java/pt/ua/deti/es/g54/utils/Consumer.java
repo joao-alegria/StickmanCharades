@@ -40,6 +40,7 @@ public class Consumer implements Runnable{
 
         properties.put("bootstrap.servers", KAFKA_HOST + ":" + KAFKA_PORT);
         properties.put("group.id", "es_g54_group_"+topic);
+        properties.put("auto.offset.reset", "latest");
         properties.put("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
         properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         this.consumer = new KafkaConsumer<Integer,String>(properties);
