@@ -20,23 +20,23 @@ import org.springframework.test.context.TestPropertySource;
  * Each step has referenced on javadoc on what Scenario(s) of which Feature(s) it is used
  */
 @TestPropertySource (locations={"classpath:application-test.properties"}, properties={"KAFKA_HOST=localhost", "KAFKA_PORT=9092"})
-@SpringBootTest (webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest (webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StepsDefs {
 
     private long MAX_WAIT_TIME = 500;
 
-    private static WebDriver driver;
-
-    static {
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--whitelisted-ips");
-        options.addArguments("--headless");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disabled-extensions");
-
-        WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver(options);
-    }
+//    private static WebDriver driver;
+//
+//    static {
+//        ChromeOptions options = new ChromeOptions();
+//        options.addArguments("--whitelisted-ips");
+//        options.addArguments("--headless");
+//        options.addArguments("--no-sandbox");
+//        options.addArguments("--disabled-extensions");
+//
+//        WebDriverManager.chromedriver().setup();
+//        driver = new ChromeDriver(options);
+//    }
     
     @Given("that I am logged in,")
     public void that_I_am_logged_in() {

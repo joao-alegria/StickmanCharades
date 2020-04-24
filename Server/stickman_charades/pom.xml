@@ -8,11 +8,19 @@
 		<version>2.2.4.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>labProjectES</groupId>
+	<groupId>pt.ua.deti.es.g54</groupId>
 	<artifactId>stickman_charades</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>stickman_charades</name>
 	<description>ES Project</description>
+
+    <distributionManagement>
+        <repository>
+            <id>central</id>
+            <name>c04a282c7a6d-releases</name>
+            <url>http://192.168.160.99:8081/artifactory/libs-release-local</url>
+        </repository>
+    </distributionManagement>
 
 	<properties>
             <java.version>1.8</java.version>
