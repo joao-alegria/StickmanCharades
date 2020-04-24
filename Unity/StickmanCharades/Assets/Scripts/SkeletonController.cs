@@ -25,7 +25,7 @@ public class SkeletonController : MonoBehaviour {
 
     void Start() {
 
-        /* DEBUGGING */
+        /* DEBUGGING 
         SessionData.KafkaTopic = "actor0002";
         SessionData.KafkaProps = new Dictionary<string, string> {
             { "group.id","test" },
@@ -97,8 +97,9 @@ public class SkeletonController : MonoBehaviour {
         foreach (KeyValuePair<nuitrack.JointType, UnityEngine.Vector3> kvp in avatars[index].ExportJoints()) {
             v = new string[3];
             for(i=0;i<3;i++) { 
-                if(kvp.Value[i]==0) { v[i] = "0.0"; } 
-                else { v[i] = "" + kvp.Value[i]; }
+                //if(kvp.Value[i]==0) { v[i] = "0.0"; }  // v[i].ToString("0.0000")
+                if(!(kvp.Value[i].ToString()).Contains(".")) { v[i] = kvp.Value[i] + ".0"; } 
+                else { v[i] = kvp.Value[i].ToString(); }
             }
             positions += string.Format("\"{0}\": [{1}], ", jointMapping[kvp.Key], v[0] +","+ v[1] +","+ v[2]);
 
@@ -109,8 +110,9 @@ public class SkeletonController : MonoBehaviour {
         positions += "}";
         orientations = orientations.Substring(0, orientations.Length-2);
         orientations += "}";
-        //string retval = "{\"index\": " + index + ", \"positions\": " + positions + "}";
+
         string retval = "{\"index\": " + index + ", \"positions\": " + positions + ", \"orientations\": " + orientations + "}";
+        //print(retval);
         return retval;
     }
 }

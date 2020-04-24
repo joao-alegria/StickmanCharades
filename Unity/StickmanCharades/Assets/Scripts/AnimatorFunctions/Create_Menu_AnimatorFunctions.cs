@@ -12,10 +12,10 @@ public class Create_Menu_AnimatorFunctions : AnimatorFunctions {
 			print("open Session");
 		} else if(GameObject.Find("Btn Start").GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("press")) {
 			print("Start");
-			SessionData.KafkaTopic = "actor0002";
+			SessionData.KafkaTopic = "esp54_1"; //"actor0002";
 			SessionData.KafkaProps = new Dictionary<string, string> {
 				{ "group.id","test" },
-				{ "bootstrap.servers", "localhost:9092" },
+				{ "bootstrap.servers", "192.168.160.103:9092" }, // "localhost:9092"
 				{ "enable.auto.commit", "false" },
             	{ "auto.offset.reset", "latest" }
 			};
