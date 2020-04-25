@@ -79,6 +79,10 @@
     font-weight: bold;
   }
 
+  .content #cucumber p {
+    font-weight: bold;
+  }
+
   .reqs table, th, td {
     border: 1px solid black;
     padding-right: 10px;
@@ -162,6 +166,27 @@
   <p>With the personas defined, we can proceed to studying the most probable and appropriate use cases. At this stage, the scenarios have a high-level nature and are open to updates. The personas are here used to easily present these usage scenarios:</p><br>
 
   <div id="scenario">
+    <p>Project Specific</p>
+    <p>Scenario 1 – Game Session Start</p>
+    Jack starts a game with the Millers already inside a session and the actual game is initialized with the defined configurations and the chosen avatars.
+    <p>Scenario 2 – In-Game Acting</p>
+    The Millers take turns being the actors that perform based on the charades they are given (automatically assigned).
+    <p>Scenario 3 – In-Game Answering</p>
+    Peter is playing in a session and watching another participant perform a charade. He thinks he knows the answer, so he types it and submits. All participants are notified if the answer is correct, which ends the turn of the actor and awards a point to Peter, or if it is incorrect, in which case the turn keeps going and Peter may try another guess if the rules of the game session allow it.
+    <p>Scenario 4 – In-Game Commands</p>
+    The current actor performs a specific movement that is interpreted by the platform and pauses the game.
+    <p>Scenario 5 – Spectator Mode</p>
+    Frances is tired of playing, but still wants to be in the game session and interact with her family, so she decides to change her status from player to spectator, so she can watch her family play and still have fun by spending time with them.
+    <p>Scenario 6 – Exiting Session</p>
+    Peter plays for a while in an open session but decides to search for a more crowded one, so he exits the current session he is in and goes back to the list of open sessions.
+    <p>Scenario 7 – Automatic Ending Session</p>
+    The system ends the session according to the rules (e.g. all rounds have been completed) and presents the results to all session players, as well as the winner.
+    <p>Scenario 8 – Ending Session</p>
+    It’s late, so Jack and his family decide to stop playing, and Jack ends the game session they are in. With that, the session results and the winner are shown to all player.
+    <p>Scenario 9 – Closing Session</p>
+    Jack closes (deletes) session and all players are duly notified.
+
+    <p>Generic</p>
     <p>Scenario 1 – Registration</p>
     Jack creates an account for him, his wife and his mother-in-law so that they can play together.
     <p>Scenario 2 – Authentication</p>
@@ -182,20 +207,6 @@
     Jack enters Peter’s game session and waits for the game to start.
     <p>Scenario 10 – Avatar Choice</p>
     Peter customizes an avatar that will represent him in game sessions, choosing between options such as color of the avatar (and perhaps height or event 3D model).
-    <p>Scenario 11 – Game Session</p>
-    Jack starts the game and the Millers take turns being the actors that perform based on the charades they are given, and the participants who are guessing gain points when they find the right solution ahead of the others.
-    <p>Scenario 12 – Spectator Mode</p>
-    Frances is tired of playing, but still wants to be in the game session and interact with her family, so she decides to change her status from player to spectator, so she can watch her family play and still have fun by spending time with them.
-    <p>Scenario 13 – Exiting Session</p>
-    Peter plays for a while in an open session but decides to search for a more crowded one, so he exits the current session he is in and goes back to the list of open sessions.
-    <p>Scenario 14 – Automatic Ending Session</p>
-    The system ends the session according to the rules (e.g. all rounds have been completed) and presents the results to all session players, as well as the winner.
-    <p>Scenario 15 – Ending Session</p>
-    It’s late, so Jack and his family decide to stop playing, and Jack ends the game session they are in. With that, the session results and the winner are shown to all player.
-    <p>Scenario 16 – Closing Session</p>
-    Jack closes (deletes) session and all players are duly notified.
-    <p>Scenario 17 – In-Game Answers</p>
-    Peter is playing in a session and watching another participant perform a charade. He thinks he knows the answer, so he types it and submits. All participants are notified if the answer is correct, which ends the turn of the actor and awards a point to Peter, or if it is incorrect, in which case the turn keeps going and Peter may try another guess if the rules of the game session allow it.
   </div><br>
 
   <h4>Solution Requirements</h4>
@@ -294,16 +305,69 @@
 
   <h4>Technical Dependencies</h4>
   <ul>
-    <li>Jakarta</li>
+    <li>Java SpringBoot</li>
     <li>Payara</li>
     <li>MySQL, via JPA</li>
     <li>Kafka</li>
     <li>Angular</li>
+    <li>Unity</li>
     <li>Orbbec</li>
   </ul>
 
   <h4>Diagram</h4>
-  <img alt="diagram" src="../assets/diagram.svg"><br><br>
+  <img alt="diagram" src="../assets/Diagram.png"><br><br>
+
+  <h4>Integration Tests</h4>
+  <p></p><br>
+
+  <div id="cucumber">
+
+    <p>Feature: Users can create a new game session</p>
+      &emsp;As an authenticated user wanting to play a game with friends or family<br>&emsp;I want to be able to create a new game session on the platform<br>&emsp;So that I can invite friends or have random people join and play with me.<br>
+      &emsp;Scenario: User asserts that it's possible to create a session.<br>
+      &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I have access to home lobby page,<br>&emsp;&emsp;When I choose the option to create a game session<br>&emsp;&emsp;Then I should see a form to be filled.<br>
+      &emsp;Scenario: User creates a game session, both correctly and without necessary fields.<br>
+      &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;When I execute the previous steps<br>&emsp;&emsp;And I fill in and submit the form,<br>&emsp;&emsp;Then I should see a message informing me about the success/failure of the operation<br>&emsp;&emsp;And (if successful) I should be redirected to the session lobby.<br><br>
+
+    <p>Feature: Users can join a game session</p>
+      &emsp;As an authenticated user wanting to play a game with friends or family<br>&emsp;I want to be able to join a game session on the platform<br>&emsp;So that I can play a game of charades with my friends.<br>
+      &emsp;Scenario: Session creator joins its own session.<br>
+      &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I see the game session I created that I want to join in the game sessions list,<br>&emsp;&emsp;When I click the join button of that game session<br>&emsp;&emsp;Then I should see the game session lobby<br>&emsp;&emsp;And I should be the admin. <br>
+      &emsp;Scenario: User joins session of another user.<br>
+      &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I see the game session I want in the game session list,<br>&emsp;&emsp;When I click the join button of that session,<br>&emsp;&emsp;Then I should see the game session lobby.<br><br>
+      
+    <p>Feature: When joining a session, any user should adopt the initial position.</p>
+      &emsp;As an authenticated user joining a game session<br>&emsp;I want the camera to work to be able to perform the initial position<br>&emsp;So that the platform recognizes me and the game session can start.<br>
+      &emsp;Scenario: User joins the session.<br>
+      &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I just joined a game session,<br>&emsp;&emsp;When I perform the initial position(spread arms)<br>&emsp;&emsp;Then I should be recognized by the platform<br>&emsp;&emsp;And if am the last user recognized, the game session should start. <br><br>
+
+    <p>Feature: During a session, any user can request an immediate session stop by making a signal.</p>
+      &emsp;As an authenticated user in a game session<br>&emsp;I want to make the stop signal(cross arms over head)<br>&emsp;So that session is immediately closed.<br>
+      &emsp;Scenario: User requests immediate session termination.<br>
+      &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I am in a game session,<br>&emsp;&emsp;When I perform the stopping position(cross arms over head)<br>&emsp;&emsp;Then I should see the game session to be immediately stopped. <br><br>
+
+    <p>Feature: During a session, any user can notify the admin by raising any hand over their head.</p>
+      &emsp;As an authenticated user playing in a game session<br>&emsp;I want to be able to notify the platform admin<br>&emsp;So that he can clear some game rule or help in any problem.<br>
+      &emsp;Scenario: User raises right hand.<br>
+      &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I am in a game session,<br>&emsp;&emsp;When I raise my right hand above my head<br>&emsp;&emsp;Then I should be notified that a message was send to the admin<br>&emsp;&emsp;And short after I should see the admin in my game session. <br>
+      &emsp;Scenario: User raises left hand.<br>
+      &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I am in a game session,<br>&emsp;&emsp;When I raise my left hand above my head<br>&emsp;&emsp;Then I should be notified that a message was send to the admin<br>&emsp;&emsp;And short after I should see the admin in my game session. <br><br>
+
+    <p>Feature: Users ask users to be their friends.</p>
+      &emsp;As an authenticated user<br>&emsp;I want to be able to ask other users to be my friends in the platform<br>&emsp;So that I in the future can invite them to game sessions.<br>
+      &emsp;Scenario: User asserts that they can ask other users to be their friends.<br>
+      &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;When I click the invite user as friend button<br>&emsp;&emsp;Then I should see a form that allows the user to insert another user's username.<br>
+      &emsp;Scenario: User ask other users to be their friends.<br>
+      &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I'm in the invite user as friend form<br>&emsp;&emsp;When I click the send notification button,<br>&emsp;&emsp;Then I should be notified that a message with my friendship request was sent.<br>
+      &emsp;Scenario: User gets notified that other user accepted their friendship request.<br>
+      &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;When I'm using the platform and other user accepts my friendship request,<br>&emsp;&emsp;Then I should be notified that that user has accepted my friendship request.<br><br>
+
+    <p>Feature: Users can invite friends to join game sessions.</p>
+      &emsp;As an authenticated user wanting to play a game with friends or family<br>&emsp;I want to be able to invite friends to the game session I'm currently on<br>&emsp;So that I can play a game of charades with my friends.<br>
+      &emsp;Scenario: User invites friend to game session.<br>
+      &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I am at the game session lobby,<br>&emsp;&emsp;And I see a friend I want to invite at the friends list,<br>&emsp;&emsp;When I click the invite button related to that friend<br>&emsp;&emsp;Then I should be notified that a message with the invitation was sent to my friend.<br><br>
+
+  </div><br>
 
   <footer>
     <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
