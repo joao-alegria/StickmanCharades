@@ -10,6 +10,7 @@ public class SkeletonController : MonoBehaviour {
     [SerializeField] SimpleSkeletonAvatar skeletonAvatar;
 
     List<SimpleSkeletonAvatar> avatars = new List<SimpleSkeletonAvatar>();
+    List<string> usernames = new List<string>();
 
     //private string path = "Assets/Resources/skeletonExample.txt";
     //private StreamWriter writer;
@@ -26,7 +27,7 @@ public class SkeletonController : MonoBehaviour {
     void Start() {
 
         /* DEBUGGING 
-        SessionData.KafkaTopic = "actor0002";
+        SessionData.KafkaTopic = "actor0001";
         SessionData.KafkaProps = new Dictionary<string, string> {
             { "group.id","test" },
             { "bootstrap.servers", "localhost:9092" },
@@ -55,6 +56,8 @@ public class SkeletonController : MonoBehaviour {
 
         NuitrackManager.SkeletonTracker.SetNumActiveUsers(skeletonCount);
 
+        usernames.Add("testUser"); // retrieve username through the REST API
+
         //writer = new StreamWriter(path, true);
 
         kafkaProducer = new ProducerBuilder<int, string>(SessionData.KafkaProps).Build();
@@ -72,7 +75,7 @@ public class SkeletonController : MonoBehaviour {
                     //writer.WriteLine(GetJoints(i));
                     try { var deliveryReport = await kafkaProducer.ProduceAsync(
                             SessionData.KafkaTopic, 
-                            new Message<int, string> { Key = msgKey, Value = GetJoints(i) }
+                            new Message<int, string> { Key = msgKey, Value = GetJoints(usernames[i]) }
                         );
                         //print($"delivered to: {deliveryReport.TopicPartitionOffset}");
 
@@ -87,14 +90,14 @@ public class SkeletonController : MonoBehaviour {
         }
     }
 
-    string GetJoints(int index) {
+    string GetJoints(string username) {
 
         int i;
         string positions = "{";
         string orientations = "{";
         nuitrack.Orientation o;
         string[] v;
-        foreach (KeyValuePair<nuitrack.JointType, UnityEngine.Vector3> kvp in avatars[index].ExportJoints()) {
+        foreach (KeyValuePair<nuitrack.JointType, UnityEngine.Vector3> kvp in avatars[0].ExportJoints()) { // this makes support of multiple users not possible
             v = new string[3];
             for(i=0;i<3;i++) { 
                 //if(kvp.Value[i]==0) { v[i] = "0.0"; }  // v[i].ToString("0.0000")
@@ -111,7 +114,7 @@ public class SkeletonController : MonoBehaviour {
         orientations = orientations.Substring(0, orientations.Length-2);
         orientations += "}";
 
-        string retval = "{\"index\": " + index + ", \"positions\": " + positions + ", \"orientations\": " + orientations + "}";
+        string retval = "{\"username\": \"" + username + "\", \"positions\": " + positions + ", \"orientations\": " + orientations + "}";
         //print(retval);
         return retval;
     }

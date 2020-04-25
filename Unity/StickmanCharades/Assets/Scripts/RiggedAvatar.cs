@@ -26,7 +26,7 @@ public class RiggedAvatar : MonoBehaviour {
     void Start() {
 
         /* DEBUGGING 
-        SessionData.KafkaTopic = "actor0002";
+        SessionData.KafkaTopic = "actor0001";
         SessionData.KafkaProps = new Dictionary<string, string> {
             { "group.id","test" },
             { "bootstrap.servers", "localhost:9092" },
