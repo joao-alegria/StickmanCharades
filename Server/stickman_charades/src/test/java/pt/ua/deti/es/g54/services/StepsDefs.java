@@ -187,5 +187,71 @@ public class StepsDefs {
         // Write code here that turns the phrase above into concrete actions
 //        throw new cucumber.api.PendingException();
     }
+    
+    @Given("I am in a game session,")
+    public void i_am_in_a_game_session() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
+
+    @When("I raise my right hand above my head")
+    public void i_raise_my_right_hand_above_my_head() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
+
+    @Then("I should be notified that a message was send to the admin")
+    public void i_should_be_notified_that_a_message_was_send_to_the_admin() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
+
+    @Then("short after I should see the admin in my game session.")
+    public void short_after_I_should_see_the_admin_in_my_game_session() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
+
+    @When("I raise my left hand above my head")
+    public void i_raise_my_left_hand_above_my_head() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
+
+    @Given("I just joined a game session,")
+    public void i_just_joined_a_game_session() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
+
+    @When("I perform the initial position\\(spread arms)")
+    public void i_perform_the_initial_position_spread_arms() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
+
+    @Then("I should be recognized by the platform")
+    public void i_should_be_recognized_by_the_platform() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
+
+    @Then("if am the last user recognized, the game session should start.")
+    public void if_am_the_last_user_recognized_the_game_session_should_start() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
+
+    @When("I perform the stopping position\\(cross arms over head)")
+    public void i_perform_the_stopping_position_cross_arms_over_head() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
+
+    @Then("I should see the game session to be immediately stopped.")
+    public void i_should_see_the_game_session_to_be_immediately_stopped() {
+        // Write code here that turns the phrase above into concrete actions
+//        throw new cucumber.api.PendingException();
+    }
 
 }

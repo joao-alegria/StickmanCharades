@@ -68,8 +68,4 @@ public class SessionRest {
         return ss.deleteSession(principal.getName(), sessionId);
     }
     
-    @GetMapping("/session/test")
-    public JSONObject teste(Principal principal){
-        return ss.teste();
-    }
 }
