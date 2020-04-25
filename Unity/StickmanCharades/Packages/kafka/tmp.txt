@@ -5,6 +5,6 @@ cd C:\Users\fp\Desktop\UA\4A2S\ES\P\StickmanCharades\Unity\StickmanCharades\Pack
 
 .\bin\windows\kafka-server-start.bat .\config\server.properties
 
-.\bin\windows\kafka-topics.bat --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic actor0001
+.\bin\windows\kafka-topics.bat --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic actor0003
 .\bin\windows\kafka-topics.bat --list --bootstrap-server localhost:9092
-.\bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic actor0001 --from-beginning
+.\bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic actor0003 --from-beginning
