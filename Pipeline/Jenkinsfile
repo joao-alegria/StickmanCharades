@@ -1,7 +1,14 @@
 pipeline {
-    agent any
+    agent none
     stages {
         stage('Test Server') {
+            agent {
+                docker {
+                    image '192.168.160.99:5000/esp54-maven_agent'
+                    registryUrl 'https://192.168.160.99:5000'
+                    args '-v /root/.m2:/root/.m2 -v /dev/shm:/dev/shm'
+                }
+            }
             steps {
                 dir('Server/stickman_charades') {
                     sh 'mvn clean verify'
@@ -9,6 +16,7 @@ pipeline {
             }
         }
         stage('Test Web') {
+            agent any
             steps {
                 dir ('Angular/stickman-charades') {
                     sh 'echo Skipping...'
@@ -16,6 +24,7 @@ pipeline {
             }
         }
         stage('Test Desktop') {
+            agent any
             steps {
                 dir('Unity/StickmanCharades') {
                     sh 'echo Skipping...'
@@ -23,6 +32,7 @@ pipeline {
             }
         }
         stage('Build Server') {
+            agent any
             when {
                 branch 'master'
             }
@@ -37,6 +47,7 @@ pipeline {
             }
         }
         stage('Build Web') {
+            agent any
             when {
                 branch 'master'
             }
@@ -47,6 +58,7 @@ pipeline {
             }
         }
         stage('Build Desktop') {
+            agent any
             when {
                 branch 'master'
             }
@@ -55,6 +67,7 @@ pipeline {
             }
         }
         stage('Publish Server') {
+            agent any
             when {
                 branch 'master'
             }
@@ -72,6 +85,7 @@ pipeline {
             }
         }
         stage('Publish Web') {
+            agent any
             when {
                 branch 'master'
             }
@@ -85,6 +99,7 @@ pipeline {
             }
         }
         stage('Publish Desktop') {
+            agent any
             when {
                 branch 'master'
             }
@@ -93,6 +108,7 @@ pipeline {
             }
         }
         stage('Deploy Server') {
+            agent any
             when {
                 branch 'master'
             }
@@ -118,6 +134,7 @@ pipeline {
             }
         }
         stage('Deploy Web') {
+            agent any
             when {
                 branch 'master'
             }
