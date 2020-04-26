@@ -20,6 +20,11 @@
             <name>c04a282c7a6d-releases</name>
             <url>http://192.168.160.99:8081/artifactory/libs-release-local</url>
         </repository>
+        <snapshotRepository>
+             <id>snapshots</id>
+             <name>c04a282c7a6d-snapshots</name>
+             <url>http://192.168.160.99:8081/artifactory/libs-snapshot-local</url>
+          </snapshotRepository>
     </distributionManagement>
 
 	<properties>
