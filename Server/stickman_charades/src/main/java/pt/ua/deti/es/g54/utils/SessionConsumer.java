@@ -16,6 +16,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import pt.ua.deti.es.g54.entities.DBSession;
 import pt.ua.deti.es.g54.entities.DBUser;
@@ -46,8 +47,10 @@ public class SessionConsumer implements Runnable{
     
     private SessionRepository sr;
     
+    private KafkaTemplate kt;
+    
 
-    public SessionConsumer(String KAFKA_HOST, String KAFKA_PORT, DBSession session, String topic,SimpMessagingTemplate smt, SessionRepository sr) {
+    public SessionConsumer(String KAFKA_HOST, String KAFKA_PORT, DBSession session, String topic,SimpMessagingTemplate smt, SessionRepository sr, KafkaTemplate kt) {
         this.properties = new Properties();
 
         properties.put("bootstrap.servers", KAFKA_HOST + ":" + KAFKA_PORT);
@@ -61,17 +64,20 @@ public class SessionConsumer implements Runnable{
         this.topic=topic;
         this.session=session;
         this.sr=sr;
+        this.kt=kt;
     }
 
     @Override
     public void run() {
-        // while (true) {
         while(!done) {
-            ConsumerRecords<Integer, String> records = consumer.poll(Duration.ofMillis(1000));
+            ConsumerRecords<Integer, String> records = consumer.poll(Duration.ofMillis(100));
             for (ConsumerRecord<Integer,String> record : records) {
                 try {
                     JSONObject json = (JSONObject)parser.parse(record.value());
-                    System.out.println(json);
+                    
+                    if(json.containsKey("msg")){
+                        continue;
+                    }
                     
                     JSONArray head = ((JSONArray)((JSONObject)json.get("positions")).get("Head"));
                     JSONArray leftHand = ((JSONArray)((JSONObject)json.get("positions")).get("LeftHand"));
@@ -94,18 +100,23 @@ public class SessionConsumer implements Runnable{
                         smt.convertAndSend("/game/admin", adminNotification.toJSONString());
                     }
                     
-                    
                     if(activePlayers.size()==session.getPlayers().size()){
                         smt.convertAndSend("/game/session/"+this.topic, record.value());
                     }else{
                         if(!activePlayers.contains(json.get("username"))){
                             double leftDist=Math.abs(((double)leftHand.get(1))-((double)leftShoulder.get(1)));
                             double rightDist=Math.abs(((double)rightHand.get(1))-((double)rightShoulder.get(1)));
-                            if(leftDist<10 && rightDist<10){
+                            if(leftDist<50 && rightDist<50){
                                 activePlayers.add((String)json.get("username"));
+                                JSONObject notification = new JSONObject();
+                                notification.put("username", (String)json.get("username"));
+                                notification.put("msg", "User recognized.");
+                                kt.send(topic, notification.toJSONString());
                             }
-                            
+
                             if(activePlayers.size()==session.getPlayers().size()){
+                                session.setIsActive(true);
+                                sr.save(session);
                                 Thread sessionThread = new Thread(new Session(session.getDurationSeconds()));
                                 sessionThread.start();
                             }
@@ -150,7 +161,6 @@ public class SessionConsumer implements Runnable{
                     this.timeToWait=0;
                 }
             }
-            
             session.setIsAvailable(false);
             sr.save(session); 
         }

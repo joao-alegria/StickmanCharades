@@ -62,12 +62,14 @@ public class SessionService {
         String title = (String)newSession.get("title");
         int duration = (int)newSession.get("duration");
         List<DBUser> listUser=ur.getUserByUsername(name);
+        JSONObject json =new JSONObject();
         if(!listUser.isEmpty()){
             DBUser user = listUser.get(0);
             DBSession session = new DBSession(title,duration,user);
             sr.save(session);
+            json.put("id", session.getId());
         }
-        return new JSONObject();
+        return json;
     }
 
     public JSONObject getSessionInfo(String name, Long sessionId) {
@@ -113,9 +115,8 @@ public class SessionService {
         List<DBSession> listSessions = sr.getSessionById(sessionId);
         if(!listSessions.isEmpty()){
             DBSession session=listSessions.get(0);
-            session.setIsActive(true);
 //            Thread s = new Thread(new Session(session.getId(), session.getDurationSeconds(), session.getCreator()));
-            Thread c = new Thread(new SessionConsumer(KAFKA_HOST, KAFKA_PORT,session,"esp54_"+String.valueOf(sessionId),smt, sr));
+            Thread c = new Thread(new SessionConsumer(KAFKA_HOST, KAFKA_PORT,session,"esp54_"+String.valueOf(sessionId),smt, sr, kt));
             c.start();
 //            s.start();
         }

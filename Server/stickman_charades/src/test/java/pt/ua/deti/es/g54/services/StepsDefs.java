@@ -5,15 +5,36 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
+import junit.framework.Assert;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.junit.After;
 import static org.junit.Assert.assertEquals;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.openqa.selenium.*;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.TestPropertySource;
+import pt.ua.deti.es.g54.api.entities.UserData;
+import pt.ua.deti.es.g54.entities.DBSession;
+import pt.ua.deti.es.g54.repository.SessionRepository;
 
 /**
  * Where all the steps of all features are defined here
@@ -25,23 +46,68 @@ public class StepsDefs {
 
     private long MAX_WAIT_TIME = 500;
 
-//    private static WebDriver driver;
-//
-//    static {
-//        ChromeOptions options = new ChromeOptions();
-//        options.addArguments("--whitelisted-ips");
-//        options.addArguments("--headless");
-//        options.addArguments("--no-sandbox");
-//        options.addArguments("--disabled-extensions");
-//
-//        WebDriverManager.chromedriver().setup();
-//        driver = new ChromeDriver(options);
-//    }
+    private static WebDriver driver;
+    
+    private static int usernameCount = 0;
+    private static String currentUsername;
+    private static long currentSessionId;
+    
+    @Value("${KAFKA_HOST}")
+    private String KAFKA_HOST;
+
+    @Value("${KAFKA_PORT}")
+    private String KAFKA_PORT;
+    
+    @LocalServerPort
+    int randomServerPort;
+    
+    @Autowired
+    private TestRestTemplate restTemplate;  
+    
+    @Autowired
+    private UserService us;
+    
+    @Autowired
+    private KafkaTemplate kt;
+    
+    @Autowired
+    private SessionRepository sr;
+    
+    private String server="http://localhost:";
+
+    static {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--whitelisted-ips");
+        options.addArguments("--headless");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disabled-extensions");
+
+        WebDriverManager.chromedriver().setup();
+        driver = new ChromeDriver(options);
+        
+    }
+    
+    private void changeCurrentUsername() {
+        usernameCount++;
+        currentUsername = "cucumber_tests" + usernameCount;
+    }
     
     @Given("that I am logged in,")
-    public void that_I_am_logged_in() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+    public void that_I_am_logged_in() throws Exception {
+        changeCurrentUsername();
+        UserData ud = new UserData();
+        ud.setUsername(currentUsername);
+        ud.setEmail(currentUsername+"@mail.com");
+        ud.setPassword("123".toCharArray());
+        us.registerUser(ud);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth(currentUsername, "123");
+        
+        HttpEntity entity = new HttpEntity(headers);
+        
+        ResponseEntity<String> result = restTemplate.exchange(server+randomServerPort+"/login", HttpMethod.GET, entity, String.class);
+        assertEquals(result.getStatusCodeValue(),200);
     }
 
     @Given("I have access to home lobby page,")
@@ -219,27 +285,65 @@ public class StepsDefs {
     }
 
     @Given("I just joined a game session,")
-    public void i_just_joined_a_game_session() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+    public void i_just_joined_a_game_session() throws ParseException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth(currentUsername, "123");
+        
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("name", "test");
+        jsonBody.put("duration", 600);
+        
+        HttpEntity entity = new HttpEntity(jsonBody, headers);
+        
+        ResponseEntity<String> result = restTemplate.exchange(server+randomServerPort+"/session", HttpMethod.POST, entity, String.class);
+        JSONObject json = (JSONObject)new JSONParser().parse(result.getBody());
+        currentSessionId=(long)json.get("id");
+        assertEquals(result.getStatusCodeValue(),200);
+        
+        jsonBody = new JSONObject();
+
+        entity = new HttpEntity(jsonBody, headers);
+        
+        result = restTemplate.exchange(server+randomServerPort+"/session/"+currentSessionId, HttpMethod.PUT, entity, String.class);
+        assertEquals(result.getStatusCodeValue(),200);
     }
 
     @When("I perform the initial position\\(spread arms)")
-    public void i_perform_the_initial_position_spread_arms() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+    public void i_perform_the_initial_position_spread_arms() throws ParseException {
+        String jsonBody = "{\"username\": \""+currentUsername+"\", \"positions\": {\"Head\": [2098.635,1708.936,0.0], \"Neck\": [2227.439,1410.903,0.0], \"LeftCollar\": [2252.219,1217.666,0.0], "
+                + "\"Torso\": [2314.787,729.7457,0.0], \"Waist\": [2356.344,278.0999,0.0], \"LeftShoulder\": [1860.994,1193.861,0.0], \"RightShoulder\": [2813.465,1175.847,0.0], "
+                + "\"LeftElbow\": [1751.346,713.7789,0.0], \"RightElbow\": [0.0,0.0,0.0], \"LeftWrist\": [0.0,0.0,0.0], \"RightWrist\": [0.0,0.0,0.0], \"LeftHand\": [0.0,1193.861,0.0], "
+                + "\"RightHand\": [0.0,1175.847,0.0], \"LeftHip\": [0.0,0.0,0.0], \"RightHip\": [2672.045,226.5393,0.0], \"LeftKnee\": [0.0,0.0,0.0], \"RightKnee\": [0.0,0.0,0.0], "
+                + "\"LeftAnkle\": [0.0,0.0,0.0], \"RightAnkle\": [0.0,0.0,0.0]}}";
+        kt.send("esp54_"+currentSessionId, jsonBody);
     }
 
     @Then("I should be recognized by the platform")
-    public void i_should_be_recognized_by_the_platform() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+    public void i_should_be_recognized_by_the_platform() throws ParseException {
+        Properties properties = new Properties();
+        properties.put("bootstrap.servers", KAFKA_HOST + ":" + KAFKA_PORT);
+        properties.put("group.id", "es_g54_group_test");
+        properties.put("auto.offset.reset", "latest");
+        properties.put("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
+        properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        KafkaConsumer consumer = new KafkaConsumer<Integer,String>(properties);
+        consumer.subscribe(Arrays.asList("esp54_"+currentSessionId));
+        ConsumerRecords<Integer, String> records = consumer.poll(Duration.ofMillis(100));
+        assertEquals(records.count(), 1);
+        for (ConsumerRecord<Integer,String> record : records){
+            JSONObject json = (JSONObject) new JSONParser().parse(record.value());
+            assertEquals(json.get("username"), currentUsername);
+            assertEquals(json.get("msg"), "User recognized.");
+        }
     }
 
     @Then("if am the last user recognized, the game session should start.")
-    public void if_am_the_last_user_recognized_the_game_session_should_start() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+    public void if_am_the_last_user_recognized_the_game_session_should_start() throws InterruptedException {
+        Thread.sleep(3000);
+        List<DBSession> sessions = sr.getSessionById(currentSessionId);
+        assertEquals(sessions.size(), 1);
+        DBSession session = sessions.get(0);
+        assertEquals(session.getIsActive(), true);
     }
 
     @When("I perform the stopping position\\(cross arms over head)")

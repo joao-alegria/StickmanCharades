@@ -12,12 +12,16 @@ import org.springframework.stereotype.Service;
 import java.nio.CharBuffer;
 import java.util.Arrays;
 import java.util.List;
+import pt.ua.deti.es.g54.repository.RoleRepository;
 
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository ur;
+    
+    @Autowired
+    private RoleRepository rr;
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -51,14 +55,16 @@ public class UserService {
 
         if (listUserGroup.isEmpty()) {
             userRole = new DBRole("ROLE_USER");
+            rr.save(userRole);
         } else {
             userRole = listUserGroup.get(0);
         }
 
         user.addRole(userRole);
         userRole.addUser(user);
-
+        
         ur.save(user);
+        rr.save(userRole);
 
         Arrays.fill(validatedUserData.getPassword(), Character.MIN_VALUE);
 
