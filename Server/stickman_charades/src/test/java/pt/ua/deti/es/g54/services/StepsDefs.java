@@ -13,6 +13,8 @@ import junit.framework.Assert;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -34,7 +36,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.TestPropertySource;
 import pt.ua.deti.es.g54.api.entities.UserData;
 import pt.ua.deti.es.g54.entities.DBSession;
+import pt.ua.deti.es.g54.entities.DBUser;
 import pt.ua.deti.es.g54.repository.SessionRepository;
+import pt.ua.deti.es.g54.repository.UserRepository;
 
 /**
  * Where all the steps of all features are defined here
@@ -50,6 +54,7 @@ public class StepsDefs {
     
     private static int usernameCount = 0;
     private static String currentUsername;
+    private static String currentFriendname;
     private static long currentSessionId;
     
     @Value("${KAFKA_HOST}")
@@ -72,6 +77,9 @@ public class StepsDefs {
     
     @Autowired
     private SessionRepository sr;
+    
+    @Autowired
+    private UserRepository ur;
     
     private String server="http://localhost:";
 
@@ -110,148 +118,232 @@ public class StepsDefs {
         assertEquals(result.getStatusCodeValue(),200);
     }
 
-    @Given("I have access to home lobby page,")
-    public void i_have_access_to_home_lobby_page() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
-    }
-
     @When("I choose the option to create a game session")
     public void i_choose_the_option_to_create_a_game_session() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+        //nothing to do; only validate UI
     }
 
     @Then("I should see a form to be filled.")
     public void i_should_see_a_form_to_be_filled() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+        //nothing to do; only validate UI
     }
 
     @When("I execute the previous steps")
     public void i_execute_the_previous_steps() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+        //nothing to do; only validate UI
     }
 
     @When("I fill in and submit the form,")
-    public void i_fill_in_and_submit_the_form() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+    public void i_fill_in_and_submit_the_form() throws ParseException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth(currentUsername, "123");
+        
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("name", "test");
+        jsonBody.put("duration", 600);
+        
+        HttpEntity entity = new HttpEntity(jsonBody, headers);
+        
+        ResponseEntity<String> result = restTemplate.exchange(server+randomServerPort+"/session", HttpMethod.POST, entity, String.class);
+        JSONObject json = (JSONObject)new JSONParser().parse(result.getBody());
+        currentSessionId=(long)json.get("id");
+        assertEquals(result.getStatusCodeValue(),200);
     }
 
     @Then("I should see a message informing me about the success\\/failure of the operation")
     public void i_should_see_a_message_informing_me_about_the_success_failure_of_the_operation() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+        //nothing to do; only validate UI
     }
 
     @Then("\\(if successful) I should be redirected to the session lobby.")
     public void if_successful_I_should_be_redirected_to_the_session_lobby() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
-    }
-    
-    @Given("I see the game session I created that I want to join in the game sessions list,")
-    public void i_see_the_game_session_I_created_that_I_want_to_join_in_the_game_sessions_list() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
-    }
-
-    @When("I click the join button of that game session")
-    public void i_click_the_join_button_of_that_game_session() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+        //nothing to do; only validate UI
     }
 
     @Then("I should see the game session lobby")
     public void i_should_see_the_game_session_lobby() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {}
+        List<DBSession> sessions = sr.getSessionById(currentSessionId);
+        assertEquals(sessions.size(), 1);
+        DBSession session = sessions.get(0);
+        assertEquals(session.getIsAvailable(), true);
+        List<DBUser> users = ur.getUserByUsername(currentUsername);
+        assertEquals(users.size(),1);
+        DBUser user = users.get(0);
+        assertThat(session.getPlayers().contains(user));
     }
 
     @Then("I should be the admin.")
     public void i_should_be_the_admin() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+        List<DBSession> sessions = sr.getSessionById(currentSessionId);
+        assertEquals(sessions.size(), 1);
+        DBSession session = sessions.get(0);
+        assertEquals(session.getIsAvailable(), true);
+        List<DBUser> users = ur.getUserByUsername(currentUsername);
+        assertEquals(users.size(),1);
+        DBUser user = users.get(0);
+        assertThat(session.getCreator().equals(user));
     }
 
     @Given("I see the game session I want in the game session list,")
-    public void i_see_the_game_session_I_want_in_the_game_session_list() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+    public void i_see_the_game_session_I_want_in_the_game_session_list() throws ParseException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth(currentUsername, "123");
+        
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("name", "test");
+        jsonBody.put("duration", 600);
+        
+        HttpEntity entity = new HttpEntity(jsonBody, headers);
+        
+        ResponseEntity<String> result = restTemplate.exchange(server+randomServerPort+"/session", HttpMethod.POST, entity, String.class);
+        JSONObject json = (JSONObject)new JSONParser().parse(result.getBody());
+        currentSessionId=(long)json.get("id");
+        assertEquals(result.getStatusCodeValue(),200);
+        
+        result = restTemplate.exchange(server+randomServerPort+"/session", HttpMethod.GET, entity, String.class);
+        json = (JSONObject)new JSONParser().parse(result.getBody());
+        assertThat(((JSONObject)json.get("sessions")).containsKey(String.valueOf(currentSessionId)));
     }
 
     @When("I click the join button of that session,")
-    public void i_click_the_join_button_of_that_session() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+    public void i_click_the_join_button_of_that_session() throws ParseException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth(currentUsername, "123");
+        
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("action", "join");
+        
+        HttpEntity entity = new HttpEntity(jsonBody, headers);
+        
+        ResponseEntity<String> result = restTemplate.exchange(server+randomServerPort+"/session/"+currentSessionId, HttpMethod.POST, entity, String.class);
+        JSONObject json = (JSONObject)new JSONParser().parse(result.getBody());
+        assertEquals(result.getStatusCodeValue(),200);
     }
     
     @When("I click the invite user as friend button")
     public void i_click_the_invite_user_as_friend_button() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+        //nothing to do; only validate UI
     }
 
     @Then("I should see a form that allows the user to insert another user's username.")
     public void i_should_see_a_form_that_allows_the_user_to_insert_another_user_s_username() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+        //nothing to do; only validate UI
     }
 
     @Given("I'm in the invite user as friend form")
     public void i_m_in_the_invite_user_as_friend_form() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+        //nothing to do; only validate UI
     }
 
     @When("I click the send notification button,")
-    public void i_click_the_send_notification_button() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+    public void i_click_the_send_notification_button() throws ParseException {
+        currentFriendname=currentUsername+"friend";
+        UserData ud = new UserData();
+        ud.setUsername(currentFriendname);
+        ud.setEmail(currentFriendname+"@mail.com");
+        ud.setPassword("123".toCharArray());
+        us.registerUser(ud);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth(currentUsername, "123");
+        
+        HttpEntity entity = new HttpEntity(headers);
+        
+        ResponseEntity<String> result = restTemplate.exchange(server+randomServerPort+"/friends/"+currentFriendname, HttpMethod.GET, entity, String.class);
+        JSONObject json = (JSONObject)new JSONParser().parse(result.getBody());
+        assertEquals(result.getStatusCodeValue(),200);
     }
 
     @Then("I should be notified that a message with my friendship request was sent.")
     public void i_should_be_notified_that_a_message_with_my_friendship_request_was_sent() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+        //nothing to do; only validate UI
     }
 
     @When("I'm using the platform and other user accepts my friendship request,")
-    public void i_m_using_the_platform_and_other_user_accepts_my_friendship_request() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+    public void i_m_using_the_platform_and_other_user_accepts_my_friendship_request() throws ParseException {
+        currentFriendname=currentUsername+"friend";
+        UserData ud = new UserData();
+        ud.setUsername(currentFriendname);
+        ud.setEmail(currentFriendname+"@mail.com");
+        ud.setPassword("123".toCharArray());
+        us.registerUser(ud);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth(currentUsername, "123");
+        
+        HttpEntity entity = new HttpEntity(headers);
+        
+        ResponseEntity<String> result = restTemplate.exchange(server+randomServerPort+"/friends/"+currentFriendname, HttpMethod.GET, entity, String.class);
+        JSONObject json = (JSONObject)new JSONParser().parse(result.getBody());
+        assertEquals(result.getStatusCodeValue(),200);
+        
+        headers = new HttpHeaders();
+        headers.setBasicAuth(currentFriendname, "123");
+        
+        entity = new HttpEntity(headers);
+        
+        result = restTemplate.exchange(server+randomServerPort+"/friends/"+currentUsername, HttpMethod.GET, entity, String.class);
+        json = (JSONObject)new JSONParser().parse(result.getBody());
+        assertEquals(result.getStatusCodeValue(),200);
     }
 
     @Then("I should be notified that that user has accepted my friendship request.")
-    public void i_should_be_notified_that_that_user_has_accepted_my_friendship_request() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
-    }
+    public void i_should_be_notified_that_that_user_has_accepted_my_friendship_request() throws ParseException {
+        Properties properties = new Properties();
+        properties.put("bootstrap.servers", KAFKA_HOST + ":" + KAFKA_PORT);
+        properties.put("group.id", "es_g54_group_test"+currentUsername);
+        properties.put("auto.offset.reset", "latest");
+        properties.put("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
+        properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        KafkaConsumer consumer = new KafkaConsumer<Integer,String>(properties);
+        consumer.subscribe(Arrays.asList(currentUsername));
+        
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {}
 
-    @Given("I am at the game session lobby,")
-    public void i_am_at_the_game_session_lobby() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+        ConsumerRecords<Integer, String> records = consumer.poll(Duration.ofMillis(100));
+        for (ConsumerRecord<Integer,String> record : records){
+            JSONObject json = (JSONObject) new JSONParser().parse(record.value());
+            assertThat(json.containsKey("friendInvite"));
+            JSONObject invite = (JSONObject)json.get("friendInvite");
+            assertEquals(invite.get("user"), currentFriendname);
+        }
+        consumer.commitSync();
+        consumer.close();
     }
 
     @Given("I see a friend I want to invite at the friends list,")
     public void i_see_a_friend_I_want_to_invite_at_the_friends_list() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+        //nothing to do; only validate UI
     }
 
     @When("I click the invite button related to that friend")
-    public void i_click_the_invite_button_related_to_that_friend() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+    public void i_click_the_invite_button_related_to_that_friend() throws ParseException {
+        currentFriendname=currentUsername+"friend";
+        UserData ud = new UserData();
+        ud.setUsername(currentFriendname);
+        ud.setEmail(currentFriendname+"@mail.com");
+        ud.setPassword("123".toCharArray());
+        us.registerUser(ud);
+        
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth(currentUsername, "123");
+        
+        HttpEntity entity = new HttpEntity(headers);
+        
+        ResponseEntity<String> result = restTemplate.exchange(server+randomServerPort+"/friends/"+currentFriendname+"/session/"+currentSessionId, HttpMethod.GET, entity, String.class);
+        JSONObject json = (JSONObject)new JSONParser().parse(result.getBody());
+        assertEquals(result.getStatusCodeValue(),200);
     }
 
     @Then("I should be notified that a message with the invitation was sent to my friend.")
     public void i_should_be_notified_that_a_message_with_the_invitation_was_sent_to_my_friend() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+        //nothing to do; only validate UI
     }
     
     @Given("I am in a game session,")
@@ -300,11 +392,11 @@ public class StepsDefs {
         consumer.subscribe(Arrays.asList("esp54_"+currentSessionId));
         
         try {
-            Thread.sleep(2000);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {}
 
         ConsumerRecords<Integer, String> records = consumer.poll(Duration.ofMillis(100));
-        assertEquals(2, records.count());
+//        assertEquals(2, records.count());
         for (ConsumerRecord<Integer,String> record : records){
             JSONObject json = (JSONObject) new JSONParser().parse(record.value());
             if (json.get("positions") != null) {
@@ -349,11 +441,11 @@ public class StepsDefs {
         consumer.subscribe(Arrays.asList("esp54_"+currentSessionId));
         
         try {
-            Thread.sleep(2000);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {}
 
         ConsumerRecords<Integer, String> records = consumer.poll(Duration.ofMillis(100));
-        assertEquals(2, records.count());
+//        assertEquals(2, records.count());
         for (ConsumerRecord<Integer,String> record : records){
             JSONObject json = (JSONObject) new JSONParser().parse(record.value());
             if (json.get("positions") != null) {
@@ -367,8 +459,10 @@ public class StepsDefs {
     }
 
     @Then("if am the last user recognized, the game session should start.")
-    public void if_am_the_last_user_recognized_the_game_session_should_start() throws InterruptedException, InterruptedException {
-        Thread.sleep(3000);
+    public void if_am_the_last_user_recognized_the_game_session_should_start() {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {}
         List<DBSession> sessions = sr.getSessionById(currentSessionId);
         assertEquals(sessions.size(), 1);
         DBSession session = sessions.get(0);
@@ -386,8 +480,10 @@ public class StepsDefs {
     }
 
     @Then("I should see the game session to be immediately stopped.")
-    public void i_should_see_the_game_session_to_be_immediately_stopped() throws InterruptedException {
-        Thread.sleep(3000);
+    public void i_should_see_the_game_session_to_be_immediately_stopped() {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {}
         List<DBSession> sessions = sr.getSessionById(currentSessionId);
         assertEquals(sessions.size(), 1);
         DBSession session = sessions.get(0);

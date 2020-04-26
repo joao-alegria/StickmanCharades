@@ -86,6 +86,14 @@ public class DBSession implements Serializable {
         return durationSeconds;
     }
 
+    public void addPlayer(DBUser user){
+        players.add(user);
+    }
+    
+    public void removePlayer(DBUser user){
+        players.remove(user);
+    }
+    
     public Set<DBUser> getPlayers() {
         return players;
     }

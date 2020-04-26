@@ -95,13 +95,17 @@ public class SessionService {
                 case "join":
                     if(!session.getPlayers().contains(user)){
                         user.setSessionInPlay(session);
+                        session.addPlayer(user);
                         ur.save(user);
+                        sr.save(session);
                     }
                     break;
                 case "leave":
                     if(session.getPlayers().contains(user)){
                         user.setSessionInPlay(null);
+                        session.removePlayer(user);
                         ur.save(user);
+                        sr.save(session);
                     }
                     break;
             }

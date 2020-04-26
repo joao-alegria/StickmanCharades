@@ -5,8 +5,8 @@ Feature: Users can join a game session
 
     Scenario: Session creator joins its own session.
         Given that I am logged in,
-        And I see the game session I created that I want to join in the game sessions list,
-        When I click the join button of that game session
+        And I see the game session I want in the game session list,
+        When I click the join button of that session,
         Then I should see the game session lobby
         And I should be the admin. 
 
