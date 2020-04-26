@@ -8,11 +8,9 @@ Feature: During a session, any user can notify the admin by raising any hand ove
         And I am in a game session,
         When I raise my right hand above my head
         Then I should be notified that a message was send to the admin
-        And short after I should see the admin in my game session. 
 
     Scenario: User raises left hand.
         Given that I am logged in,
         And I am in a game session,
         When I raise my left hand above my head
         Then I should be notified that a message was send to the admin
-        And short after I should see the admin in my game session. 

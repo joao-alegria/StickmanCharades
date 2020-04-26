@@ -90,14 +90,23 @@ public class SessionConsumer implements Runnable{
                        (((((double)rightElbow.get(0))>((double)leftElbow.get(0))) && (((double)rightHand.get(0))<((double)leftHand.get(0)))) || 
                        ((((double)rightElbow.get(0))<((double)leftElbow.get(0))) && (((double)rightHand.get(0))>((double)leftHand.get(0)))))){  //cross arms above head
                         //stop session
-                        sessionThread.interrupt();
+                        if(sessionThread!= null){
+                            sessionThread.interrupt();
+                        }
                         done=true;
+                        session.setIsAvailable(false);
+                        sr.save(session);
                     }else if((((double)rightHand.get(1))>((double)head.get(1))) || (((double)leftHand.get(1))>((double)head.get(1)))){  //raise hand above head
                         //notify admin
                         JSONObject adminNotification = new JSONObject();
                         adminNotification.put("session", topic);
                         adminNotification.put("user", json.get("username"));
                         smt.convertAndSend("/game/admin", adminNotification.toJSONString());
+                        
+                        JSONObject notification = new JSONObject();
+                        notification.put("username", (String)json.get("username"));
+                        notification.put("msg", "Admin notified.");
+                        kt.send(topic, notification.toJSONString());
                     }
                     
                     if(activePlayers.size()==session.getPlayers().size()){
@@ -117,7 +126,7 @@ public class SessionConsumer implements Runnable{
                             if(activePlayers.size()==session.getPlayers().size()){
                                 session.setIsActive(true);
                                 sr.save(session);
-                                Thread sessionThread = new Thread(new Session(session.getDurationSeconds()));
+                                sessionThread = new Thread(new Session(session.getDurationSeconds()));
                                 sessionThread.start();
                             }
                         }

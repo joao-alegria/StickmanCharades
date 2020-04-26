@@ -255,37 +255,7 @@ public class StepsDefs {
     }
     
     @Given("I am in a game session,")
-    public void i_am_in_a_game_session() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
-    }
-
-    @When("I raise my right hand above my head")
-    public void i_raise_my_right_hand_above_my_head() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
-    }
-
-    @Then("I should be notified that a message was send to the admin")
-    public void i_should_be_notified_that_a_message_was_send_to_the_admin() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
-    }
-
-    @Then("short after I should see the admin in my game session.")
-    public void short_after_I_should_see_the_admin_in_my_game_session() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
-    }
-
-    @When("I raise my left hand above my head")
-    public void i_raise_my_left_hand_above_my_head() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
-    }
-
-    @Given("I just joined a game session,")
-    public void i_just_joined_a_game_session() throws ParseException {
+    public void i_am_in_a_game_session() throws ParseException {
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth(currentUsername, "123");
         
@@ -308,6 +278,55 @@ public class StepsDefs {
         assertEquals(result.getStatusCodeValue(),200);
     }
 
+    @When("I raise my right hand above my head")
+    public void i_raise_my_right_hand_above_my_head() {
+        String jsonBody = "{\"username\": \""+currentUsername+"\", \"positions\": {\"Head\": [2098.635,1708.936,0.0], \"Neck\": [2227.439,1410.903,0.0], \"LeftCollar\": [2252.219,1217.666,0.0], "
+                + "\"Torso\": [2314.787,729.7457,0.0], \"Waist\": [2356.344,278.0999,0.0], \"LeftShoulder\": [1860.994,1193.861,0.0], \"RightShoulder\": [2813.465,1175.847,0.0], "
+                + "\"LeftElbow\": [1751.346,713.7789,0.0], \"RightElbow\": [0.0,0.0,0.0], \"LeftWrist\": [0.0,0.0,0.0], \"RightWrist\": [0.0,0.0,0.0], \"LeftHand\": [0.0,1193.861,0.0], "
+                + "\"RightHand\": [0.0,1908.936,0.0], \"LeftHip\": [0.0,0.0,0.0], \"RightHip\": [2672.045,226.5393,0.0], \"LeftKnee\": [0.0,0.0,0.0], \"RightKnee\": [0.0,0.0,0.0], "
+                + "\"LeftAnkle\": [0.0,0.0,0.0], \"RightAnkle\": [0.0,0.0,0.0]}}";
+        kt.send("esp54_"+currentSessionId, jsonBody);
+    }
+
+    @Then("I should be notified that a message was send to the admin")
+    public void i_should_be_notified_that_a_message_was_send_to_the_admin() throws ParseException {
+        Properties properties = new Properties();
+        properties.put("bootstrap.servers", KAFKA_HOST + ":" + KAFKA_PORT);
+        properties.put("group.id", "es_g54_group_test"+currentUsername);
+        properties.put("auto.offset.reset", "latest");
+        properties.put("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
+        properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        KafkaConsumer consumer = new KafkaConsumer<Integer,String>(properties);
+        consumer.subscribe(Arrays.asList("esp54_"+currentSessionId));
+        
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {}
+
+        ConsumerRecords<Integer, String> records = consumer.poll(Duration.ofMillis(100));
+        assertEquals(2, records.count());
+        for (ConsumerRecord<Integer,String> record : records){
+            JSONObject json = (JSONObject) new JSONParser().parse(record.value());
+            if (json.get("positions") != null) {
+                continue;
+            }
+            assertEquals(json.get("username"), currentUsername);
+            assertEquals(json.get("msg"), "Admin notified.");
+        }
+        consumer.commitSync();
+        consumer.close();
+    }
+
+    @When("I raise my left hand above my head")
+    public void i_raise_my_left_hand_above_my_head() {
+        String jsonBody = "{\"username\": \""+currentUsername+"\", \"positions\": {\"Head\": [2098.635,1708.936,0.0], \"Neck\": [2227.439,1410.903,0.0], \"LeftCollar\": [2252.219,1217.666,0.0], "
+                + "\"Torso\": [2314.787,729.7457,0.0], \"Waist\": [2356.344,278.0999,0.0], \"LeftShoulder\": [1860.994,1193.861,0.0], \"RightShoulder\": [2813.465,1175.847,0.0], "
+                + "\"LeftElbow\": [1751.346,713.7789,0.0], \"RightElbow\": [0.0,0.0,0.0], \"LeftWrist\": [0.0,0.0,0.0], \"RightWrist\": [0.0,0.0,0.0], \"LeftHand\": [0.0,1908.936,0.0], "
+                + "\"RightHand\": [0.0,1908.936,0.0], \"LeftHip\": [0.0,0.0,0.0], \"RightHip\": [2672.045,226.5393,0.0], \"LeftKnee\": [0.0,0.0,0.0], \"RightKnee\": [0.0,0.0,0.0], "
+                + "\"LeftAnkle\": [0.0,0.0,0.0], \"RightAnkle\": [0.0,0.0,0.0]}}";
+        kt.send("esp54_"+currentSessionId, jsonBody);
+    }
+
     @When("I perform the initial position\\(spread arms)")
     public void i_perform_the_initial_position_spread_arms() throws ParseException {
         String jsonBody = "{\"username\": \""+currentUsername+"\", \"positions\": {\"Head\": [2098.635,1708.936,0.0], \"Neck\": [2227.439,1410.903,0.0], \"LeftCollar\": [2252.219,1217.666,0.0], "
@@ -319,26 +338,36 @@ public class StepsDefs {
     }
 
     @Then("I should be recognized by the platform")
-    public void i_should_be_recognized_by_the_platform() throws ParseException {
+    public void i_should_be_recognized_by_the_platform() throws ParseException, InterruptedException {
         Properties properties = new Properties();
         properties.put("bootstrap.servers", KAFKA_HOST + ":" + KAFKA_PORT);
-        properties.put("group.id", "es_g54_group_test");
+        properties.put("group.id", "es_g54_group_test"+currentUsername);
         properties.put("auto.offset.reset", "latest");
         properties.put("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
         properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         KafkaConsumer consumer = new KafkaConsumer<Integer,String>(properties);
         consumer.subscribe(Arrays.asList("esp54_"+currentSessionId));
+        
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {}
+
         ConsumerRecords<Integer, String> records = consumer.poll(Duration.ofMillis(100));
-        assertEquals(records.count(), 1);
+        assertEquals(2, records.count());
         for (ConsumerRecord<Integer,String> record : records){
             JSONObject json = (JSONObject) new JSONParser().parse(record.value());
+            if (json.get("positions") != null) {
+                continue;
+            }
             assertEquals(json.get("username"), currentUsername);
             assertEquals(json.get("msg"), "User recognized.");
         }
+        consumer.commitSync();
+        consumer.close();
     }
 
     @Then("if am the last user recognized, the game session should start.")
-    public void if_am_the_last_user_recognized_the_game_session_should_start() throws InterruptedException {
+    public void if_am_the_last_user_recognized_the_game_session_should_start() throws InterruptedException, InterruptedException {
         Thread.sleep(3000);
         List<DBSession> sessions = sr.getSessionById(currentSessionId);
         assertEquals(sessions.size(), 1);
@@ -348,14 +377,22 @@ public class StepsDefs {
 
     @When("I perform the stopping position\\(cross arms over head)")
     public void i_perform_the_stopping_position_cross_arms_over_head() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+        String jsonBody = "{\"username\": \""+currentUsername+"\", \"positions\": {\"Head\": [2098.635,1708.936,0.0], \"Neck\": [2227.439,1410.903,0.0], \"LeftCollar\": [2252.219,1217.666,0.0], "
+                + "\"Torso\": [2314.787,729.7457,0.0], \"Waist\": [2356.344,278.0999,0.0], \"LeftShoulder\": [1860.994,1193.861,0.0], \"RightShoulder\": [2813.465,1175.847,0.0], "
+                + "\"LeftElbow\": [2098.635,713.7789,0.0], \"RightElbow\": [2198.635,0.0,0.0], \"LeftWrist\": [0.0,0.0,0.0], \"RightWrist\": [0.0,0.0,0.0], \"LeftHand\": [2198.635,1908.936,0.0], "
+                + "\"RightHand\": [2098.635,1908.936,0.0], \"LeftHip\": [0.0,0.0,0.0], \"RightHip\": [2672.045,226.5393,0.0], \"LeftKnee\": [0.0,0.0,0.0], \"RightKnee\": [0.0,0.0,0.0], "
+                + "\"LeftAnkle\": [0.0,0.0,0.0], \"RightAnkle\": [0.0,0.0,0.0]}}";
+        kt.send("esp54_"+currentSessionId, jsonBody);
     }
 
     @Then("I should see the game session to be immediately stopped.")
-    public void i_should_see_the_game_session_to_be_immediately_stopped() {
-        // Write code here that turns the phrase above into concrete actions
-//        throw new cucumber.api.PendingException();
+    public void i_should_see_the_game_session_to_be_immediately_stopped() throws InterruptedException {
+        Thread.sleep(3000);
+        List<DBSession> sessions = sr.getSessionById(currentSessionId);
+        assertEquals(sessions.size(), 1);
+        DBSession session = sessions.get(0);
+        assertEquals(session.getIsActive(), false);
+        assertEquals(session.getIsAvailable(), false);
     }
 
 }
