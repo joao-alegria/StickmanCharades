@@ -34,5 +34,3 @@ RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.d
 #    ln -s /opt/firefox/firefox /usr/bin/firefox
 #
 #WORKDIR /
-
-ENTRYPOINT tail -f /dev/null

@@ -25,7 +25,7 @@ pipeline {
                         
                         docker stop esp54-kafka-tests && docker rm esp54-kafka-tests
 
-                        if [[ $tests_exit_code -ne 0 ]] ; then
+                        if [ $tests_exit_code -ne 0 ] ; then
                             exit $tests_exit_code
                         fi
                     '''
