@@ -6,12 +6,29 @@ pipeline {
                 docker {
                     image '192.168.160.99:5000/esp54-maven_agent'
                     registryUrl 'https://192.168.160.99:5000'
-                    args '-v /root/.m2:/root/.m2 -v /dev/shm:/dev/shm'
+                    args '-v /root/.m2:/root/.m2 -v /var/run/docker.sock:/var/run/docker.sock --network esp54-tests -v /dev/shm:/dev/shm'
                 }
             }
             steps {
                 dir('Server/stickman_charades') {
-                    sh 'mvn clean verify'
+                    sh '''
+                        set +e
+
+                        docker stop esp54-kafka-tests && docker rm esp54-kafka-tests
+
+                        docker run -d --env ADVERTISED_HOST=kafka --env ADVERTISED_PORT=9092 --name esp54-kafka-tests --network esp54-tests --network-alias kafka spotify/kafka
+
+                        sleep 5
+
+                        KAFKA_HOST=kafka KAFKA_PORT=9092 mvn clean verify
+                        tests_exit_code=$?
+                        
+                        docker stop esp54-kafka-tests && docker rm esp54-kafka-tests
+
+                        if [[ $tests_exit_code -ne 0 ]] ; then
+                            exit $tests_exit_code
+                        fi
+                    '''
                 }
             }
         }

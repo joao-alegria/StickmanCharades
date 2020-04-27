@@ -3,6 +3,22 @@
 # docker push 192.168.160.99:5000/esp54-maven_agent
 FROM maven:3.6.3-jdk-8
 
+# docker
+RUN apt-get update && apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common
+
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
+    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian \
+    $(lsb_release -cs) stable" && \
+    apt-get update && apt-get install -y \
+    docker-ce \
+    docker-ce-cli \
+    containerd.io
+
 # chrome
 RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
     apt-get update && \
@@ -18,3 +34,5 @@ RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.d
 #    ln -s /opt/firefox/firefox /usr/bin/firefox
 #
 #WORKDIR /
+
+ENTRYPOINT tail -f /dev/null
