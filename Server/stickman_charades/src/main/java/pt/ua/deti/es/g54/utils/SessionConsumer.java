@@ -50,10 +50,10 @@ public class SessionConsumer implements Runnable{
     private KafkaTemplate kt;
     
 
-    public SessionConsumer(String KAFKA_HOST, String KAFKA_PORT, DBSession session, String topic,SimpMessagingTemplate smt, SessionRepository sr, KafkaTemplate kt) {
+    public SessionConsumer(DBSession session, String topic,SimpMessagingTemplate smt, SessionRepository sr, KafkaTemplate kt) {
         this.properties = new Properties();
 
-        properties.put("bootstrap.servers", KAFKA_HOST + ":" + KAFKA_PORT);
+        properties.put("bootstrap.servers", System.getProperty("KAFKA_BOOTSTRAP_SERVERS"));
         properties.put("group.id", "es_g54_group_"+topic);
         properties.put("auto.offset.reset", "latest");
         properties.put("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");

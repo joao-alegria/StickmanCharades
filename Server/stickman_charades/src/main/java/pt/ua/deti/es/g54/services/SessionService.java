@@ -33,12 +33,6 @@ public class SessionService {
     
     @Autowired
     private KafkaTemplate<String,String>  kt;
-    
-    @Value("${KAFKA_HOST}")
-    private String KAFKA_HOST;
-
-    @Value("${KAFKA_PORT}")
-    private String KAFKA_PORT;
 
     public JSONObject getAllSessions(String name) {
         JSONObject jo = new JSONObject();
@@ -120,7 +114,7 @@ public class SessionService {
         if(!listSessions.isEmpty()){
             DBSession session=listSessions.get(0);
 //            Thread s = new Thread(new Session(session.getId(), session.getDurationSeconds(), session.getCreator()));
-            Thread c = new Thread(new SessionConsumer(KAFKA_HOST, KAFKA_PORT,session,"esp54_"+String.valueOf(sessionId),smt, sr, kt));
+            Thread c = new Thread(new SessionConsumer(session,"esp54_"+String.valueOf(sessionId),smt, sr, kt));
             c.start();
 //            s.start();
         }

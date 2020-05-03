@@ -1,6 +1,7 @@
 package pt.ua.deti.es.g54.services;
 
 
+import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -33,6 +34,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.TestPropertySource;
 import pt.ua.deti.es.g54.api.entities.UserData;
 import pt.ua.deti.es.g54.entities.DBSession;
@@ -44,9 +47,9 @@ import pt.ua.deti.es.g54.repository.UserRepository;
  * Where all the steps of all features are defined here
  * Each step has referenced on javadoc on what Scenario(s) of which Feature(s) it is used
  */
-//, properties={"KAFKA_HOST=localhost", "KAFKA_PORT=9092"}
 @TestPropertySource (locations={"classpath:application-test.properties"})
 @SpringBootTest (webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@EmbeddedKafka
 public class StepsDefs {
 
     private long MAX_WAIT_TIME = 500;
@@ -55,12 +58,14 @@ public class StepsDefs {
     private static String currentUsername;
     private static String currentFriendname;
     private static long currentSessionId;
-    
-    @Value("${KAFKA_HOST}")
-    private String KAFKA_HOST;
 
-    @Value("${KAFKA_PORT}")
-    private String KAFKA_PORT;
+    @Autowired
+    private EmbeddedKafkaBroker embeddedKafkaBroker;
+
+    @Before
+    public void before() {
+        System.setProperty("KAFKA_BOOTSTRAP_SERVERS", embeddedKafkaBroker.getBrokersAsString());
+    }
 
     @LocalServerPort
     int randomServerPort;
@@ -293,7 +298,7 @@ public class StepsDefs {
     @Then("I should be notified that that user has accepted my friendship request.")
     public void i_should_be_notified_that_that_user_has_accepted_my_friendship_request() throws ParseException {
         Properties properties = new Properties();
-        properties.put("bootstrap.servers", KAFKA_HOST + ":" + KAFKA_PORT);
+        properties.put("bootstrap.servers", System.getProperty("KAFKA_BOOTSTRAP_SERVERS"));
         properties.put("group.id", "es_g54_group_test"+currentUsername);
         properties.put("auto.offset.reset", "latest");
         properties.put("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
@@ -383,7 +388,7 @@ public class StepsDefs {
     @Then("I should be notified that a message was send to the admin")
     public void i_should_be_notified_that_a_message_was_send_to_the_admin() throws ParseException {
         Properties properties = new Properties();
-        properties.put("bootstrap.servers", KAFKA_HOST + ":" + KAFKA_PORT);
+        properties.put("bootstrap.servers", System.getProperty("KAFKA_BOOTSTRAP_SERVERS"));
         properties.put("group.id", "es_g54_group_test"+currentUsername);
         properties.put("auto.offset.reset", "latest");
         properties.put("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
@@ -432,7 +437,7 @@ public class StepsDefs {
     @Then("I should be recognized by the platform")
     public void i_should_be_recognized_by_the_platform() throws ParseException, InterruptedException {
         Properties properties = new Properties();
-        properties.put("bootstrap.servers", KAFKA_HOST + ":" + KAFKA_PORT);
+        properties.put("bootstrap.servers", System.getProperty("KAFKA_BOOTSTRAP_SERVERS"));
         properties.put("group.id", "es_g54_group_test"+currentUsername);
         properties.put("auto.offset.reset", "latest");
         properties.put("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
