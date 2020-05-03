@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+    stages {
+        stage('Test') {
+            when {
+                not {
+                    branch 'master'
+                }
+            }
+            steps {
+                dir('Unity/StickmanCharades') {
+                    sh 'echo Skipping...'
+                }
+            }
+        }
+        stage('Build') {
+            when {
+                branch 'master'
+            }
+            steps {
+                sh 'echo Skipping...'
+            }
+        }
+        stage('Publish') {
+            when {
+                branch 'master'
+            }
+            steps {
+                sh 'echo Skipping...'
+            }
+        }
+    }
+}
