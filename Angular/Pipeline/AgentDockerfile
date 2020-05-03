@@ -1,6 +1,3 @@
-# Jenkins pipeline Docker agent with chrome installed
-# docker build -t 192.168.160.99:5000/esp54-web_pipeline_agent -f AgentDockerfile .
-# docker push 192.168.160.99:5000/esp54-web_pipeline_agent
 FROM node:12.16.3
 
 RUN apt-get update && \
