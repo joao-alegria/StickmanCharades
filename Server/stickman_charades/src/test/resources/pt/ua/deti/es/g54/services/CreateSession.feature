@@ -5,7 +5,7 @@ Feature: Users can create a new game session
 
     Scenario: User asserts that it's possible to create a session.
         Given that I am logged in,
-        And I have access to home lobby page,
+        And I am in a game session,
         When I choose the option to create a game session
         Then I should see a form to be filled.
 

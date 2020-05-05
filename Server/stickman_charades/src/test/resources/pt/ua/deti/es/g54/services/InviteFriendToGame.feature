@@ -5,7 +5,7 @@ Feature: Users can invite friends to join game sessions
 
     Scenario: User invites friend to game session.
         Given that I am logged in,
-        And I am at the game session lobby,
+        And I am in a game session,
         And I see a friend I want to invite at the friends list,
         When I click the invite button related to that friend
         Then I should be notified that a message with the invitation was sent to my friend.

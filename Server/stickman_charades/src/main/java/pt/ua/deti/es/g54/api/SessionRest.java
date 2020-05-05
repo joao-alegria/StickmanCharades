@@ -34,8 +34,8 @@ public class SessionRest {
     }
     
     @PostMapping(value="/session")
-    public JSONObject createNewSession(@RequestBody JSONObject newSession){
-        return ss.createNewSession("joao", newSession);
+    public JSONObject createNewSession(@RequestBody JSONObject newSession, Principal principal){
+        return ss.createNewSession(principal.getName(), newSession);
     }
     
     @GetMapping(value="/session/{sessionId}")
@@ -68,8 +68,4 @@ public class SessionRest {
         return ss.deleteSession(principal.getName(), sessionId);
     }
     
-    @GetMapping("/session/test")
-    public JSONObject teste(Principal principal){
-        return ss.teste();
-    }
 }

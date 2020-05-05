@@ -3,7 +3,9 @@ package pt.ua.deti.es.g54.entities;
 import pt.ua.deti.es.g54.api.entities.UserData;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -15,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -39,7 +42,7 @@ public class DBUser implements Serializable {
     @Column
     private boolean enabled = true;
     
-    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy= "users", cascade = CascadeType.MERGE)
     private Set<DBRole> roles;
 
     @ManyToOne
@@ -54,6 +57,13 @@ public class DBUser implements Serializable {
 
     @ManyToMany(mappedBy="byMe")
     private Set<DBUser> byOthers = new HashSet<DBUser>();
+    
+    @OneToMany(
+        mappedBy = "creator",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
+    private List<DBSession> mySessions = new ArrayList<>();
 
     public DBUser() {}
 

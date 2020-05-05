@@ -4,14 +4,14 @@ import pt.ua.deti.es.g54.entities.DBSession;
 import pt.ua.deti.es.g54.entities.DBUser;
 import pt.ua.deti.es.g54.repository.SessionRepository;
 import pt.ua.deti.es.g54.repository.UserRepository;
-import pt.ua.deti.es.g54.utils.Consumer;
-import pt.ua.deti.es.g54.utils.SkeletonProcessor;
+import pt.ua.deti.es.g54.utils.SessionConsumer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -32,20 +32,7 @@ public class SessionService {
     private SimpMessagingTemplate smt;
     
     @Autowired
-    private SkeletonProcessor sp;
-    
-    @Value("${KAFKA_HOST}")
-    private String KAFKA_HOST;
-
-    @Value("${KAFKA_PORT}")
-    private String KAFKA_PORT;
-    
-    public JSONObject teste(){
-        JSONObject jo = new JSONObject();
-        jo.put("leftHandOverHand", sp.leftHandOverHead);
-        jo.put("rightHandOverHand", sp.rightHandOverHead);
-        return jo;
-    }
+    private KafkaTemplate<String,String>  kt;
 
     public JSONObject getAllSessions(String name) {
         JSONObject jo = new JSONObject();
@@ -69,12 +56,14 @@ public class SessionService {
         String title = (String)newSession.get("title");
         int duration = (int)newSession.get("duration");
         List<DBUser> listUser=ur.getUserByUsername(name);
+        JSONObject json =new JSONObject();
         if(!listUser.isEmpty()){
             DBUser user = listUser.get(0);
             DBSession session = new DBSession(title,duration,user);
             sr.save(session);
+            json.put("id", session.getId());
         }
-        return new JSONObject();
+        return json;
     }
 
     public JSONObject getSessionInfo(String name, Long sessionId) {
@@ -100,13 +89,17 @@ public class SessionService {
                 case "join":
                     if(!session.getPlayers().contains(user)){
                         user.setSessionInPlay(session);
+                        session.addPlayer(user);
                         ur.save(user);
+                        sr.save(session);
                     }
                     break;
                 case "leave":
                     if(session.getPlayers().contains(user)){
                         user.setSessionInPlay(null);
+                        session.removePlayer(user);
                         ur.save(user);
+                        sr.save(session);
                     }
                     break;
             }
@@ -120,11 +113,10 @@ public class SessionService {
         List<DBSession> listSessions = sr.getSessionById(sessionId);
         if(!listSessions.isEmpty()){
             DBSession session=listSessions.get(0);
-            session.setIsActive(true);
-            Thread c = new Thread(new Consumer(KAFKA_HOST, KAFKA_PORT,"esp54_"+String.valueOf(sessionId),smt, sp));
-            Thread s = new Thread(new Session(session.getId(), session.getDurationSeconds(), session.getCreator()));
+//            Thread s = new Thread(new Session(session.getId(), session.getDurationSeconds(), session.getCreator()));
+            Thread c = new Thread(new SessionConsumer(session,"esp54_"+String.valueOf(sessionId),smt, sr, kt));
             c.start();
-            s.start();
+//            s.start();
         }
         return jo;
     }
@@ -138,55 +130,6 @@ public class SessionService {
             sr.save(session);
         }
         return jo;
-    }
-    
-    
-    
-    private class Session implements Runnable{
-        
-        private long sessionId;
-        private int durationSeconds;
-        private int timeToWait;
-        private DBUser creator;
-
-        public Session(long sessionId, int durationSeconds, DBUser creator) {
-            this.sessionId = sessionId;
-            this.durationSeconds = durationSeconds;
-            this.timeToWait = durationSeconds;
-            this.creator = creator;
-        }
-
-        @Override
-        public void run() {
-            System.out.println("Started Thread for Session "+this.sessionId);
-            List<DBSession> listSessions;
-            DBSession session=null;
-            try{
-                while(this.timeToWait>0){
-                    Thread.sleep(this.timeToWait);
-                    listSessions = sr.getSessionById(sessionId);
-                    if(!listSessions.isEmpty()){
-                        session=listSessions.get(0);
-                        this.timeToWait=session.getDurationSeconds()-this.durationSeconds;
-                        this.durationSeconds=session.getDurationSeconds();
-                    }
-                }
-            }catch(InterruptedException ex){
-                    listSessions = sr.getSessionById(sessionId);
-                    if(!listSessions.isEmpty()){
-                        session=listSessions.get(0);
-                        this.timeToWait=session.getDurationSeconds()-this.durationSeconds;
-                        this.durationSeconds=session.getDurationSeconds();
-                        
-                        if(!session.getIsAvailable()){
-                            this.timeToWait=0;
-                        }
-                    }
-                }
-            
-            session.setIsAvailable(false);
-            sr.save(session);
-        }
     }
 
 }

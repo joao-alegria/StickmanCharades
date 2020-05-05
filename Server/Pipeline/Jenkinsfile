@@ -1,0 +1,72 @@
+pipeline {
+    agent {
+        docker {
+            image '192.168.160.99:5000/esp54-server_pipeline_agent'
+            registryUrl 'https://192.168.160.99:5000'
+            args '-v /root/.m2:/root/.m2 -v /var/run/docker.sock:/var/run/docker.sock -v /dev/shm:/dev/shm'
+        }
+    }
+    stages {
+        stage('Test') {
+            when {
+                not {
+                    branch 'master'
+                }
+            }
+            steps {
+                dir('Server/stickman_charades') {
+                    sh 'mvn clean verify'
+                }
+            }
+        }
+        stage('Build & Publish') {
+            when {
+                not {
+                    branch 'master'
+                }
+            }
+            steps {
+                dir('Server/stickman_charades') {
+                    configFileProvider([configFile(fileId: 'esp54-maven-settings', variable: 'MAVEN_SETTINGS')]) {
+                        sh '''
+                            mvn clean deploy --settings $MAVEN_SETTINGS -Dmaven.test.skip=true
+
+                            version=$(sed -e 's/xmlns=".*"//g' pom.xml | xmllint --xpath "//project/version/text())
+                            docker build -t esp54-server:$version .
+
+                            docker tag esp54-server:$version 192.168.160.99:5000/esp54-server:$version
+                            docker push 192.168.160.99:5000/esp54-server:$version
+                        '''
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            when {
+                branch 'master'
+            }
+            steps {
+                sshagent(credentials: ['esp54-ssh-runtime-vm']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no -l esp54 192.168.160.103 "
+                            docker stop esp54-server && docker rm esp54-server || echo No container up. Continue
+                            version=$(sed -e 's/xmlns=".*"//g' pom.xml | xmllint --xpath "//project/version/text())
+                            docker pull 192.168.160.99:5000/esp54-server:$version
+                            docker run -p 54880:8080 -d --name=esp54-server \
+                                --network shared_postgres \
+                                --network bridge \
+                                -e PERSISTENCE_HOST=db \
+                                -e PERSISTENCE_PORT=5432 \
+                                -e PERSISTENCE_DB=esp54 \
+                                -e PERSISTENCE_USER=esp54 \
+                                -e PERSISTENCE_PASSWORD=esp54 \
+                                -e KAFKA_HOST=192.168.160.103 \
+                                -e KAFKA_PORT=9092 \
+                                192.168.160.99:5000/esp54-server:$version
+                        "
+                    '''
+                }
+            }
+        }
+    }
+}

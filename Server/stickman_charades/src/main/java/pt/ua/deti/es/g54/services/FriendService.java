@@ -68,7 +68,7 @@ public class FriendService {
                 DBFriendInvite fi;
                 if(listInvites.isEmpty()){
                     fi = new DBFriendInvite(listUser.get(0), listFriend.get(0));
-                    kafkaTemplate.send(friendname, "{\"friendInvite\":{\"user\":"+username+"}}");
+                    kafkaTemplate.send(friendname, "{\"friendInvite\":{\"user\":\""+username+"\"}}");
                 }else{
                     fi=listInvites.get(0);
                     fi.setAccepted(true);

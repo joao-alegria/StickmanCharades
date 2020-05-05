@@ -1,12 +1,15 @@
 package pt.ua.deti.es.g54.entities;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 /**
@@ -20,7 +23,7 @@ public class DBSession implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
-    @Column
+    @ManyToOne(fetch = FetchType.LAZY)
     private DBUser creator;
     
     @Column
@@ -36,7 +39,7 @@ public class DBSession implements Serializable {
     private Boolean isAvailable;
     
     @OneToMany(mappedBy="sessionInPlay")
-    private Set<DBUser> players;
+    private Set<DBUser> players = new HashSet();
 
     public DBSession() {
     }
@@ -47,6 +50,8 @@ public class DBSession implements Serializable {
         this.creator = creator;
         this.isActive=false;
         this.isAvailable=true;
+        players.add(creator);
+        creator.setSessionInPlay(this);
     }
 
     public String getTitle() {
@@ -81,6 +86,14 @@ public class DBSession implements Serializable {
         return durationSeconds;
     }
 
+    public void addPlayer(DBUser user){
+        players.add(user);
+    }
+    
+    public void removePlayer(DBUser user){
+        players.remove(user);
+    }
+    
     public Set<DBUser> getPlayers() {
         return players;
     }

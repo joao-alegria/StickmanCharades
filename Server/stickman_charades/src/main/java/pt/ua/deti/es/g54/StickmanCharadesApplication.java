@@ -18,7 +18,7 @@ public class StickmanCharadesApplication {
 
 	public static void main(String[] args) {
 		List<String> requiredEnvVariables = Arrays.asList(
-				"KAFKA_HOST", "KAFKA_PORT",
+				"KAFKA_BOOTSTRAP_SERVERS",
 				"PERSISTENCE_HOST", "PERSISTENCE_PORT", "PERSISTENCE_DB", "PERSISTENCE_USER", "PERSISTENCE_PASSWORD"
 		);
 
@@ -34,6 +34,8 @@ public class StickmanCharadesApplication {
 		if (variablesMissing) {
 			System.exit(1);
 		}
+
+		System.setProperty("KAFKA_BOOTSTRAP_SERVERS", System.getenv().get("KAFKA_BOOTSTRAP_SERVERS"));
 
 		SpringApplication.run(StickmanCharadesApplication.class, args);
 	}
