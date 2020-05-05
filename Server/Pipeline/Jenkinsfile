@@ -54,6 +54,7 @@ pipeline {
                             docker pull 192.168.160.99:5000/esp54-server:$version
                             docker run -p 54880:8080 -d --name=esp54-server \
                                 --network shared_postgres \
+                                --network bridge \
                                 -e PERSISTENCE_HOST=db \
                                 -e PERSISTENCE_PORT=5432 \
                                 -e PERSISTENCE_DB=esp54 \
