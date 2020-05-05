@@ -98,4 +98,9 @@ public class DBSession implements Serializable {
         return players;
     }
     
+    public String getRandomWord(){
+        //TODO: user inserts word poll, return a random one
+        return "banana";
+    }
+    
 }

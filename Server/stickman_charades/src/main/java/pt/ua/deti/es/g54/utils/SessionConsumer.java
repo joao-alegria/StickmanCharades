@@ -3,7 +3,9 @@ package pt.ua.deti.es.g54.utils;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,6 +51,10 @@ public class SessionConsumer implements Runnable{
     
     private KafkaTemplate kt;
     
+    private int currentPlayingPlayerIdx;
+    private String currentWord;
+    private Map<String, Integer> playersScore;
+    
 
     public SessionConsumer(DBSession session, String topic,SimpMessagingTemplate smt, SessionRepository sr, KafkaTemplate kt) {
         this.properties = new Properties();
@@ -65,6 +71,8 @@ public class SessionConsumer implements Runnable{
         this.session=session;
         this.sr=sr;
         this.kt=kt;
+        this.currentPlayingPlayerIdx=0;
+        this.playersScore = new HashMap();
     }
 
     @Override
@@ -76,6 +84,30 @@ public class SessionConsumer implements Runnable{
                     JSONObject json = (JSONObject)parser.parse(record.value());
                     
                     if(json.containsKey("msg")){
+                        if(((String)json.get("msg")).equals("Word guess.")){
+                            if(((String)json.get("msg")).equals(currentWord)){
+                                
+                                if(!playersScore.containsKey((String)json.get("username"))){
+                                    playersScore.put(((String)json.get("username")), 1);
+                                }else{
+                                    playersScore.put(((String)json.get("username")), playersScore.get(((String)json.get("username")))+1);
+                                }
+                                
+                                JSONObject message = new JSONObject();
+                                message.put("username", activePlayers.get(currentPlayingPlayerIdx));
+                                currentWord=session.getRandomWord();
+                                message.put("word", currentWord);
+                                message.put("msg", "Word to mimic.");
+                                kt.send(topic, message.toJSONString());
+                                currentPlayingPlayerIdx++;
+                                
+                                if(currentPlayingPlayerIdx>=activePlayers.size()){
+                                    done=true;
+                                    sessionThread.interrupt();
+                                    break;
+                                }
+                            }
+                        }
                         continue;
                     }
                     
@@ -128,6 +160,13 @@ public class SessionConsumer implements Runnable{
                                 sr.save(session);
                                 sessionThread = new Thread(new Session(session.getDurationSeconds()));
                                 sessionThread.start();
+                                JSONObject message = new JSONObject();
+                                message.put("username", activePlayers.get(currentPlayingPlayerIdx));
+                                currentWord=session.getRandomWord();
+                                message.put("word", currentWord);
+                                message.put("msg", "Word to mimic.");
+                                kt.send(topic, message.toJSONString());
+                                currentPlayingPlayerIdx++;
                             }
                         }
                     }
