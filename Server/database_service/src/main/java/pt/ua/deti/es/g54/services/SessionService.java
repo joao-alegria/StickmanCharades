@@ -4,7 +4,6 @@ import pt.ua.deti.es.g54.entities.DBSession;
 import pt.ua.deti.es.g54.entities.DBUser;
 import pt.ua.deti.es.g54.repository.SessionRepository;
 import pt.ua.deti.es.g54.repository.UserRepository;
-import pt.ua.deti.es.g54.utils.SessionConsumer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,10 +112,14 @@ public class SessionService {
         List<DBSession> listSessions = sr.getSessionById(sessionId);
         if(!listSessions.isEmpty()){
             DBSession session=listSessions.get(0);
-//            Thread s = new Thread(new Session(session.getId(), session.getDurationSeconds(), session.getCreator()));
-            Thread c = new Thread(new SessionConsumer(session,"esp54_"+String.valueOf(sessionId),smt, sr, kt));
-            c.start();
-//            s.start();
+//            Thread c = new Thread(new SessionConsumer(session,"esp54_"+String.valueOf(sessionId),smt, sr, kt));
+//            c.start();
+
+            JSONObject message = new JSONObject();
+            message.put("", name);
+
+            kt.send("esp54_eventHandlerTopic", message.toJSONString());
+            kt.send("esp54_kafkaTranslatorTopic", message.toJSONString());
         }
         return jo;
     }
