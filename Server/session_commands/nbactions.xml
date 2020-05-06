@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>run</actionName>
+            <packagings>
+                <packaging>jar</packaging>
+            </packagings>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
+            </goals>
+            <properties>
+                <exec.args>-classpath %classpath pt.ua.deti.es.g54.StickmanCharadesApplication</exec.args>
+                <exec.executable>java</exec.executable>
+                <Env.PERSISTENCE_HOST>localhost</Env.PERSISTENCE_HOST>
+                <Env.PERSISTENCE_PORT>5432</Env.PERSISTENCE_PORT>
+                <Env.PERSISTENCE_DB>postgres</Env.PERSISTENCE_DB>
+                <Env.PERSISTENCE_USER>postgres</Env.PERSISTENCE_USER>
+                <Env.PERSISTENCE_PASSWORD>postgres</Env.PERSISTENCE_PASSWORD>
+                
+                
+                
+                
+                
+                <Env.KAFKA_HOST>localhost</Env.KAFKA_HOST>
+                
+                
+                
+                
+                
+                <Env.KAFKA_PORT>9092</Env.KAFKA_PORT>
+                
+            </properties>
+        </action>
+        <action>
+            <actionName>debug</actionName>
+            <packagings>
+                <packaging>jar</packaging>
+            </packagings>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
+            </goals>
+            <properties>
+                <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath pt.ua.deti.es.g54.StickmanCharadesApplication</exec.args>
+                <exec.executable>java</exec.executable>
+                <jpda.listen>true</jpda.listen>
+            </properties>
+        </action>
+        <action>
+            <actionName>profile</actionName>
+            <packagings>
+                <packaging>jar</packaging>
+            </packagings>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
+            </goals>
+            <properties>
+                <exec.args>-classpath %classpath pt.ua.deti.es.g54.StickmanCharadesApplication</exec.args>
+                <exec.executable>java</exec.executable>
+            </properties>
+        </action>
+        <action>
+            <actionName>build</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>install</goal>
+            </goals>
+            <properties>
+                <Env.PERSISTENCE_HOST>localhost</Env.PERSISTENCE_HOST>
+                <Env.PERSISTENCE_PORT>5432</Env.PERSISTENCE_PORT>
+                <Env.PERSISTENCE_DB>postgres</Env.PERSISTENCE_DB>
+                <Env.PERSISTENCE_USER>postgres</Env.PERSISTENCE_USER>
+                <Env.PERSISTENCE_PASSWORD>postgres</Env.PERSISTENCE_PASSWORD>
+                
+                
+                
+                
+                
+                <Env.KAFKA_HOST>localhost</Env.KAFKA_HOST>
+                <Env.KAFKA_POSRT>9092</Env.KAFKA_POSRT>
+            </properties>
+        </action>
+        <action>
+            <actionName>test</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>test</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>test.single</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>test-compile</goal>
+                <goal>surefire:test</goal>
+            </goals>
+            <properties>
+                <test>${packageClassName}</test>
+                
+                
+                
+                
+                
+                
+                
+            </properties>
+        </action>
+        <action>
+            <actionName>integration-test.single</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>integration-test</goal>
+            </goals>
+            <properties>
+                <test>DummyToSkipUnitTests</test>
+                <failIfNoTests>false</failIfNoTests>
+                
+                
+                
+                
+                
+                
+                
+                
+            </properties>
+        </action>
+    </actions>
