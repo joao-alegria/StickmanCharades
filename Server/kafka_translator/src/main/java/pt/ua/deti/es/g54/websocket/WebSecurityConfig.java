@@ -1,4 +1,4 @@
-package pt.ua.deti.es.g54.security;
+package pt.ua.deti.es.g54.websocket;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -6,32 +6,25 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
-
-import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    DataSource dataSource;
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        /* TODO
         http.authorizeRequests()
             .antMatchers("/admin/**").hasRole("ADMIN")
-            .antMatchers("/register").permitAll()
-            .antMatchers("/login").authenticated()
-            .antMatchers("/friends/**", "/session/**", "/game/**").hasRole("USER")
+            .antMatchers("/game/**").hasRole("USER")
             .and().httpBasic()
-            .and().logout().logoutUrl("/logout").invalidateHttpSession(true).deleteCookies("JSESSIONID").clearAuthentication(true)
             .and().csrf().disable();
+        */
     }
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        /* TODO
         auth
             .jdbcAuthentication().passwordEncoder(new BCryptPasswordEncoder()).dataSource(dataSource)
             .usersByUsernameQuery("SELECT username, password, enabled FROM dbuser WHERE username=?")
@@ -41,5 +34,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                             "JOIN dbrole ON dbrole_users.roles_id = dbrole.id " +
                             "WHERE dbuser.username = ?"
             );
+         */
     }
 }

@@ -26,8 +26,3 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/game/skeletons").setAllowedOrigins("*").withSockJS();
     }
 }
-
-//@Autowired
-//SimpMessagingTemplate simpMessagingTemplate;
-//simpMessagingTemplate.convertAndSend("/session/banana", "isto é um teste");
-
