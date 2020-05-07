@@ -1,0 +1,54 @@
+<div class="container-fluid" id="modal-content-wrapper" style="height: 100%; display: flex; flex-flow: column;">
+    <div class="row" style="margin-bottom:20px;">
+        <h2 id="modal-title" style="color: #007bff;">View All SLA</h2>
+
+        <i style="margin-left: auto;" class="fa fa-times fa-lg" aria-hidden="true" type=" button"
+            (click)="closeModal()"></i>
+    </div>
+
+    <div id="modal-body-extra" style="overflow-y: auto;">
+
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">SLA</th>
+                    <th scope="col">Delete?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let sla of validSLA">
+                    <td>
+                        <table class="table table-hover">
+                            <thead>
+                                <th scope="col">Scope</th>
+                                <th scope="col">vRAM</th>
+                                <th scope="col">vCPU</th>
+                                <th scope="col">Disk Storage</th>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let maxResources of sla.slaConstraints">
+                                    <td>{{maxResources.scope}}</td>
+                                    <td>{{maxResources.maxResourceLimit.memoryRAM}}</td>
+                                    <td>{{maxResources.maxResourceLimit.vCPU}}</td>
+                                    <td>{{maxResources.maxResourceLimit.diskStorage}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <input style="zoom: 1.5;" type="checkbox" [attr.id]="'delete_'+sla.id"
+                            (change)="registerSla(sla.id)" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <div class="row">
+        <button id="createSLA" type="button" class="btn btn-primary" (click)="createSLA()">New SLA</button>
+        <button style="margin-left: auto;" id="deleteSLA" type="button" class="btn btn-primary"
+            (click)="deleteSLA()">Delete SLAs</button>
+    </div>
+</div>
+<p-toast [style]="{width: 'auto'}" position="bottom-center"></p-toast>

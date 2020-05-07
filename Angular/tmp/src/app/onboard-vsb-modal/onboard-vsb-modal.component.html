@@ -1,0 +1,217 @@
+<div class="container-fluid" id="modal-content-wrapper" style="height: 100%; display: flex; flex-flow: column;">
+    <div class="row" style="margin-bottom:20px;">
+        <h2 id="modal-title" style="color: #007bff;">Onboard New VSB</h2>
+        <i style="margin-left: auto;" class="fa fa-times fa-lg" aria-hidden="true" type=" button"
+            (click)="closeModal()"></i>
+    </div>
+    <div id="modal-body-extra container" style="overflow-y: auto;">
+        <div class="container">
+            <div class="row" style="margin-bottom: 10px;">
+                <div class="col-md-6">
+                    <h3>VSB Description File</h3>
+                    <div class="dropArea" (fileDropped)="vsbDropped($event)">
+                        <input type="file" id="vsbDrop" (change)="vsbDropped($event.target.files)" />
+                        <h5>Drop file here</h5>
+                        <h5>or</h5>
+                        <label for="vsbDrop" class="btn-primary">Choose file</label>
+                    </div>
+                    <div class="files-list">
+                        <div class="single-file" *ngFor="let file of vsbFiles; let i = index">
+                            <i class="fa fa-file-o" aria-hidden="true"></i>
+                            {{ file.name }}
+                            <i (click)="deleteVSBFile(i)" class="fa fa-trash" aria-hidden="true"
+                                style="float: right;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <h3>NSD Description File</h3>
+                    <div class="dropArea" (fileDropped)="nsdDropped($event)">
+                        <input type="file" id="nsdDrop" multiple (change)="nsdDropped($event.target.files)" />
+                        <h5>Drop files here</h5>
+                        <h5>or</h5>
+                        <label for="nsdDrop" class="btn-primary">Choose files</label>
+                    </div>
+                    <div class="files-list">
+                        <div class="single-file" *ngFor="let file of nsdFiles; let i = index">
+                            <i class="fa fa-file-o" aria-hidden="true"></i>
+                            {{ file.name }}
+                            <i (click)="deleteNSDFile(i)" class="fa fa-trash" aria-hidden="true"
+                                style="float: right;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3>VNF Packages</h3>
+        <form>
+            <div class="container" *ngFor="let vnfNumber of vnfNumbers; let i=index">
+                <div class="row">
+                    <div class="col-md-1" style="margin:auto;">
+                        <i *ngIf="i!=0" style="float:right" class=" fa fa-trash fa-2x" (click)="removeVNF(i)"></i>
+                    </div>
+                    <div class="col-md-11">
+                        <div class="container-fluid" [ngStyle]="myStyle(i)">
+                            <div class="row">
+                                <div class="col form-group">
+                                    <input type="text" class="form-control" placeholder="Name"
+                                        [attr.id]="'vnfname'+vnfNumber">
+                                </div>
+                                <div class="col form-group">
+                                    <input type="text" class="form-control" placeholder="Version"
+                                        [attr.id]="'vnfversion'+vnfNumber">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col form-group">
+                                    <input type="text" class="form-control" placeholder="Provider"
+                                        [attr.id]="'vnfprovider'+vnfNumber">
+                                </div>
+                                <div class="col form-group">
+                                    <input type="text" class="form-control" placeholder="Checksum"
+                                        [attr.id]="'vnfchecksum'+vnfNumber">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="VNFD Path"
+                                    [attr.id]="'vnfpath'+vnfNumber">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <button type="button" class="btn btn-primary" (click)="addVNFForm()">Add +1 VNF Package</button>
+            </div>
+        </form>
+
+        <h3>App Packages</h3>
+        <form>
+            <div class="container" *ngFor="let appNumber of appNumbers; let j=index">
+                <div class="row">
+                    <div class="col-md-1" style="margin:auto;">
+                        <i *ngIf="j!=0" style="float:right" class=" fa fa-trash fa-2x" (click)="removeAPP(j)"></i>
+                    </div>
+                    <div class="col-md-11">
+                        <div class="container-fluid" [ngStyle]="myStyle(j)">
+                            <div class="row">
+                                <div class="col form-group">
+                                    <input type="text" class="form-control" placeholder="Name"
+                                        [attr.id]="'appname'+appNumber">
+                                </div>
+                                <div class="col form-group">
+                                    <input type="text" class="form-control" placeholder="Version"
+                                        [attr.id]="'appversion'+appNumber">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col form-group">
+                                    <input type="text" class="form-control" placeholder="Provider"
+                                        [attr.id]="'appprovider'+appNumber">
+                                </div>
+                                <div class="col form-group">
+                                    <input type="text" class="form-control" placeholder="Checksum"
+                                        [attr.id]="'appchecksum'+appNumber">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="App Path"
+                                    [attr.id]="'apppath'+appNumber">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <button type="button" class="btn btn-primary" (click)="addAPPForm()">Add +1 App Package</button>
+            </div>
+        </form>
+
+        <h3>Translation Rules</h3>
+        <form>
+            <div class="container" *ngFor="let ruleNumber of rulesNumbers; let k = index;">
+                <div class="row">
+                    <div class="col-md-1" style="margin:auto;">
+                        <i *ngIf="k!=0" style="float:right" class=" fa fa-trash fa-2x" (click)="removeRule(k)"></i>
+                    </div>
+                    <div class="col-md-11">
+                        <div class="container-fluid" [ngStyle]="myStyle(k)">
+                            <div class="row">
+                                <div class="col form-group">
+                                    <input type="text" class="form-control" placeholder="NSD ID"
+                                        [attr.id]="'ruleNSDid'+k">
+                                </div>
+                                <div class="col form-group">
+                                    <input type="text" class="form-control" placeholder="NSD Version"
+                                        [attr.id]="'ruleNSDversion'+k">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col form-group">
+                                    <input type="text" class="form-control" placeholder="NS Flavour ID"
+                                        [attr.id]="'ruleNSflavourid'+k">
+                                </div>
+                                <div class="col form-group">
+                                    <input type="text" class="form-control" placeholder="NS Instantiation Level ID"
+                                        [attr.id]="'ruleinstlevelid'+k">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <form>
+                                    <div style="width:90%" class="container"
+                                        *ngFor="let parameterNumber of rulesNumbers[k]; let l=index">
+                                        <div class="row">
+                                            <div class="col-md-1" style="margin:auto;">
+                                                <i *ngIf="l!=0" style="float:right" class=" fa fa-trash fa-2x"
+                                                    (click)="removeParameter(k,l)"></i>
+                                            </div>
+                                            <div class="col-md-11">
+                                                <div class="container-fluid" [ngStyle]="myStyle(l)">
+                                                    <div class="row">
+                                                        <div class="col form-group">
+                                                            <input type="text" class="form-control"
+                                                                placeholder="Parameter ID"
+                                                                [attr.id]="'ruleparamid'+k+'_'+parameterNumber">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col form-group">
+                                                            <input type="text" class="form-control"
+                                                                placeholder="Min Value"
+                                                                [attr.id]="'ruleparammin'+k+'_'+parameterNumber">
+                                                        </div>
+                                                        <div class="col form-group">
+                                                            <input type="text" class="form-control"
+                                                                placeholder="MaxValue"
+                                                                [attr.id]="'ruleparammax'+k+'_'+parameterNumber">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <button style="margin-bottom: 10px;" type="button" class="btn btn-primary"
+                        (click)="addInputParameterForm(k)">Add +1 Parameter</button>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <button type="button" class="btn btn-primary" (click)="addRuleForm()">Add +1 Rule</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="row">
+        <button style="margin-left: auto;" id="onboardVsb" type="button" class="btn btn-primary"
+            (click)="onboardVsb()">Submit</button>
+
+    </div>
+</div>
+<p-toast [style]="{width: 'auto'}" position="bottom-center"></p-toast>

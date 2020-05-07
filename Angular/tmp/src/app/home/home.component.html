@@ -1,0 +1,43 @@
+<div class="container">
+    <div class="row">
+        <h1 style="width:100%; text-align:center">Welcome Back</h1>
+        <h1 style="width:100%; text-align:center">{{userName}}</h1>
+    </div>
+    <h2>Entities and Resources</h2>
+    <hr />
+    <div class="row" style="margin-top: 5px;">
+        <div *ngIf="!isTenant" class="col-sm-6 col-md-4 col-lg-4" style="display: flex;flex-direction: column;">
+            <div id="groups" class="card border-primary mb-3" style="border-width: 2px; cursor: pointer; height:100%"
+                (click)="goToGroups()" (mouseenter)="onEnter('groups')" (mouseleave)="onLeave('groups')">
+                <div class="card-body" style="clear: none;">
+                    <i class="fa fa-users fa-4x" style="float: right; color:lightgray;"></i>
+                    <h2 class="card-title">{{groups}}</h2>
+                    <p class="card-text">Existing Groups</p>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="!isTenant" class="col-sm-6 col-md-4 col-lg-4" style="display: flex;flex-direction: column;">
+            <div id="tenants" class="card border-primary mb-3" style="border-width: 2px; cursor: pointer; height:100%"
+                (click)="goToGroups()" (mouseenter)="onEnter('tenants')" (mouseleave)="onLeave('tenants')">
+                <div class="card-body" style="clear: none;">
+                    <i class="fa fa-user fa-4x" style="float: right; color:lightgray;"></i>
+                    <h2 class="card-title">{{tenants}}</h2>
+                    <p class="card-text">Existing Tenants</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-md-4 col-lg-4" style="display: flex;flex-direction: column;">
+            <div id="blueprints" class="card border-primary mb-3"
+                style="border-width: 2px; cursor: pointer; height:100%" (click)="goToBlueprints()"
+                (mouseenter)="onEnter('blueprints')" (mouseleave)="onLeave('blueprints')">
+                <div class="card-body" style="clear: none;">
+                    <i class="fa fa-file-text-o fa-4x" style="float: right; color:lightgray;"></i>
+                    <h2 class="card-title">{{blueprints}}</h2>
+                    <p class="card-text">Existing Blueprints</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

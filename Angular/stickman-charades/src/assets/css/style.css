@@ -3410,27 +3410,27 @@ hr {
   background-image: url(../img/hero/hero2.jpg);
   background-size: cover;
   background-repeat: no-repeat;
-  min-height: 560px;
+  min-height: 56px;
 }
 
 @media only screen and (min-width: 768px) and (max-width: 991px) {
   /* line 131, ../../../sponDon TI/Running Project/259.Finance_HTML/assets/scss/_h1-hero.scss */
   .hero-area2 {
-    min-height: 400px;
+    min-height: 40px;
   }
 }
 
 @media only screen and (min-width: 576px) and (max-width: 767px) {
   /* line 131, ../../../sponDon TI/Running Project/259.Finance_HTML/assets/scss/_h1-hero.scss */
   .hero-area2 {
-    min-height: 360px;
+    min-height: 36px;
   }
 }
 
 @media (max-width: 575px) {
   /* line 131, ../../../sponDon TI/Running Project/259.Finance_HTML/assets/scss/_h1-hero.scss */
   .hero-area2 {
-    min-height: 360px;
+    min-height: 36px;
   }
 }
 
@@ -4911,7 +4911,7 @@ hr {
 @media only screen and (min-width: 768px) and (max-width: 991px) {
   /* line 1, ../../../sponDon TI/Running Project/259.Finance_HTML/assets/scss/_apply.scss */
   .apply-area {
-    padding-top: 100px;
+    padding-top: 20px;
     padding-bottom: 100px;
   }
 }
@@ -4919,7 +4919,7 @@ hr {
 @media only screen and (min-width: 576px) and (max-width: 767px) {
   /* line 1, ../../../sponDon TI/Running Project/259.Finance_HTML/assets/scss/_apply.scss */
   .apply-area {
-    padding-top: 70px;
+    padding-top: 10px;
     padding-bottom: 70px;
   }
 }
@@ -4927,7 +4927,7 @@ hr {
 @media (max-width: 575px) {
   /* line 1, ../../../sponDon TI/Running Project/259.Finance_HTML/assets/scss/_apply.scss */
   .apply-area {
-    padding-top: 70px;
+    padding-top: 10px;
     padding-bottom: 70px;
   }
 }
@@ -5050,14 +5050,14 @@ hr {
 
 /* line 106, ../../../sponDon TI/Running Project/259.Finance_HTML/assets/scss/_apply.scss */
 .apply-area .apply-wrapper .single-form .select-radio6 .radio input[type="radio"]:checked + .radio-label:before {
-  background-color: #ff872d;
+  background-color: #3589f1; /* #ff872d; */
   box-shadow: inset 0 0 0 4px #f4f4f4;
 }
 
 /* line 114, ../../../sponDon TI/Running Project/259.Finance_HTML/assets/scss/_apply.scss */
 .apply-area .apply-wrapper .single-form .select-radio6 .radio input[type="radio"]:focus + .radio-label:before {
   outline: none;
-  border-color: #ff872d;
+  border-color: #3589f1; /* #ff872d; */
 }
 
 /* line 122, ../../../sponDon TI/Running Project/259.Finance_HTML/assets/scss/_apply.scss */
@@ -8378,3 +8378,78 @@ del {
 }
 
 /*# sourceMappingURL=style.css.map */
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* My CSS */
+
+
+.vh-20 {
+  height: 20vh;
+}
+
+.vh-80 {
+  height: 80vh;
+}
+
+.vh-100 {
+  height: 100vh;
+}
+
+.vw-90 {
+  width: 90vw;
+}
+
+.vw-100 {
+  width: 100vw;
+}
+
+.blue-link-text {
+  color: #3589f1;
+  opacity: 0.85;
+}
+.blue-link-text:hover {
+  color: #3589f1;
+  opacity: 1;
+}
+
+.error-paragraph {
+  font-family: "Rubik", sans-serif;
+  color: #db3131;
+  font-size: 16px;
+  line-height: 30px;
+  margin-bottom: 0px;
+  font-weight: normal;
+}
+
+.reqs table, th, td {
+  border: 1px solid black;
+  padding-right: 10px;
+  padding-left: 5px;
+}
+
+.reqs th, caption {
+  text-align: center;
+}
+
+.centered-img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+}
+
+.to-top-btn {
+  z-index: 10;
+  position:relative;
+}
