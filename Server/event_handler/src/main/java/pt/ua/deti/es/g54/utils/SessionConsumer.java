@@ -35,8 +35,6 @@ public class SessionConsumer implements Runnable{
     
     private SimpMessagingTemplate smt;
     
-    private DBSession session;
-    
     private String topic;
     
     private volatile boolean done = false;
@@ -47,8 +45,6 @@ public class SessionConsumer implements Runnable{
     
     private List<String> activePlayers= new ArrayList();
     
-    private SessionRepository sr;
-    
     private KafkaTemplate kt;
     
     private int currentPlayingPlayerIdx;
@@ -56,7 +52,7 @@ public class SessionConsumer implements Runnable{
     private Map<String, Integer> playersScore;
     
 
-    public SessionConsumer(DBSession session, String topic,SimpMessagingTemplate smt, SessionRepository sr, KafkaTemplate kt) {
+    public SessionConsumer(String topic,SimpMessagingTemplate smt, KafkaTemplate kt) {
         this.properties = new Properties();
 
         properties.put("bootstrap.servers", System.getProperty("KAFKA_BOOTSTRAP_SERVERS"));
@@ -68,8 +64,6 @@ public class SessionConsumer implements Runnable{
         this.consumer.subscribe(Arrays.asList(topic));
         this.smt=smt;
         this.topic=topic;
-        this.session=session;
-        this.sr=sr;
         this.kt=kt;
         this.currentPlayingPlayerIdx=0;
         this.playersScore = new HashMap();
@@ -95,7 +89,7 @@ public class SessionConsumer implements Runnable{
                                 
                                 JSONObject message = new JSONObject();
                                 message.put("username", activePlayers.get(currentPlayingPlayerIdx));
-                                currentWord=session.getRandomWord();
+                                //-currentWord=session.getRandomWord();
                                 message.put("word", currentWord);
                                 message.put("msg", "Word to mimic.");
                                 kt.send(topic, message.toJSONString());
@@ -126,8 +120,10 @@ public class SessionConsumer implements Runnable{
                             sessionThread.interrupt();
                         }
                         done=true;
+                        /*-
                         session.setIsAvailable(false);
                         sr.save(session);
+                         */
                     }else if((((double)rightHand.get(1))>((double)head.get(1))) || (((double)leftHand.get(1))>((double)head.get(1)))){  //raise hand above head
                         //notify admin
                         JSONObject adminNotification = new JSONObject();
