@@ -1,5 +1,11 @@
 pipeline {
     agent any
+    environment {
+        VERSION = """${sh(
+            returnStdout:true,
+            script: 'echo 0.0.0'
+        )}"""
+    }
     stages {
         stage('Test') {
             when {
