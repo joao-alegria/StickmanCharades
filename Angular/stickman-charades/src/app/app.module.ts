@@ -17,6 +17,7 @@ import { UserNavbarComponent } from './elements/header/user-navbar/user-navbar.c
 import { AdminNavbarComponent } from './elements/header/admin-navbar/admin-navbar.component';
 import { ContactFormComponent } from './elements/forms/contact-form/contact-form.component';
 import { ScrollupComponent } from './elements/scrollup/scrollup.component';
+import { SkeletonComponent } from './elements/skeleton/skeleton.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { ScrollupComponent } from './elements/scrollup/scrollup.component';
     AdminNavbarComponent,
     ContactFormComponent,
     ScrollupComponent,
+    SkeletonComponent,
   ],
   imports: [
     BrowserModule,

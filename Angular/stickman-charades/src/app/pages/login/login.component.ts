@@ -41,7 +41,7 @@ export class LoginComponent implements OnInit {
     })
     */
     localStorage.setItem("loggedIn", "true");
-    localStorage.setItem("role", "USER"); // ADMIN
+    localStorage.setItem("role", "ADMIN"); // USER / ADMIN
     if(localStorage.getItem("role") == "ADMIN") {
       
       this.router.navigate(["/dashboard"]);
