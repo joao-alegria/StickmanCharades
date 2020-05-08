@@ -1,0 +1,5 @@
+{
+    "vsEndpoint": "http://192.168.160.103:54880",
+    "login": "/login",
+    "register": "/register"
+}
