@@ -1,7 +1,10 @@
 package pt.ua.deti.es.g54.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,11 +43,14 @@ public class DBSession implements Serializable {
     
     @OneToMany(mappedBy="sessionInPlay")
     private Set<DBUser> players = new HashSet();
+    
+    @Column
+    private List<String> words;
 
     public DBSession() {
     }
     
-    public DBSession(String title, Integer durationSeconds, DBUser creator) {
+    public DBSession(String title, Integer durationSeconds, DBUser creator, String[] words) {
         this.title=title;
         this.durationSeconds=durationSeconds;
         this.creator = creator;
@@ -52,6 +58,7 @@ public class DBSession implements Serializable {
         this.isAvailable=true;
         players.add(creator);
         creator.setSessionInPlay(this);
+        this.words=new ArrayList(Arrays.asList(words));
     }
 
     public String getTitle() {
@@ -99,8 +106,8 @@ public class DBSession implements Serializable {
     }
     
     public String getRandomWord(){
-        //TODO: user inserts word poll, return a random one
-        return "banana";
+        int random=(int)(Math.random()*this.words.size());
+        return this.words.get(random);
     }
     
 }

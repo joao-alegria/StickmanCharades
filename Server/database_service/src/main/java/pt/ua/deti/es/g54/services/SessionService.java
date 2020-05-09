@@ -7,6 +7,8 @@ import pt.ua.deti.es.g54.repository.UserRepository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,11 +56,12 @@ public class SessionService {
     public JSONObject createNewSession(String name, JSONObject newSession) {
         String title = (String)newSession.get("title");
         int duration = (int)newSession.get("duration");
+        String[] words = (String[])((JSONArray)newSession.get("words")).toArray();
         List<DBUser> listUser=ur.getUserByUsername(name);
         JSONObject json =new JSONObject();
         if(!listUser.isEmpty()){
             DBUser user = listUser.get(0);
-            DBSession session = new DBSession(title,duration,user);
+            DBSession session = new DBSession(title,duration,user,words);
             sr.save(session);
             json.put("id", session.getId());
         }

@@ -62,7 +62,7 @@ public class CommandsService {
                 message.put("username", (String)json.get("username"));
                 kt.send("esp54_eventHandlerTopic", message.toJSONString());
                 kt.send("esp54_kafkaTranslatorTopic", message.toJSONString());
-                message.put("type", "update");
+                message.put("type", "execute");
                 message.put("command", "stopSession");
                 kt.send("esp54_databaseServiceTopic", message.toJSONString());
                 
@@ -76,7 +76,7 @@ public class CommandsService {
                 message.put("username", (String)json.get("username"));
                 kt.send("esp54_eventHandlerTopic", message.toJSONString());
                 kt.send("esp54_kafkaTranslatorTopic", message.toJSONString());
-                message.put("type", "update");
+                message.put("type", "execute");
                 message.put("command", "startSession");
                 kt.send("esp54_databaseServiceTopic", message.toJSONString());
                 
