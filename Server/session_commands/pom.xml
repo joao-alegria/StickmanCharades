@@ -35,10 +35,6 @@
 
 	<dependencies>
             <dependency>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-websocket</artifactId>
-            </dependency>
-            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-devtools</artifactId>
                 <optional>true</optional>
@@ -48,21 +44,28 @@
                 <artifactId>spring-boot-starter-web</artifactId>
             </dependency>
             <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-test</artifactId>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
                 <scope>test</scope>
+            </dependency>
+
+            <!-- logging -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter</artifactId>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-logging</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-log4j2</artifactId>
             </dependency>
 
-            <!-- vv kafka vv -->
+            <!-- kafka -->
             <dependency>
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka-log4j-appender</artifactId>
@@ -77,30 +80,18 @@
                 <artifactId>spring-kafka-test</artifactId>
                 <scope>test</scope>
             </dependency>
-            <!-- ^^ kafka ^^ -->
 
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-security</artifactId>
                 <version>2.2.6.RELEASE</version>
             </dependency>
-
-            <!-- vv persistence vv -->
             <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-data-jpa</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-test</artifactId>
                 <scope>test</scope>
             </dependency>
-            <dependency>
-                <groupId>org.postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>42.2.12</version>
-            </dependency>
-            
+
             <dependency>
                 <groupId>com.googlecode.json-simple</groupId>
                 <artifactId>json-simple</artifactId>
@@ -126,8 +117,6 @@
                 <version>${cucumber.version}</version>
                 <scope>test</scope>
             </dependency>
-            <!-- ^^ persistence ^^ -->
-
             <dependency>
                 <groupId>io.cucumber</groupId>
                 <artifactId>cucumber-junit</artifactId>
@@ -142,19 +131,16 @@
                 <scope>test</scope>
                 <type>jar</type>
             </dependency>
-            
             <dependency>
                 <groupId>org.seleniumhq.selenium</groupId>
                 <artifactId>selenium-chrome-driver</artifactId>
                 <version>3.141.59</version>
             </dependency>
-
             <dependency>
                  <groupId>io.github.bonigarcia</groupId>
                  <artifactId>webdrivermanager</artifactId>
                  <version>3.6.0</version>
             </dependency>
-
             <dependency>
                 <groupId>org.seleniumhq.selenium</groupId>
                 <artifactId>selenium-support</artifactId>
@@ -169,9 +155,6 @@
                 <artifactId>sikulixapi</artifactId>
                 <version>1.1.0</version>
             </dependency>-->
-
-
-
 	</dependencies>
         
 	<build>

@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.Map;
 
@@ -22,6 +21,7 @@ public class StickmanCharadesApplication {
 
 		Constants.BOOTSTRAP_SERVERS = env.get("KAFKA_BOOTSTRAP_SERVERS");
 
+		logger.info("Launching application");
 		SpringApplication.run(StickmanCharadesApplication.class, args);
 	}
 

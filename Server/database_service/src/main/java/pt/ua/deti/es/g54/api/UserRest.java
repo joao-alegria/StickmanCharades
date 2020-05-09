@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = "*")
 public class UserRest {
     
-    private Logger logger = LoggerFactory.getLogger(UserRest.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(UserRest.class);
 
     Matcher emailMatcher = Pattern.compile( // https://regular-expressions.mobi/email.html?wlr=1
             "\\A[a-z0-9!#$%&'*+/=?^_‘{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_‘{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\z").matcher("");
@@ -36,7 +36,8 @@ public class UserRest {
 
     @GetMapping(value="/login")
     public ResponseEntity<String> login(){
-        //ks.sendMessage();
+        logger.info("Login Successful");
+
         return ResponseEntity.ok("Login Successful");
     }
 
@@ -65,7 +66,10 @@ public class UserRest {
 
     @PostMapping(value="/register")
     public ResponseEntity<String> register(@RequestBody UserData userData){
+        logger.info("Register POST");
+
         if (userData == null) {
+            logger.error("User registration failed. No user data provided");
             return ResponseEntity.status(400).body("No user data provided");
         }
 
@@ -82,6 +86,8 @@ public class UserRest {
 
         String errorMessage = buildErrorMsg(malformedFields, "Empty field(s) ");
         if (errorMessage != null) {
+            logger.error("User registration failed. " + errorMessage);
+
             return ResponseEntity.status(400).body(errorMessage);
         }
 
@@ -98,6 +104,7 @@ public class UserRest {
 
         errorMessage = buildErrorMsg(malformedFields, "Invalid field(s) ");
         if (errorMessage != null) {
+            logger.error("User registration failed. " + errorMessage);
             return ResponseEntity.status(400).body(errorMessage);
         }
 
@@ -106,7 +113,8 @@ public class UserRest {
 
     @GetMapping(value="/logout")
     public ResponseEntity<String> logout(){
-        //ks.sendMessage();
+        logger.info("Logout successful");
+
         return ResponseEntity.ok("Logout successful");
     }
 }

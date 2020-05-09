@@ -7,6 +7,8 @@ package pt.ua.deti.es.g54.api;
 
 import java.security.Principal;
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,12 +27,15 @@ import pt.ua.deti.es.g54.services.CommandsService;
 @RestController
 @CrossOrigin(origins = "*")
 public class CommandsController {
+
+    private static Logger logger = LoggerFactory.getLogger(CommandsController.class);
     
     @Autowired
     private CommandsService cs;
     
     @GetMapping(value="/session/{sessionId}/action/start")
     public JSONObject startSession(@PathVariable Long sessionId,Principal principal){
+        logger.info("Start session command received");
         JSONObject command = new JSONObject();
         command.put("command", "startSession");
         command.put("session", sessionId);
@@ -40,6 +45,7 @@ public class CommandsController {
     
     @GetMapping(value="/session/{sessionId}/action/stop")
     public JSONObject stopSession(@PathVariable Long sessionId, Principal principal){
+        logger.info("Stop session command received");
         JSONObject command = new JSONObject();
         command.put("command", "startSession");
         command.put("session", sessionId);
@@ -49,6 +55,7 @@ public class CommandsController {
     
     @GetMapping(value="/session/{sessionId}/action/notifyAdmin")
     public JSONObject notifyAdmin(@PathVariable Long sessionId, Principal principal){
+        logger.info("Notify admin command received");
         JSONObject command = new JSONObject();
         command.put("command", "notifyAdmin");
         command.put("session", sessionId);
