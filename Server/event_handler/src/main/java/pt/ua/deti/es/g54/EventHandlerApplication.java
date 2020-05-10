@@ -17,7 +17,8 @@ public class EventHandlerApplication {
 	public static void main(String[] args) {
 		List<String> requiredEnvVariables = Arrays.asList(
 				"KAFKA_BOOTSTRAP_SERVERS",
-				"ELASTICSEARCH_HOST", "ELASTICSEARCH_PORT", "ELASTICSEARCH_USER", "ELASTICSEARCH_PASSWORD", "ELASTICSEARCH_INDEX"
+				"ELASTICSEARCH_HOST", "ELASTICSEARCH_PORT", "ELASTICSEARCH_USER", "ELASTICSEARCH_PASSWORD", "ELASTICSEARCH_INDEX",
+				"MONITORING_HOST", "MONITORING_PORT"
 		);
 
 		Map<String, String> env = System.getenv();
@@ -39,4 +40,20 @@ public class EventHandlerApplication {
 		SpringApplication.run(EventHandlerApplication.class, args);
 	}
 
+	/*
+	@Autowired
+	MeterRegistry registry;
+
+	@Bean
+	public ApplicationRunner runner() {
+		return (args) -> {
+			Counter c = Counter.builder("cenas3").tag("host","eventHandler").description("cenas mais detalhadas").register(registry);
+
+			while (true) {
+				Thread.sleep(1000);
+				c.increment(1);
+			}
+		};
+	}
+	*/
 }
