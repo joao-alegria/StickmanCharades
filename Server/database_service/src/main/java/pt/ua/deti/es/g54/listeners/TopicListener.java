@@ -1,14 +1,25 @@
 package pt.ua.deti.es.g54.listeners;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import pt.ua.deti.es.g54.entities.DBCommand;
@@ -26,6 +37,8 @@ import pt.ua.deti.es.g54.services.GameEngine;
  * @author joaoalegria
  */
 @Service
+@EnableKafka
+@Configuration
 public class TopicListener {
 
 	private static Logger logger = LoggerFactory.getLogger(TopicListener.class);
@@ -49,6 +62,39 @@ public class TopicListener {
     private GameEngine ge;
     
     private JSONParser jparser=new JSONParser();
+    
+    @Value("${KAFKA_BOOTSTRAP_SERVERS}")
+    private String KAFKA_BOOTSTRAP_SERVERS;
+    
+    private ConsumerFactory<String, String> consumerFactory() {
+        Map<String, Object> properties = new HashMap<>();
+
+        properties.put(
+                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                KAFKA_BOOTSTRAP_SERVERS
+        );
+        properties.put(
+                ConsumerConfig.GROUP_ID_CONFIG,
+                "esp54_databaseConsumer"
+        );
+        properties.put(
+                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+                StringDeserializer.class
+        );
+        properties.put(
+                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+                StringDeserializer.class
+        );
+
+        return new DefaultKafkaConsumerFactory<>(properties);
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory());
+        return factory;
+    }
 
     @KafkaListener(topics="esp54_databaseServiceTopic")
     private void receiveMessage(String command){

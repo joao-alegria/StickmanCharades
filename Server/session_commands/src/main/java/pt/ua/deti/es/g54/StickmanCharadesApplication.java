@@ -57,12 +57,13 @@ public class StickmanCharadesApplication {
             // build list
             topics.add(new NewTopic("esp54_commandsServiceTopic",1,(short)1));
             Collection<TopicListing> topicListings = admin.listTopics().listings().get();
+            List<String> names=new ArrayList();
             for(TopicListing tl: topicListings){
-                if(tl.name().equals("esp54_commandsServiceTopic")){
-                    return;
-                }
+                names.add(tl.name());
             }
-            admin.createTopics(topics).all().get();
+            if(!names.contains("esp54_commandsServiceTopic")){
+                admin.createTopics(topics).all().get();
+            }
         };
     }
 
