@@ -46,12 +46,12 @@ public class CommandsService {
                 message.put("msg", "Notification forwarded to admin.");
                 message.put("session", (String)json.get("session"));
                 message.put("username", (String)json.get("username"));
+                message.put("command", "notifyAdmin");
                 kt.send("esp54_eventHandlerTopic", message.toJSONString());
                 
                 message.put("msg", "Notify admin.");
                 kt.send("esp54_kafkaTranslatorTopic", message.toJSONString());
                 
-                message.put("command", "notifyAdmin");
                 message.put("type", "command");
                 kt.send("esp54_databaseServiceTopic", message.toJSONString());
                 break;
@@ -60,10 +60,10 @@ public class CommandsService {
                 message.put("msg", "Session ended.");
                 message.put("session", (String)json.get("session"));
                 message.put("username", (String)json.get("username"));
+                message.put("command", "stopSession");
                 kt.send("esp54_eventHandlerTopic", message.toJSONString());
                 kt.send("esp54_kafkaTranslatorTopic", message.toJSONString());
                 message.put("type", "execute");
-                message.put("command", "stopSession");
                 kt.send("esp54_databaseServiceTopic", message.toJSONString());
                 
                 message.put("type", "command");
@@ -74,10 +74,10 @@ public class CommandsService {
                 message.put("msg", "Session started.");
                 message.put("session", (String)json.get("session"));
                 message.put("username", (String)json.get("username"));
+                message.put("command", "startSession");
                 kt.send("esp54_eventHandlerTopic", message.toJSONString());
                 kt.send("esp54_kafkaTranslatorTopic", message.toJSONString());
                 message.put("type", "execute");
-                message.put("command", "startSession");
                 kt.send("esp54_databaseServiceTopic", message.toJSONString());
                 
                 message.put("type", "command");

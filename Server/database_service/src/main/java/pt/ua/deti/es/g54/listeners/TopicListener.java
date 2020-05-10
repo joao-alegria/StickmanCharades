@@ -116,6 +116,9 @@ public class TopicListener {
                 }
                 DBEvent e = new DBEvent(eventCreator, targetSession, (String)json.get("event"), (Long)json.get("time"));
                 er.save(e);
+                if(((String)json.get("event")).equals("initialPosition")){
+                    ge.registerPlayers((String)json.get("session"), targetSession, (String)json.get("username"));
+                }
                 break;
             case "wordGuess":
                 json.remove("type");

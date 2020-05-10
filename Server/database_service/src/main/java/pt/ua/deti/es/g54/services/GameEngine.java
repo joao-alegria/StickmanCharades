@@ -6,7 +6,9 @@
 package pt.ua.deti.es.g54.services;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -21,6 +23,8 @@ import pt.ua.deti.es.g54.entities.DBSession;
 public class GameEngine{
     
     private List<OngoingGame> games = new ArrayList();
+    
+    private Map<DBSession, List<String>> players=new HashMap();
     
     @Autowired
     private KafkaTemplate<String,String>  kt;
@@ -71,6 +75,35 @@ public class GameEngine{
     public void stopGame(String sessionTopic, DBSession session){
         for(OngoingGame game:games){
             games.remove(game);
+        }
+    }
+    
+    public void registerPlayers(String sessionTopic, DBSession session, String username){
+        List<String> names;
+        if(!players.keySet().contains(session)){
+            names = new ArrayList();
+            names.add(username);
+            players.put(session, names);
+        }
+        names=players.get(session);
+        
+        JSONObject message = new JSONObject();
+        message.put("type", "gameInfo");
+        message.put("info", "User Recognized.");
+        kt.send(sessionTopic, message.toJSONString());
+        kt.flush();
+        if(names.size()==session.getPlayers().size()){
+//            JSONObject message = new JSONObject();
+//            message.put("type", "gameInfo");
+//            message.put("info", "Game Started.");
+//            kt.send(sessionTopic, message.toJSONString());
+//            this.startGame(sessionTopic, session);
+            message = new JSONObject();
+            message.put("command", "startSession");
+            message.put("username", username);
+            message.put("session", sessionTopic);
+            kt.send("esp54_commandsServiceTopic", message.toJSONString());
+            kt.flush();
         }
     }
     
