@@ -17,7 +17,7 @@ public class EventHandlerApplication {
 	public static void main(String[] args) {
 		List<String> requiredEnvVariables = Arrays.asList(
 				"KAFKA_BOOTSTRAP_SERVERS",
-				"ELASTICSEARCH_HOST", "ELASTICSEARCH_PORT", "ELASTICSEARCH_USER", "ELASTICSEARCH_PASSWORD", "ELASTICSEARCH_INDEX",
+				"LOGGING_HOST", "LOGGING_PORT", "LOGGING_USER", "LOGGING_PASSWORD", "LOGGING_INDEX",
 				"MONITORING_HOST", "MONITORING_PORT"
 		);
 
