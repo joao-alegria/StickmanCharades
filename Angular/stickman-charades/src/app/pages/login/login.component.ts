@@ -18,15 +18,13 @@ export class LoginComponent implements OnInit {
   }
 
   async login() {
-    /*
+    
     await this.vs.login($("#username").val().trim(), $("#userpassword").val().trim()).catch(data => {
       if (data.status == 401) {
         document.getElementById("error").innerHTML = "Incorrect username / password. Please try again.";
         //this.messageService.add({ severity: 'warn', summary: 'Username/Password may be incorrect.' });
       } else if (data.status == 0) {
-        //$("#error").text = "a";
-        document.getElementById("error").innerHTML = "Incorrect username / password. Please try again.";
-        //this.messageService.add({ severity: 'warn', summary: 'Try later. Something went wrong.' });
+        document.getElementById("error").innerHTML = "Something went wrong. Please try again later.";
       } else {
         localStorage.setItem("loggedIn", "true");
         localStorage.setItem("role", "USER"); // ADMIN
@@ -39,7 +37,8 @@ export class LoginComponent implements OnInit {
       }
       console.log(data);
     })
-    */
+    
+    /*
     localStorage.setItem("loggedIn", "true");
     localStorage.setItem("role", "ADMIN"); // USER / ADMIN
     if(localStorage.getItem("role") == "ADMIN") {
@@ -48,5 +47,6 @@ export class LoginComponent implements OnInit {
     } else {
       this.router.navigate(["/download"]);
     }
+    */
   }
 }

@@ -65,6 +65,10 @@ export class VsService {
     }))
   }
 
+  async register(firstname: string, lastname: string, email: string, username: string, password: string, accountType: string) {
+
+  }
+
   async getBlueprints() {
     if (this.endpoints == undefined) {
       await this.loadEndpoints().then(data => { this.endpoints = data })

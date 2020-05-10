@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import * as d3 from 'd3';
 import * as $ from "jquery";
-//import { Observable } from 'rxjs';
-//import * as Stomp from '../../../assets/js/stomp.min.js';
-//import * as SockJS from '../../../assets/js/sockjs.min.js';
-//import { SocketClientService } from '../../socket-client.service';
+import { Observable } from 'rxjs';
+import * as Stomp from '../../../assets/js/stomp.min.js';
+import * as SockJS from '../../../assets/js/sockjs.min.js';
+import { SocketClientService } from '../../socket-client.service';
 
 @Component({
   selector: 'app-skeleton',
@@ -17,7 +17,7 @@ export class SkeletonComponent implements OnInit {
 
   mapping = ["Head", "Neck", "Torso", "Waist", "RightHip", "LeftHip", "RightKnee", "LeftKnee", "RightAnkle", "LeftAnkle", "RightHand", "RightWrist", "RightElbow", "RightShoulder", "RightCollar", "LeftCollar", "LeftShoulder", "LeftElbow", "LeftWrist", "LeftHand"]
 
-  constructor() {} //private socketClient: SocketClientService) { }
+  constructor(private socketClient: SocketClientService) { }
 
   ngOnInit(): void {
 
@@ -111,9 +111,9 @@ export class SkeletonComponent implements OnInit {
       draw();
     });
 
-    //this.socketClient.onMessage('/game/session/esp54_1', (message) => {
-    //  console.log(message);
-    //})
+    this.socketClient.onMessage('/game/session/esp54_1', (message) => {
+      console.log(message);
+    })
 
   }
 
