@@ -23,13 +23,15 @@ public class RiggedAvatar : MonoBehaviour {
     private UnityEngine.Vector3 posModifier = new UnityEngine.Vector3(0.0f,0.0f,-7.5f);
     private UnityEngine.Vector3 posModifierPreview = new UnityEngine.Vector3(-1535.0f,-0.18f,-1287.0f);
 
+    private int frameCtr = 0;
+
     void Start() {
 
-        /* DEBUGGING 
-        SessionData.KafkaTopic = "actor0001";
+        /* DEBUGGING */
+        SessionData.KafkaTopic = "esp54_1";
         SessionData.KafkaProps = new Dictionary<string, string> {
             { "group.id","test" },
-            { "bootstrap.servers", "localhost:9092" },
+            { "bootstrap.servers", "192.168.160.103:9092" },
             { "enable.auto.commit", "false" },
             { "auto.offset.reset", "latest" }
         };
@@ -68,41 +70,43 @@ public class RiggedAvatar : MonoBehaviour {
             ProcessSkeleton(CurrentUserTracker.CurrentSkeleton);
         }
         */
-        
-        try {
-            var consumeResult = kafkaConsumer.Consume(1);
+        frameCtr++;
+        if(frameCtr%60 == 0) {
+            try {
+                var consumeResult = kafkaConsumer.Consume(1);
+                
+                if(consumeResult != null) {
+                    if (consumeResult.IsPartitionEOF) {
+                        //print($"Reached end of topic {consumeResult.Topic}, partition {consumeResult.Partition}, offset {consumeResult.Offset}.");
+                        //continue;
+                        return;
+                    }
 
-            if(consumeResult != null) {
-                if (consumeResult.IsPartitionEOF) {
-                    //print($"Reached end of topic {consumeResult.Topic}, partition {consumeResult.Partition}, offset {consumeResult.Offset}.");
-                    //continue;
-                    return;
-                }
+                    print($"Received message at {consumeResult.TopicPartitionOffset}: {consumeResult.Message.Value}");
 
-                //print($"Received message at {consumeResult.TopicPartitionOffset}: {consumeResult.Message.Value}");
+                    nuitrack.Joint[] tmp = ProcessKafkaMessage(consumeResult.Message.Value);
+                    //print(tmp[0].Orient.Matrix[8]);
+                    
+                    avatarSkeleton = new nuitrack.Skeleton(1234, tmp); // ProcessKafkaMessage(consumeResult.Message.Value));
+                    ProcessSkeleton(avatarSkeleton);
 
-                nuitrack.Joint[] tmp = ProcessKafkaMessage(consumeResult.Message.Value);
-                //print(tmp[0].Orient.Matrix[8]);
-
-                avatarSkeleton = new nuitrack.Skeleton(1234, tmp); // ProcessKafkaMessage(consumeResult.Message.Value));
-                ProcessSkeleton(avatarSkeleton);
-
-                if (consumeResult.Offset % commitPeriod == 0) {
-                    try {
-                        kafkaConsumer.Commit(consumeResult);
-                    } catch (KafkaException e) {
-                        print($"Commit error: {e.Error.Reason}");
+                    if (consumeResult.Offset % commitPeriod == 0) {
+                        try {
+                            kafkaConsumer.Commit(consumeResult);
+                        } catch (KafkaException e) {
+                            print($"Commit error: {e.Error.Reason}");
+                        }
                     }
                 }
-            }
 
-        } catch (ConsumeException e) {
-            print($"Consume error: {e.Error.Reason}");
+            } catch (ConsumeException e) {
+                print($"Consume error: {e.Error.Reason}");
+            }
         }
-        
     }
 
     void ProcessSkeleton(Skeleton skeleton) {
+        print($"Frame Counter: {frameCtr}");
         //Calculate the model position: take the Torso position and invert movement along the Z axis
 
         UnityEngine.Vector3 torsoPos = Quaternion.Euler(0f, 180f, 0f) * (-0.001f * skeleton.GetJoint(JointType.Torso).ToVector3());
@@ -133,6 +137,9 @@ public class RiggedAvatar : MonoBehaviour {
     nuitrack.Joint[] ProcessKafkaMessage(string value) {
         nuitrack.Joint[] skeletonJoints = new nuitrack.Joint[19];
 
+        print("1");
+
+
         string[] partitions = Regex.Split(value, "\"orientations\"");
 
         string[] pos = Regex.Split(partitions[0], "\"");
@@ -143,7 +150,7 @@ public class RiggedAvatar : MonoBehaviour {
         int i;
         int j = 0;
         int k;
-        for(i=5; i<pos.Length; i+=2) {
+        for(i=7; i<pos.Length; i+=2) {
 
             vecStr = Regex.Split(Regex.Split(Regex.Split(pos[i+1], "\\[")[1], "\\]")[0], ",");
             nuitrack.Vector3 vec = new nuitrack.Vector3(
@@ -173,6 +180,7 @@ public class RiggedAvatar : MonoBehaviour {
             //if(j==19) {print(j)};
 
         }
+        print("2");
         return skeletonJoints;
     }
 }
