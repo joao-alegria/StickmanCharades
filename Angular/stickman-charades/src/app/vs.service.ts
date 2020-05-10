@@ -1,6 +1,7 @@
 import { Injectable, NgZone } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from "@angular/common/http";
 import { Router } from '@angular/router';
+import { toBase64String } from '@angular/compiler/src/output/source_map';
 
 declare var $: any;
 
@@ -22,17 +23,12 @@ export class VsService {
       await this.loadEndpoints().then(data => { this.endpoints = data })
     }
 
-    var requestHeaders = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Access-Control-Allow-Origin': "*", //this.endpoints["vsEndpoint"],
-      'Authorization': "Basic " + btoa(username + ":" + password)
-    });
-    await this.http.post(this.endpoints["vsEndpoint"] + this.endpoints["login"],
+    let headers = new HttpHeaders();
+    headers = headers.append("Authorization", "Basic " + btoa(username + ":" + password));
+    await this.http.get(this.endpoints["vsEndpoint"] + this.endpoints["login"],
       {
-        headers: requestHeaders, //new HttpHeaders().append('Content-Type', 'application/json').append("Authorization", "Basic " + btoa(username + ":" + password)),
-        observe: 'response',
-        withCredentials: true
+        headers: headers,
+        observe: 'response'
       }
     ).toPromise();
   }

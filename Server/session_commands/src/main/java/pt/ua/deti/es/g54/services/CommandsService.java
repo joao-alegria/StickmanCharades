@@ -54,7 +54,11 @@ public class CommandsService {
         );
         properties.put(
                 ConsumerConfig.GROUP_ID_CONFIG,
-                "esp54_databaseConsumer"
+                "esp54_commandsConsumer"
+        );
+        properties.put(
+                ConsumerConfig.CLIENT_ID_CONFIG,
+                "esp54_commandsConsumer"
         );
         properties.put(
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,

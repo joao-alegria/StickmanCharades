@@ -18,7 +18,6 @@ export class LoginComponent implements OnInit {
   }
 
   async login() {
-    /*
     await this.vs.login($("#username").val().trim(), $("#userpassword").val().trim()).catch(data => {
       if (data.status == 401) {
         document.getElementById("error").innerHTML = "Incorrect username / password. Please try again.";
@@ -30,8 +29,8 @@ export class LoginComponent implements OnInit {
       } else {
         localStorage.setItem("loggedIn", "true");
         localStorage.setItem("role", "USER"); // ADMIN
-        if(localStorage.getItem("role") == "ADMIN") {
-          
+        if (localStorage.getItem("role") == "ADMIN") {
+
           this.router.navigate(["/dashboard"]);
         } else {
           this.router.navigate(["/download"]);
@@ -39,14 +38,13 @@ export class LoginComponent implements OnInit {
       }
       console.log(data);
     })
-    */
-    localStorage.setItem("loggedIn", "true");
-    localStorage.setItem("role", "ADMIN"); // USER / ADMIN
-    if(localStorage.getItem("role") == "ADMIN") {
-      
-      this.router.navigate(["/dashboard"]);
-    } else {
-      this.router.navigate(["/download"]);
-    }
+    // localStorage.setItem("loggedIn", "true");
+    // localStorage.setItem("role", "ADMIN"); // USER / ADMIN
+    // if(localStorage.getItem("role") == "ADMIN") {
+
+    //   this.router.navigate(["/dashboard"]);
+    // } else {
+    //   this.router.navigate(["/download"]);
+    // }
   }
 }

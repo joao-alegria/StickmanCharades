@@ -78,6 +78,10 @@ public class TopicListener {
                 "esp54_databaseConsumer"
         );
         properties.put(
+                ConsumerConfig.CLIENT_ID_CONFIG,
+                "esp54_databaseConsumer"
+        );
+        properties.put(
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
                 StringDeserializer.class
         );

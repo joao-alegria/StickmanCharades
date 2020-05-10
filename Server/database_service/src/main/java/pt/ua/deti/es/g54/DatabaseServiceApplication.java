@@ -45,20 +45,4 @@ public class DatabaseServiceApplication {
 		SpringApplication.run(DatabaseServiceApplication.class, args);
 	}
 
-//    @Bean
-//    public ApplicationRunner runner(KafkaAdmin kafkaAdmin) {
-//        return args -> {
-//            AdminClient admin = AdminClient.create(kafkaAdmin.getConfig());
-//            List<NewTopic> topics = new ArrayList<>();
-//            // build list
-//            topics.add(new NewTopic("esp54_databaseServiceTopic",1,(short)1));
-//            Collection<TopicListing> topicListings = admin.listTopics().listings().get();
-//            for(TopicListing tl: topicListings){
-//                if(tl.name().equals("esp54_databaseServiceTopic")){
-//                    return;
-//                }
-//            }
-//            admin.createTopics(topics).all().get();
-//        };
-//    }
 }
