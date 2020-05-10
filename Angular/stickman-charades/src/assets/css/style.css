@@ -4713,7 +4713,7 @@ hr {
 
 /* line 1, ../../../sponDon TI/Running Project/259.Finance_HTML/assets/scss/_footer.scss */
 .footer-area {
-  background-image: url(../img/gallery/footer_bg.jpg);
+  background-image: url(../img/gallery/footer_bg.jpg); 
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -8446,10 +8446,21 @@ del {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  width: 80%;
+  width: 50vw;
 }
 
 .to-top-btn {
   z-index: 10;
   position:relative;
+}
+
+@media (min-width: 1200px) {
+  .container{
+      max-width: 90vw;
+  }
+  .team-container{
+    max-width: 60vw;
+    margin-left: auto;
+    margin-right: auto;
+}
 }

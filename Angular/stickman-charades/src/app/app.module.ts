@@ -22,22 +22,18 @@ import { SkeletonComponent } from './elements/skeleton/skeleton.component';
 @NgModule({
   declarations: [
     AppComponent,
+    PreloaderComponent, ScrollupComponent,
+    HeaderComponent, DefaultNavbarComponent, UserNavbarComponent, AdminNavbarComponent,
     FooterComponent,
-    PreloaderComponent,
-    BannerComponent,
-    TeamComponent,
-    FeaturesComponent,
-    HeaderComponent, DefaultNavbarComponent, UserNavbarComponent,
-    routingComponents,
-    AdminNavbarComponent,
+    BannerComponent, FeaturesComponent, TeamComponent,
     ContactFormComponent,
-    ScrollupComponent,
+    routingComponents,
     SkeletonComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
   ],
   providers: [CookieService],
   bootstrap: [AppComponent]
