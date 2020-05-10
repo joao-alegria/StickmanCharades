@@ -6,6 +6,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +26,8 @@ import java.util.Map;
 @EnableKafka
 @Configuration
 public class MainListener {
+
+    private static final Logger logger = LoggerFactory.getLogger(MainListener.class);
 
     private static final JSONParser parser = new JSONParser();
 
@@ -64,18 +68,20 @@ public class MainListener {
 
     @KafkaListener(topics = Constants.LISTENER_TOPIC)
     public void listen(String message_string) {
+        logger.info("Record received on listening topic");
+
         JSONObject message;
         try {
             message = (JSONObject) parser.parse(message_string);
         } catch (ParseException e) {
-            e.printStackTrace();
-            // TODO log. invalid message
+            logger.error("Error while converting received record to json", e);
             return;
         }
 
         String session = (String) message.get("session");
         switch ((String) message.get("command")) {
             case "stopSession":
+                logger.info("Stop session message received for session " + session);
                 synchronized (eventHandlers) {
                     EventHandler eventHandler = eventHandlers.get(session);
                     if (eventHandler != null) {
@@ -83,11 +89,16 @@ public class MainListener {
                         eventHandlers.remove(session);
                     }
                     else {
-                        // TODO log. no session mapper for the received session
+                        logger.error(String.format(
+                            "Unable to stop session %s. There is no event handler associated with it",
+                            session
+                        ));
                     }
                 }
                 break;
             case "startSession":
+                logger.info("Start session message received");
+
                 if (!eventHandlers.containsKey(session)) {
                     List<String> wordPool = (JSONArray) message.get("wordPool");
                     List<String> players = (JSONArray) message.get("players");
@@ -100,9 +111,18 @@ public class MainListener {
                     }
                     eventHandler.start();
                 }
+                else {
+                    logger.error(String.format(
+                        "There is already a event handler for session %s",
+                        session
+                    ));
+                }
                 break;
             default:
-                // TODO log. unknown message
+                logger.error(String.format(
+                    "Unknown command received (%s)",
+                    message.get("command")
+                ));
         }
     }
 }

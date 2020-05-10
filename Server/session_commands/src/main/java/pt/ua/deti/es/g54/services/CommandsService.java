@@ -5,11 +5,11 @@
  */
 package pt.ua.deti.es.g54.services;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class CommandsService {
+
+    private static Logger logger = LoggerFactory.getLogger(CommandsService.class);
     
     private JSONParser jparser = new JSONParser();
     
@@ -29,11 +31,13 @@ public class CommandsService {
     
     @KafkaListener(topics="esp54_commandsServiceTopic")
     private void receiveCommand(String command){
+        logger.info("Record received on listening topic");
+
         try {
             JSONObject json=(JSONObject)jparser.parse(command);
             processCommand(json);
         } catch (ParseException ex) {
-            Logger.getLogger(CommandsService.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error("Error while converting received record to json", ex);
         }
     }
     
@@ -54,6 +58,12 @@ public class CommandsService {
                 
                 message.put("type", "command");
                 kt.send("esp54_databaseServiceTopic", message.toJSONString());
+
+                logger.info(String.format(
+                    "Notify admin command sent for session %s by user %s",
+                    json.get("session"),
+                    json.get("username")
+                ));
                 break;
             case "stopSession":
                 message=new JSONObject();
@@ -68,6 +78,12 @@ public class CommandsService {
                 
                 message.put("type", "command");
                 kt.send("esp54_databaseServiceTopic", message.toJSONString());
+
+                logger.info(String.format(
+                    "Stop session command sent for session %s by user %s",
+                    json.get("session"),
+                    json.get("username")
+                ));
                 break;
             case "startSession":
                 message=new JSONObject();
@@ -82,6 +98,12 @@ public class CommandsService {
                 
                 message.put("type", "command");
                 kt.send("esp54_databaseServiceTopic", message.toJSONString());
+
+                logger.info(String.format(
+                    "Start session command sent for session %s by user %s",
+                    json.get("session"),
+                    json.get("username")
+                ));
                 break;
         }
         

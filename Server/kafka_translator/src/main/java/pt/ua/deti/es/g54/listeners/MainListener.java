@@ -5,6 +5,8 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +23,16 @@ import java.util.Map;
 
 @EnableKafka
 @Configuration
-public class Configurations {
+public class MainListener {
+
+    private static final Logger logger = LoggerFactory.getLogger(MainListener.class);
+
+    private static final JSONParser parser = new JSONParser();
+
+    private static final Map<String, SessionMapper> sessionMappers = new HashMap<>();
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     private ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> properties = new HashMap<>();
@@ -53,34 +64,37 @@ public class Configurations {
         return factory;
     }
 
-    private static final JSONParser parser = new JSONParser();
-
-    @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
-
-    private static final Map<String, SessionMapper> sessionMappers = new HashMap<>();
-
     @KafkaListener(topics = Constants.LISTENER_TOPIC)
     public void listen(String message_string) {
+        logger.info("Record received on listening topic");
+
         JSONObject message;
         try {
             message = (JSONObject) parser.parse(message_string);
         } catch (ParseException e) {
-            e.printStackTrace();
-            // TODO log. invalid message
+            logger.error("Error while converting received record to json", e);
             return;
         }
 
         String session = (String) message.get("session");
         switch ((String) message.get("command")) {
             case "notifyAdmin":
+                String username = (String) message.get("username");
+                logger.info(String.format(
+                    "Notify admin message received from user %s on session %s. Resending to admin websocket",
+                    username,
+                    session
+                ));
+
                 JSONObject notification = new JSONObject();
                 notification.put("session", session);
-                notification.put("user", message.get("username"));
+                notification.put("user", username);
                 notification.put("data", message.get("data"));
                 simpMessagingTemplate.convertAndSend("/game/admin", notification.toJSONString());
                 break;
             case "stopSession":
+                logger.info("Stop session message received");
+
                 synchronized (sessionMappers) {
                     SessionMapper sessionMapper = sessionMappers.get(session);
                     if (sessionMapper != null) {
@@ -88,11 +102,16 @@ public class Configurations {
                         sessionMappers.remove(session);
                     }
                     else {
-                        // TODO log. no session mapper for the received session
+                        logger.error(String.format(
+                            "Unable to stop session %s. There is no session mapper associated with it",
+                            session
+                        ));
                     }
                 }
                 break;
             case "startSession":
+                logger.info("Start session message received");
+
                 if (!sessionMappers.containsKey(session)) {
                     SessionMapper sessionMapper = new SessionMapper(session, simpMessagingTemplate);
                     synchronized (sessionMappers) {
@@ -103,9 +122,18 @@ public class Configurations {
                     }
                     sessionMapper.start();
                 }
+                else {
+                    logger.error(String.format(
+                        "There is already a session mapper for session %s",
+                        session
+                    ));
+                }
                 break;
             default:
-                // TODO log. unknown message
+                logger.error(String.format(
+                    "Unknown command received (%s)",
+                    message.get("command")
+                ));
         }
     }
 

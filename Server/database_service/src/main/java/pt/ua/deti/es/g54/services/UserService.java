@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.CharBuffer;
 import java.util.Arrays;
@@ -16,6 +18,8 @@ import pt.ua.deti.es.g54.repository.RoleRepository;
 
 @Service
 public class UserService {
+
+    private final static Logger logger = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
     private UserRepository ur;
@@ -39,6 +43,8 @@ public class UserService {
         }
 
         if (duplicatedFields.length() > 0) {
+            logger.error("User registration failed. Fields already in use: " + duplicatedFields.toString());
+
             return ResponseEntity.status(400)
                     .body(
                             String.format("Field(s) %s value(s) already in use", duplicatedFields.toString())
@@ -68,7 +74,7 @@ public class UserService {
 
         Arrays.fill(validatedUserData.getPassword(), Character.MIN_VALUE);
 
-        //ks.sendMessage();
+        logger.info("User registration successful. New user " + validatedUserData.getUsername());
 
         return ResponseEntity.ok("Registration successful");
     }

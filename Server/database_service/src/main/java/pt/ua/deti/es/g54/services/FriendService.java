@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,8 @@ import java.util.ArrayList;
  */
 @Service
 public class FriendService {
+
+    private static final Logger logger = LoggerFactory.getLogger(FriendService.class);
     
     @Autowired
     private UserRepository ur;
@@ -48,6 +52,9 @@ public class FriendService {
                 friendNames.add(f.getUsername());
             }
             jo.put("friends", friendNames);
+        }
+        else {
+            logger.error("Get all friends request failed. No user with username " + username);
         }
         return jo;
     }
@@ -75,8 +82,21 @@ public class FriendService {
                     fir.save(fi);
                     listFriend.get(0).addFriend(listUser.get(0));
                 }
+            }else{
+                logger.warn(String.format(
+                    "add friend request ignored. user %s is already fiend of %s",
+                    friendname,
+                    username
+                ));
             }
+        }else{
+            logger.error(String.format(
+                "Add friend request failed. No user with username %s or %s",
+                username,
+                friendname
+            ));
         }
+
         return jo;
     }
     
@@ -87,7 +107,19 @@ public class FriendService {
         if(!listUser.isEmpty() && !listFriend.isEmpty()){
             if(listUser.get(0).getFriends().contains(listFriend.get(0))){
                 listUser.get(0).removeFriend(listFriend.get(0));
+            }else{
+                logger.warn(String.format(
+                    "Delete friend request ignored. user %s is not fiend of %s",
+                    friendname,
+                    username
+                ));
             }
+        }else{
+            logger.error(String.format(
+                "Delete friend request failed. No user with username %s or %s",
+                username,
+                friendname
+            ));
         }
         return jo;
     }
@@ -102,7 +134,19 @@ public class FriendService {
                 DBGameInvite invite = new DBGameInvite(listUser.get(0), listFriend.get(0), listSession.get(0));
                 gir.save(invite);
                 kafkaTemplate.send(friendname, "{\"gameInvite\":{\"friend\":"+username+", \"session\": "+sessionId+"}}");
+            }else{
+                logger.error(String.format(
+                    "Delete friend request failed. user %s is not fiend of %s",
+                    friendname,
+                    username
+                ));
             }
+        }else{
+            logger.error(String.format(
+                "Delete friend request failed. No user with username %s or %s",
+                username,
+                friendname
+            ));
         }
         return jo;
     }

@@ -45,6 +45,7 @@ public class StickmanCharadesApplication {
 
         System.setProperty("KAFKA_BOOTSTRAP_SERVERS", System.getenv().get("KAFKA_BOOTSTRAP_SERVERS"));
 
+        logger.info("Launching application");
         SpringApplication.run(StickmanCharadesApplication.class, args);
     }
         

@@ -10,10 +10,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 
-import org.springframework.stereotype.Component;
 import pt.ua.deti.es.g54.Constants;
 
 import java.time.Duration;
@@ -28,19 +28,15 @@ import java.util.Set;
 
 public class EventHandler extends Thread {
 
-    private final Consumer<String, String> consumer;
-
-    private final String session;
-
-    private boolean closed;
+    private static final Logger logger = LoggerFactory.getLogger(EventHandler.class);
 
     private static final JSONParser parser = new JSONParser();
 
     private static final Random random = new Random();
 
-    private int currentPlayingPlayerIdx;
+    private final Consumer<String, String> consumer;
 
-    private String currentWord;
+    private final String session;
 
     private final Map<String, Integer> playersScore;
 
@@ -50,9 +46,20 @@ public class EventHandler extends Thread {
 
     private final List<String> wordPool;
 
-    private KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+
+    private boolean closed;
+
+    private int currentPlayingPlayerIdx;
+
+    private String currentWord;
 
     public EventHandler(String sessionId, KafkaTemplate<String, String> kafkaTemplate, List<String> players, List<String> wordPool) {
+        logger.info(String.format(
+            "Initializing EventHandler for session %s",
+            sessionId
+        ));
+
         Properties properties = new Properties();
         properties.put(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
@@ -87,21 +94,27 @@ public class EventHandler extends Thread {
     }
 
     public void sessionClosed() {
+        logger.info("Tell event handler for session" + session + " to exit");
         closed = true;
     }
 
     @Override
     public void run() {
+        logger.info(String.format(
+                "EventHandler for session %s started",
+                session
+        ));
+
         while (!closed) {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
 
             for (ConsumerRecord<String, String> record : records) {
+                logger.error("Parsing a record");
                 JSONObject json;
                 try {
                     json = (JSONObject) parser.parse(record.value());
                 } catch (ParseException e) {
-                    e.printStackTrace();
-                    // TODO log. parse json error
+                    logger.error("Error while converting received record to json", e);
                     continue;
                 }
 
@@ -109,13 +122,22 @@ public class EventHandler extends Thread {
                     handleMessage(json);
                 }
                 catch (MissingKeyException e) {
-                    // TODO log. missing key
+                    logger.error(
+                        String.format(
+                            "Received message (%s) on session %s is missing key %s",
+                            record.value(),
+                            session,
+                            e.getMissingKey()
+                        )
+                    );
                 }
                 catch (ArrayIndexOutOfBoundsException e) {
-                    // TODO log. no data on positions fields
+                    logger.error("Missing data on some positions field", e);
                 }
             }
         }
+
+        logger.info("Event handler for session" + session + " is exiting");
 
         consumer.close();
     }
@@ -128,6 +150,11 @@ public class EventHandler extends Thread {
         if (message.containsKey("msg")){
             String msgTag = (String) getValueFromKey(message, "msg");
             if (msgTag.equals("wordGuess")) {
+                logger.info(String.format(
+                    "WordGuess message received (%s). Sending to Database service.",
+                    message.toJSONString()
+                ));
+
                 event.put("event", "wordGuess");
                 event.put("username", username);
                 event.put("guess", getValueFromKey(message, "word"));
@@ -155,6 +182,12 @@ public class EventHandler extends Thread {
                 ||
                 ((((double)rightElbow.get(0))<((double)leftElbow.get(0))) &&
                 (((double)rightHand.get(0))>((double)leftHand.get(0)))))) { //cross arms above head
+            logger.info(String.format(
+                "Stop session event from user %s on session %s",
+                username,
+                session
+            ));
+
             event.put("event", "stopSession");
             event.put("session", session);
 
@@ -163,6 +196,12 @@ public class EventHandler extends Thread {
         else if ((((double)rightHand.get(1)) > ((double)head.get(1)))
                  ||
                  (((double)leftHand.get(1)) > ((double)head.get(1)))) {  //raise hand above head
+            logger.info(String.format(
+                "Notify admin event from user %s on session %s",
+                username,
+                session
+            ));
+
             event.put("event", "notifyAdmin");
             event.put("session", session);
             event.put("username", username);
@@ -174,6 +213,11 @@ public class EventHandler extends Thread {
             double leftDist = Math.abs(((double)leftHand.get(1)) - ((double)leftShoulder.get(1)));
             double rightDist = Math.abs(((double)rightHand.get(1)) - ((double)rightShoulder.get(1)));
             if (leftDist < 50 && rightDist < 50) {
+                logger.info(String.format(
+                    "%s ready",
+                    username
+                ));
+
                 activePlayers.add(username);
                 event.put("event", "playerReady");
                 event.put("session", session);
@@ -182,6 +226,8 @@ public class EventHandler extends Thread {
             }
 
             if (activePlayers.size() == players.size()) {
+                logger.info("All players ready");
+
                 event.put("event", "allPlayersReady");
                 event.put("username", players.get(currentPlayingPlayerIdx));
                 currentWord = wordPool.get(random.nextInt(wordPool.size()));

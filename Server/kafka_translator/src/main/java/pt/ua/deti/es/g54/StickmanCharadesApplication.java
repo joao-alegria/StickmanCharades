@@ -24,6 +24,7 @@ public class StickmanCharadesApplication {
 
 		Constants.BOOTSTRAP_SERVERS = env.get("KAFKA_BOOTSTRAP_SERVERS");
 
+		logger.info("Launching application");
 		SpringApplication.run(StickmanCharadesApplication.class, args);
 	}
 

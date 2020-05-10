@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -23,6 +25,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class SessionService {
+
+    private static final Logger logger = LoggerFactory.getLogger(SessionService.class);
     
     @Autowired
     private SessionRepository sr;
@@ -66,6 +70,9 @@ public class SessionService {
             sr.save(session);
             json.put("id", session.getId());
         }
+        else {
+            logger.error("Create session request failed. No uer with username " + name);
+        }
         return json;
     }
 
@@ -75,6 +82,9 @@ public class SessionService {
         DBSession session = null;
         if(!listSessions.isEmpty()){
             session=listSessions.get(0);
+        }
+        else {
+            logger.error("Get session info request failed. No session with id " + sessionId);
         }
         jo.put("sessions", session);
         return jo;
@@ -91,20 +101,49 @@ public class SessionService {
             switch(action){
                 case "join":
                     if(!session.getPlayers().contains(user)){
+                        logger.info(String.format(
+                            "User %s joined session %d",
+                            name,
+                            sessionId
+                        ));
                         user.setSessionInPlay(session);
                         session.addPlayer(user);
                         ur.save(user);
                         sr.save(session);
                     }
+                    else {
+                        logger.error(String.format(
+                            "Join request failed. User %s already on session %d",
+                            name,
+                            sessionId
+                        ));
+                    }
                     break;
                 case "leave":
                     if(session.getPlayers().contains(user)){
+                        logger.info(String.format(
+                            "User %s left session %d",
+                            name,
+                            sessionId
+                        ));
                         user.setSessionInPlay(null);
                         session.removePlayer(user);
                         ur.save(user);
                         sr.save(session);
                     }
+                    else {
+                        logger.error(String.format(
+                            "Leave request failed. User %s in not on session %d",
+                            name,
+                            sessionId
+                        ));
+                    }
                     break;
+                default:
+                    logger.error(String.format(
+                        "Join/Leave request for user %s for session %d failed. Invalid action \"%a\"",
+                        action
+                    ));
             }
         }
         
@@ -136,6 +175,9 @@ public class SessionService {
             DBSession session=listSessions.get(0);
             session.setIsAvailable(false);
             sr.save(session);
+        }
+        else {
+            logger.error("Delete session request failed. No session with id " + sessionId);
         }
         return jo;
     }
