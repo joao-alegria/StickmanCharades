@@ -10,8 +10,9 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath pt.ua.deti.es.g54.StickmanCharadesApplication</exec.args>
+                <exec.args>-classpath %classpath pt.ua.deti.es.g54.DatabaseServiceApplication</exec.args>
                 <exec.executable>java</exec.executable>
+                <Env.KAFKA_BOOTSTRAP_SERVERS>localhost:9092</Env.KAFKA_BOOTSTRAP_SERVERS>
                 <Env.PERSISTENCE_HOST>localhost</Env.PERSISTENCE_HOST>
                 <Env.PERSISTENCE_PORT>5432</Env.PERSISTENCE_PORT>
                 <Env.PERSISTENCE_DB>postgres</Env.PERSISTENCE_DB>
@@ -19,17 +20,20 @@
                 <Env.PERSISTENCE_PASSWORD>postgres</Env.PERSISTENCE_PASSWORD>
                 
                 
+
+
+
+                <Env.ELASTICSEARCH_HOST>192.168.160.103</Env.ELASTICSEARCH_HOST>
+                <Env.ELASTICSEARCH_PORT>9200</Env.ELASTICSEARCH_PORT>
+                <Env.ELASTICSEARCH_USER>esp54</Env.ELASTICSEARCH_USER>
+                <Env.ELASTICSEARCH_PASSWORD>passwordesp54</Env.ELASTICSEARCH_PASSWORD>
+                <Env.ELASTICSEARCH_INDEX>esp54-logs</Env.ELASTICSEARCH_INDEX>
+
                 
                 
                 
-                <Env.KAFKA_HOST>localhost</Env.KAFKA_HOST>
                 
-                
-                
-                
-                
-                <Env.KAFKA_PORT>9092</Env.KAFKA_PORT>
-                
+
             </properties>
         </action>
         <action>
@@ -42,7 +46,8 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
             </goals>
             <properties>
-                <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath pt.ua.deti.es.g54.StickmanCharadesApplication</exec.args>
+                <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath
+                    pt.ua.deti.es.g54.DatabaseServiceApplication</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
             </properties>
@@ -57,7 +62,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath pt.ua.deti.es.g54.StickmanCharadesApplication</exec.args>
+                <exec.args>-classpath %classpath pt.ua.deti.es.g54.DatabaseServiceApplication</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>

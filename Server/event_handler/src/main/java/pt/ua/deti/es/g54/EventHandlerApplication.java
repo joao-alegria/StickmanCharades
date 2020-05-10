@@ -4,22 +4,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 @SpringBootApplication
-@EnableScheduling
-public class StickmanCharadesApplication {
+public class EventHandlerApplication {
 
-	private static Logger logger = LoggerFactory.getLogger(StickmanCharadesApplication.class);
+	private static final Logger logger = LoggerFactory.getLogger(EventHandlerApplication.class);
 
 	public static void main(String[] args) {
 		List<String> requiredEnvVariables = Arrays.asList(
 				"KAFKA_BOOTSTRAP_SERVERS",
-				"PERSISTENCE_HOST", "PERSISTENCE_PORT", "PERSISTENCE_DB", "PERSISTENCE_USER", "PERSISTENCE_PASSWORD"
+				"ELASTICSEARCH_HOST", "ELASTICSEARCH_PORT", "ELASTICSEARCH_USER", "ELASTICSEARCH_PASSWORD", "ELASTICSEARCH_INDEX"
 		);
 
 		Map<String, String> env = System.getenv();
@@ -35,10 +33,10 @@ public class StickmanCharadesApplication {
 			System.exit(1);
 		}
 
-		System.setProperty("KAFKA_BOOTSTRAP_SERVERS", System.getenv().get("KAFKA_BOOTSTRAP_SERVERS"));
+		Constants.BOOTSTRAP_SERVERS = env.get("KAFKA_BOOTSTRAP_SERVERS");
 
-        logger.info("Launching application");
-		SpringApplication.run(StickmanCharadesApplication.class, args);
+		logger.info("Launching application");
+		SpringApplication.run(EventHandlerApplication.class, args);
 	}
 
 }
