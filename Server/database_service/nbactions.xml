@@ -18,6 +18,9 @@
                 <Env.PERSISTENCE_DB>postgres</Env.PERSISTENCE_DB>
                 <Env.PERSISTENCE_USER>postgres</Env.PERSISTENCE_USER>
                 <Env.PERSISTENCE_PASSWORD>postgres</Env.PERSISTENCE_PASSWORD>
+                <Env.KAFKA_BOOTSTRAP_SERVERS>localhost:9092</Env.KAFKA_BOOTSTRAP_SERVERS>
+                
+                
                 
                 
 

@@ -6,6 +6,12 @@ pipeline {
             args '-v /root/.m2:/root/.m2 -v /var/run/docker.sock:/var/run/docker.sock -v /dev/shm:/dev/shm'
         }
     }
+    environment {
+        VERSION = """${sh(
+            returnStdout:true,
+            script: 'sed -e \'s/xmlns=".*"//g\' pom.xml | xmllint --xpath "//project/version/text()" -'
+        )}"""
+    }
     stages {
         stage('Test') {
             when {
@@ -31,11 +37,10 @@ pipeline {
                         sh '''
                             mvn clean deploy --settings $MAVEN_SETTINGS -Dmaven.test.skip=true
 
-                            version=$(sed -e 's/xmlns=".*"//g' pom.xml | xmllint --xpath "//project/version/text())
-                            docker build -t esp54-server:$version .
+                            docker build -t esp54-server:$VERSION .
 
-                            docker tag esp54-server:$version 192.168.160.99:5000/esp54-server:$version
-                            docker push 192.168.160.99:5000/esp54-server:$version
+                            docker tag esp54-server:$VERSION 192.168.160.99:5000/esp54-server:$VERSION
+                            docker push 192.168.160.99:5000/esp54-server:$VERSION
                         '''
                     }
                 }
@@ -50,8 +55,7 @@ pipeline {
                     sh '''
                         ssh -o StrictHostKeyChecking=no -l esp54 192.168.160.103 "
                             docker stop esp54-server && docker rm esp54-server || echo No container up. Continue
-                            version=$(sed -e 's/xmlns=".*"//g' pom.xml | xmllint --xpath "//project/version/text())
-                            docker pull 192.168.160.99:5000/esp54-server:$version
+                            docker pull 192.168.160.99:5000/esp54-server:$VERSION
                             docker run -p 54880:8080 -d --name=esp54-server \
                                 --network shared_postgres \
                                 --network bridge \
@@ -62,7 +66,7 @@ pipeline {
                                 -e PERSISTENCE_PASSWORD=esp54 \
                                 -e KAFKA_HOST=192.168.160.103 \
                                 -e KAFKA_PORT=9092 \
-                                192.168.160.99:5000/esp54-server:$version
+                                192.168.160.99:5000/esp54-server:$VERSION
                         "
                     '''
                 }

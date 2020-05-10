@@ -29,6 +29,7 @@ public class StickmanCharadesApplication {
 				logger.error(String.format("Environment variable '%s' wasn't defined", envVariable));
 				variablesMissing = true;
 			}
+			System.out.println(env.get(envVariable));
 		}
 
 		if (variablesMissing) {

@@ -6,6 +6,12 @@ pipeline {
             args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
+    environment {
+        VERSION = """${sh(
+            returnStdout:true,
+            script: 'jq -r .version Angular/stickman-charades/package.json'
+        )}"""
+    }
     stages {
         stage('Test') {
             when {
@@ -28,10 +34,9 @@ pipeline {
             steps {
                 dir('Angular/stickman-charades') {
                     sh '''
-                        version=$(jq -r .version package.json)
-                        docker build -t esp54-web:$version --file Dockerfile-prod .
-                        docker tag esp54-web:$version 192.168.160.99:5000/esp54-web:$version
-                        docker push 192.168.160.99:5000/esp54-web:$version
+                        docker build -t esp54-web:${VERSION} --file Dockerfile-prod .
+                        docker tag esp54-web:${VERSION} 192.168.160.99:5000/esp54-web:${VERSION}
+                        docker push 192.168.160.99:5000/esp54-web:$VERSION
                     '''
                 }
             }
@@ -45,9 +50,8 @@ pipeline {
                     sh '''
                         ssh -o StrictHostKeyChecking=no -l esp54 192.168.160.103 "
                             docker stop esp54-web && docker rm esp54-web || echo No container up. Continue
-                            version=$(jq -r .version package.json)
-                            docker pull 192.168.160.99:5000/esp54-web:$version
-                            docker run -p 54080:80 -d --name=esp54-web 192.168.160.99:5000/esp54-web:$version
+                            docker pull 192.168.160.99:5000/esp54-web:${VERSION}
+                            docker run -p 54080:80 -d --name=esp54-web 192.168.160.99:5000/esp54-web:${VERSION}
                         "
                     '''
                 }

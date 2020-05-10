@@ -381,12 +381,12 @@ public class StepsDefs {
         currentSessionId=(long)json.get("id");
         assertEquals(result.getStatusCodeValue(),200);
         
-        jsonBody = new JSONObject();
-
-        entity = new HttpEntity(jsonBody, headers);
-        
-        result = restTemplate.exchange(server+randomServerPort+"/session/"+currentSessionId, HttpMethod.PUT, entity, String.class);
-        assertEquals(result.getStatusCodeValue(),200);
+//        jsonBody = new JSONObject();
+//
+//        entity = new HttpEntity(jsonBody, headers);
+//        
+//        result = restTemplate.exchange(server+randomServerPort+"/session/"+currentSessionId, HttpMethod.PUT, entity, String.class);
+//        assertEquals(result.getStatusCodeValue(),200);
     }
 
     @When("I raise my right hand above my head")
