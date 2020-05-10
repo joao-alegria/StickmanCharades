@@ -1,4 +1,11 @@
 pipeline {
+    parameters {
+        booleanParam(
+            name: 'build_and_publish',
+            defaultValue: false,
+            description: 'Build and publish docker image'
+        )
+    }
     agent {
         docker {
             image '192.168.160.99:5000/esp54-server_pipeline_agent'
@@ -7,9 +14,21 @@ pipeline {
         }
     }
     environment {
-        VERSION = """${sh(
+        VERSION-DATABASE-SERVICE = """${sh(
             returnStdout:true,
-            script: 'sed -e \'s/xmlns=".*"//g\' pom.xml | xmllint --xpath "//project/version/text()" -'
+            script: 'sed -e \'s/xmlns=".*"//g\' Server/database_service/pom.xml | xmllint --xpath "//project/version/text()" -'
+        )}"""
+        VERSION-EVENT-HANDLER = """${sh(
+            returnStdout:true,
+            script: 'sed -e \'s/xmlns=".*"//g\' Server/event_handler/pom.xml | xmllint --xpath "//project/version/text()" -'
+        )}"""
+        VERSION-KAFKA-TRANSLATOR = """${sh(
+            returnStdout:true,
+            script: 'sed -e \'s/xmlns=".*"//g\' Server/kafka_tranlator/pom.xml | xmllint --xpath "//project/version/text()" -'
+        )}"""
+        VERSION-SESSION-COMMANDS = """${sh(
+            returnStdout:true,
+            script: 'sed -e \'s/xmlns=".*"//g\' Server/session_commands/pom.xml | xmllint --xpath "//project/version/text()" -'
         )}"""
     }
     stages {
@@ -20,28 +39,80 @@ pipeline {
                 }
             }
             steps {
-                dir('Server/stickman_charades') {
-                    sh 'mvn clean verify'
+                parallel {
+                    dir('Server/database_service') {
+                        sh 'mvn clean verify'
+                    }
+                    dir('Server/event_handler') {
+                        sh 'mvn clean verify'
+                    }
+                    dir('Server/kafka_translator') {
+                        sh 'mvn clean verify'
+                    }
+                    dir('Server/session_commands') {
+                        sh 'mvn clean verify'
+                    }
                 }
             }
         }
         stage('Build & Publish') {
             when {
-                not {
-                    branch 'master'
+                or {
+                    not {
+                        branch 'master'
+                    }
+                    expresion { params.build_and_publish }
                 }
             }
             steps {
-                dir('Server/stickman_charades') {
-                    configFileProvider([configFile(fileId: 'esp54-maven-settings', variable: 'MAVEN_SETTINGS')]) {
-                        sh '''
-                            mvn clean deploy --settings $MAVEN_SETTINGS -Dmaven.test.skip=true
+                parallel {
+                    dir('Server/database_service') {
+                        configFileProvider([configFile(fileId: 'esp54-maven-settings', variable: 'MAVEN_SETTINGS')]) {
+                            sh '''
+                                mvn clean deploy --settings $MAVEN_SETTINGS -Dmaven.test.skip=true
 
-                            docker build -t esp54-server:$VERSION .
+                                docker build -t esp54-server-database_service:$VERSION-DATABASE-SERVICE .
 
-                            docker tag esp54-server:$VERSION 192.168.160.99:5000/esp54-server:$VERSION
-                            docker push 192.168.160.99:5000/esp54-server:$VERSION
-                        '''
+                                docker tag esp54-server-database_service:$VERSION-DATABASE-SERVICE 192.168.160.99:5000/esp54-server-database_service:$VERSION-DATABASE-SERVICE
+                                docker push 192.168.160.99:5000/esp54-server-database_service:$VERSION-DATABASE-SERVICE
+                            '''
+                        }
+                    }
+                    dir('Server/event_handler') {
+                        configFileProvider([configFile(fileId: 'esp54-maven-settings', variable: 'MAVEN_SETTINGS')]) {
+                            sh '''
+                                mvn clean deploy --settings $MAVEN_SETTINGS -Dmaven.test.skip=true
+
+                                docker build -t esp54-server-event_handler:$VERSION-EVENT-HANDLER .
+
+                                docker tag esp54-server-event_handler:$VERSION-EVENT-HANDLER 192.168.160.99:5000/esp54-server-event_handler:$VERSION-EVENT-HANDLER
+                                docker push 192.168.160.99:5000/esp54-server-event_handler:$VERSION-EVENT-HANDLER
+                            '''
+                        }
+                    }
+                    dir('Server/kafka_translator') {
+                        configFileProvider([configFile(fileId: 'esp54-maven-settings', variable: 'MAVEN_SETTINGS')]) {
+                            sh '''
+                                mvn clean deploy --settings $MAVEN_SETTINGS -Dmaven.test.skip=true
+
+                                docker build -t esp54-server-kafka_translator:$VERSION-KAFKA-TRANSLATOR .
+
+                                docker tag esp54-server-kafka_translator:$VERSION-KAFKA-TRANSLATOR 192.168.160.99:5000/esp54-server-kafka_translator:$VERSION-KAFKA-TRANSLATOR
+                                docker push 192.168.160.99:5000/esp54-server-kafka_translator:$VERSION-KAFKA-TRANSLATOR
+                            '''
+                        }
+                    }
+                    dir('Server/session_commands') {
+                        configFileProvider([configFile(fileId: 'esp54-maven-settings', variable: 'MAVEN_SETTINGS')]) {
+                            sh '''
+                                mvn clean deploy --settings $MAVEN_SETTINGS -Dmaven.test.skip=true
+
+                                docker build -t esp54-server-session_commands:$VERSION-SESSION-COMMANDS .
+
+                                docker tag esp54-server-session_commands:$VERSION-SESSION-COMMANDS 192.168.160.99:5000/esp54-server-session_commands:$VERSION-SESSION-COMMANDS
+                                docker push 192.168.160.99:5000/esp54-server-session_commands:$VERSION-SESSION-COMMANDS
+                            '''
+                        }
                     }
                 }
             }
@@ -51,24 +122,92 @@ pipeline {
                 branch 'master'
             }
             steps {
-                sshagent(credentials: ['esp54-ssh-runtime-vm']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no -l esp54 192.168.160.103 "
-                            docker stop esp54-server && docker rm esp54-server || echo No container up. Continue
-                            docker pull 192.168.160.99:5000/esp54-server:$VERSION
-                            docker run -p 54880:8080 -d --name=esp54-server \
-                                --network shared_postgres \
-                                --network bridge \
-                                -e PERSISTENCE_HOST=db \
-                                -e PERSISTENCE_PORT=5432 \
-                                -e PERSISTENCE_DB=esp54 \
-                                -e PERSISTENCE_USER=esp54 \
-                                -e PERSISTENCE_PASSWORD=esp54 \
-                                -e KAFKA_HOST=192.168.160.103 \
-                                -e KAFKA_PORT=9092 \
-                                192.168.160.99:5000/esp54-server:$VERSION
-                        "
-                    '''
+                parallel {
+                    sshagent(credentials: ['esp54-ssh-runtime-vm']) {
+                        sh '''
+                            ssh -o StrictHostKeyChecking=no -l esp54 192.168.160.103 "
+                                docker pull 192.168.160.99:5000/esp54-server-database_service:$VERSION-DATABASE-SERVICE
+                                docker stop esp54-server-database_service && docker rm esp54-server-database_service || echo No container up. Continue
+                                docker run -p 54880:8080 -d --name=esp54-server-database_service \
+                                    --network shared_postgres \
+                                    --network bridge \
+                                    -e PERSISTENCE_HOST=db \
+                                    -e PERSISTENCE_PORT=5432 \
+                                    -e PERSISTENCE_DB=esp54 \
+                                    -e PERSISTENCE_USER=esp54 \
+                                    -e PERSISTENCE_PASSWORD=esp54 \
+                                    -e KAFKA_BOOTSTRAP_SERVERS=192.168.160.103:9092 \
+                                    -e LOGGING_HOST=192.168.160.103 \
+                                    -e LOGGING_PORT=9200 \
+                                    -e LOGGING_USER=esp54 \
+                                    -e LOGGING_PASSWORD=passwordesp54 \
+                                    -e LOGGING_INDEX=esp54-logs \
+                                    -e MONITORING_HOST=192.168.160.103 \
+                                    -e MONITORING_PORT=8125 \
+                                    192.168.160.99:5000/esp54-server-database_service:$VERSION-DATABASE-SERVICE
+                            "
+                        '''
+                    }
+                    sshagent(credentials: ['esp54-ssh-runtime-vm']) {
+                        sh '''
+                            ssh -o StrictHostKeyChecking=no -l esp54 192.168.160.103 "
+                                docker pull 192.168.160.99:5000/esp54-server-event_handler:$VERSION-EVENT-HANDLER
+                                docker stop esp54-server-event_handler && docker rm esp54-server-event_handler || echo No container up. Continue
+                                docker run -p 54880:8080 -d --name=esp54-server-event_handler \
+                                    --network shared_postgres \
+                                    --network bridge \
+                                    -e KAFKA_BOOTSTRAP_SERVERS=192.168.160.103:9092 \
+                                    -e LOGGING_HOST=192.168.160.103 \
+                                    -e LOGGING_PORT=9200 \
+                                    -e LOGGING_USER=esp54 \
+                                    -e LOGGING_PASSWORD=passwordesp54 \
+                                    -e LOGGING_INDEX=esp54-logs \
+                                    -e MONITORING_HOST=192.168.160.103 \
+                                    -e MONITORING_PORT=8125 \
+                                    192.168.160.99:5000/esp54-server-event_handler:$VERSION-EVENT-HANDLER
+                            "
+                        '''
+                    }
+                    sshagent(credentials: ['esp54-ssh-runtime-vm']) {
+                        sh '''
+                            ssh -o StrictHostKeyChecking=no -l esp54 192.168.160.103 "
+                                docker pull 192.168.160.99:5000/esp54-server-kafka_translator:$VERSION-KAFKA-TRANSLATOR
+                                docker stop esp54-server-kafka_translator && docker rm esp54-server-kafka_translator || echo No container up. Continue
+                                docker run -p 54880:8080 -d --name=esp54-server-kafka_translator \
+                                    --network shared_postgres \
+                                    --network bridge \
+                                    -e KAFKA_BOOTSTRAP_SERVERS=192.168.160.103:9092 \
+                                    -e LOGGING_HOST=192.168.160.103 \
+                                    -e LOGGING_PORT=9200 \
+                                    -e LOGGING_USER=esp54 \
+                                    -e LOGGING_PASSWORD=passwordesp54 \
+                                    -e LOGGING_INDEX=esp54-logs \
+                                    -e MONITORING_HOST=192.168.160.103 \
+                                    -e MONITORING_PORT=8125 \
+                                    192.168.160.99:5000/esp54-server-kafka_translator:$VERSION-KAFKA-TRANSLATOR
+                            "
+                        '''
+                    }
+                    sshagent(credentials: ['esp54-ssh-runtime-vm']) {
+                        sh '''
+                            ssh -o StrictHostKeyChecking=no -l esp54 192.168.160.103 "
+                                docker pull 192.168.160.99:5000/esp54-server-session_commands:$VERSION-SESSION-COMMANDS
+                                docker stop esp54-server-session_commands && docker rm esp54-server-session_commands || echo No container up. Continue
+                                docker run -p 54880:8080 -d --name=esp54-server-session_commands \
+                                    --network shared_postgres \
+                                    --network bridge \
+                                    -e KAFKA_BOOTSTRAP_SERVERS=192.168.160.103:9092 \
+                                    -e LOGGING_HOST=192.168.160.103 \
+                                    -e LOGGING_PORT=9200 \
+                                    -e LOGGING_USER=esp54 \
+                                    -e LOGGING_PASSWORD=passwordesp54 \
+                                    -e LOGGING_INDEX=esp54-logs \
+                                    -e MONITORING_HOST=192.168.160.103 \
+                                    -e MONITORING_PORT=8125 \
+                                    192.168.160.99:5000/esp54-server-session_commands:$VERSION-SESSION-COMMANDS
+                            "
+                        '''
+                    }
                 }
             }
         }

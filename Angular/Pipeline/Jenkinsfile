@@ -1,4 +1,11 @@
 pipeline {
+    parameters {
+        booleanParam(
+            name: 'build_and_publish',
+            defaultValue: false,
+            description: 'Build and publish docker image'
+        )
+    }
     agent {
         docker {
             image '192.168.160.99:5000/esp54-web_pipeline_agent'
@@ -27,8 +34,11 @@ pipeline {
         }
         stage('Build & Publish') {
             when {
-                not {
-                    branch 'master'
+                or {
+                    not {
+                        branch 'master'
+                    }
+                    expresion { params.build_and_publish }
                 }
             }
             steps {
@@ -49,8 +59,8 @@ pipeline {
                 sshagent(credentials: ['esp54-ssh-runtime-vm']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no -l esp54 192.168.160.103 "
-                            docker stop esp54-web && docker rm esp54-web || echo No container up. Continue
                             docker pull 192.168.160.99:5000/esp54-web:${VERSION}
+                            docker stop esp54-web && docker rm esp54-web || echo No container up. Continue
                             docker run -p 54080:80 -d --name=esp54-web 192.168.160.99:5000/esp54-web:${VERSION}
                         "
                     '''
