@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.admin.TopicListing;
 import org.springframework.boot.ApplicationRunner;
@@ -21,13 +20,14 @@ import org.springframework.kafka.core.KafkaAdmin;
 
 @SpringBootApplication
 @EnableScheduling
-public class StickmanCharadesApplication {
+public class SessionCommandsApplication {
 
-    private static Logger logger = LoggerFactory.getLogger(StickmanCharadesApplication.class);
+    private static final Logger logger = LoggerFactory.getLogger(SessionCommandsApplication.class);
 
     public static void main(String[] args) {
         List<String> requiredEnvVariables = Arrays.asList(
-            "KAFKA_BOOTSTRAP_SERVERS"
+                "KAFKA_BOOTSTRAP_SERVERS",
+                "ELASTICSEARCH_HOST", "ELASTICSEARCH_PORT", "ELASTICSEARCH_USER", "ELASTICSEARCH_PASSWORD", "ELASTICSEARCH_INDEX"
         );
 
         Map<String, String> env = System.getenv();
@@ -46,7 +46,7 @@ public class StickmanCharadesApplication {
         System.setProperty("KAFKA_BOOTSTRAP_SERVERS", System.getenv().get("KAFKA_BOOTSTRAP_SERVERS"));
 
         logger.info("Launching application");
-        SpringApplication.run(StickmanCharadesApplication.class, args);
+        SpringApplication.run(SessionCommandsApplication.class, args);
     }
         
     @Bean
