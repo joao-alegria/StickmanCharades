@@ -15,6 +15,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import pt.ua.deti.es.g54.Constants;
 
@@ -33,6 +34,9 @@ public class MainListener {
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
+
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     private ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> properties = new HashMap<>();
@@ -89,8 +93,9 @@ public class MainListener {
                 JSONObject notification = new JSONObject();
                 notification.put("session", session);
                 notification.put("user", username);
-                notification.put("data", message.get("data"));
+                notification.put("msg", message.get("msg"));
                 simpMessagingTemplate.convertAndSend("/game/admin", notification.toJSONString());
+                kafkaTemplate.send(session, notification.toJSONString());
                 break;
             case "stopSession":
                 logger.info("Stop session message received");

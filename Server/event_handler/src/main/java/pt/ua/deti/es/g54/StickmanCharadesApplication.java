@@ -10,7 +10,7 @@ import java.util.Map;
 @SpringBootApplication
 public class StickmanCharadesApplication {
 
-	private static Logger logger = LoggerFactory.getLogger(StickmanCharadesApplication.class);
+	private static final Logger logger = LoggerFactory.getLogger(StickmanCharadesApplication.class);
 
 	public static void main(String[] args) {
 		Map<String, String> env = System.getenv();

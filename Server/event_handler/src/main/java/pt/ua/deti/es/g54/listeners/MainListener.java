@@ -100,9 +100,7 @@ public class MainListener {
                 logger.info("Start session message received");
 
                 if (!eventHandlers.containsKey(session)) {
-                    List<String> wordPool = (JSONArray) message.get("wordPool");
-                    List<String> players = (JSONArray) message.get("players");
-                    EventHandler eventHandler = new EventHandler(session, kafkaTemplate, players, wordPool);
+                    EventHandler eventHandler = new EventHandler(session, kafkaTemplate);
                     synchronized (eventHandlers) {
                         eventHandlers.put(
                                 session,

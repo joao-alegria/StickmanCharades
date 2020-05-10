@@ -18,13 +18,7 @@ import pt.ua.deti.es.g54.Constants;
 
 import java.time.Duration;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Random;
-import java.util.Set;
 
 public class EventHandler extends Thread {
 
@@ -32,29 +26,15 @@ public class EventHandler extends Thread {
 
     private static final JSONParser parser = new JSONParser();
 
-    private static final Random random = new Random();
-
     private final Consumer<String, String> consumer;
 
     private final String session;
-
-    private final Map<String, Integer> playersScore;
-
-    private final Set<String> activePlayers;
-
-    private final List<String> players;
-
-    private final List<String> wordPool;
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     private boolean closed;
 
-    private int currentPlayingPlayerIdx;
-
-    private String currentWord;
-
-    public EventHandler(String sessionId, KafkaTemplate<String, String> kafkaTemplate, List<String> players, List<String> wordPool) {
+    public EventHandler(String sessionId, KafkaTemplate<String, String> kafkaTemplate) {
         logger.info(String.format(
             "Initializing EventHandler for session %s",
             sessionId
@@ -83,14 +63,8 @@ public class EventHandler extends Thread {
 
         this.session = sessionId;
         this.kafkaTemplate = kafkaTemplate;
-        this.players = players;
-        this.wordPool = wordPool;
 
         closed = false;
-        currentPlayingPlayerIdx = 0;
-
-        playersScore = new HashMap<>();
-        activePlayers = new HashSet<>();
     }
 
     public void sessionClosed() {
@@ -155,13 +129,12 @@ public class EventHandler extends Thread {
                     message.toJSONString()
                 ));
 
-                event.put("event", "wordGuess");
+                event.put("type", "wordGuess");
+                event.put("session", session);
                 event.put("username", username);
                 event.put("guess", getValueFromKey(message, "word"));
 
-                event.put("correct", msgTag.equals(currentWord));
-
-                kafkaTemplate.send(Constants.SESSION_COMMAND_TOPIC, event.toJSONString());
+                kafkaTemplate.send(Constants.DATABASE_SERVICE_TOPIC, event.toJSONString());
             }
 
             return;
@@ -188,10 +161,17 @@ public class EventHandler extends Thread {
                 session
             ));
 
-            event.put("event", "stopSession");
+            event.put("command", "stopSession");
             event.put("session", session);
 
             kafkaTemplate.send(Constants.SESSION_COMMAND_TOPIC, event.toJSONString());
+
+            event.remove("command");
+            event.put("type", "event");
+            event.put("event", "armsCrossedAboveHead");
+            event.put("time", System.currentTimeMillis());
+
+            kafkaTemplate.send(Constants.DATABASE_SERVICE_TOPIC, event.toJSONString());
         }
         else if ((((double)rightHand.get(1)) > ((double)head.get(1)))
                  ||
@@ -202,41 +182,34 @@ public class EventHandler extends Thread {
                 session
             ));
 
-            event.put("event", "notifyAdmin");
+            event.put("command", "notifyAdmin");
             event.put("session", session);
             event.put("username", username);
 
             kafkaTemplate.send(Constants.SESSION_COMMAND_TOPIC, event.toJSONString());
+
+            event.remove("command");
+            event.put("type", "event");
+            event.put("event", "handsAboveHead");
+            event.put("time", System.currentTimeMillis());
+
+            kafkaTemplate.send(Constants.DATABASE_SERVICE_TOPIC, event.toJSONString());
         }
 
-        if (activePlayers.size() < players.size() && !activePlayers.contains(username)) {
-            double leftDist = Math.abs(((double)leftHand.get(1)) - ((double)leftShoulder.get(1)));
-            double rightDist = Math.abs(((double)rightHand.get(1)) - ((double)rightShoulder.get(1)));
-            if (leftDist < 50 && rightDist < 50) {
-                logger.info(String.format(
-                    "%s ready",
-                    username
-                ));
+        double leftDist = Math.abs(((double)leftHand.get(1)) - ((double)leftShoulder.get(1)));
+        double rightDist = Math.abs(((double)rightHand.get(1)) - ((double)rightShoulder.get(1)));
+        if (leftDist < 50 && rightDist < 50) {
+            logger.info(String.format(
+                "%s ready",
+                username
+            ));
 
-                activePlayers.add(username);
-                event.put("event", "playerReady");
-                event.put("session", session);
-                event.put("username", username);
-                kafkaTemplate.send(Constants.SESSION_COMMAND_TOPIC, event.toJSONString());
-            }
-
-            if (activePlayers.size() == players.size()) {
-                logger.info("All players ready");
-
-                event.put("event", "allPlayersReady");
-                event.put("username", players.get(currentPlayingPlayerIdx));
-                currentWord = wordPool.get(random.nextInt(wordPool.size()));
-                event.put("wordToGuess", currentWord);
-
-                kafkaTemplate.send(Constants.SESSION_COMMAND_TOPIC, event.toJSONString());
-
-                currentPlayingPlayerIdx++;
-            }
+            event.put("type", "event");
+            event.put("event", "initialPosition");
+            event.put("session", session);
+            event.put("username", username);
+            event.put("time", System.currentTimeMillis());
+            kafkaTemplate.send(Constants.SESSION_COMMAND_TOPIC, event.toJSONString());
         }
     }
 
