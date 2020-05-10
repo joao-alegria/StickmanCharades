@@ -1,5 +1,6 @@
 package pt.ua.deti.es.g54.services;
 
+import java.util.ArrayList;
 import pt.ua.deti.es.g54.entities.DBSession;
 import pt.ua.deti.es.g54.entities.DBUser;
 import pt.ua.deti.es.g54.repository.SessionRepository;
@@ -34,9 +35,6 @@ public class SessionService {
     private UserRepository ur;
     
     @Autowired
-    private SimpMessagingTemplate smt;
-    
-    @Autowired
     private KafkaTemplate<String,String>  kt;
 
     public JSONObject getAllSessions(String name) {
@@ -60,7 +58,10 @@ public class SessionService {
     public JSONObject createNewSession(String name, JSONObject newSession) {
         String title = (String)newSession.get("title");
         int duration = (int)newSession.get("duration");
-        String[] words = (String[])((JSONArray)newSession.get("words")).toArray();
+        List<String> words = new ArrayList();
+        for(Object tmp : (List)newSession.get("words")){
+            words.add((String)tmp);
+        }
         List<DBUser> listUser=ur.getUserByUsername(name);
         JSONObject json =new JSONObject();
         if(!listUser.isEmpty()){
@@ -149,25 +150,23 @@ public class SessionService {
         return jo;
     }
 
-    public JSONObject updateSession(String name, Long sessionId, JSONObject jsonObject) {
-        JSONObject jo = new JSONObject();
-        List<DBSession> listSessions = sr.getSessionById(sessionId);
-        if(!listSessions.isEmpty()){
-            DBSession session=listSessions.get(0);
-//            Thread c = new Thread(new SessionConsumer(session,"esp54_"+String.valueOf(sessionId),smt, sr, kt));
-//            c.start();
-
-            JSONObject message = new JSONObject();
-            message.put("", name);
-
-            kt.send("esp54_eventHandlerTopic", message.toJSONString());
-            kt.send("esp54_kafkaTranslatorTopic", message.toJSONString());
-        }
-        else {
-            logger.error("Update session request failed. No session with id " + sessionId);
-        }
-        return jo;
-    }
+    //NAO EXISTE-----START E STOP EM COMMANDS
+//    public JSONObject updateSession(String name, Long sessionId, JSONObject jsonObject) {
+//        JSONObject jo = new JSONObject();
+//        List<DBSession> listSessions = sr.getSessionById(sessionId);
+//        if(!listSessions.isEmpty()){
+//            DBSession session=listSessions.get(0);
+////            Thread c = new Thread(new SessionConsumer(session,"esp54_"+String.valueOf(sessionId),smt, sr, kt));
+////            c.start();
+//
+//            JSONObject message = new JSONObject();
+//            message.put("", name);
+//
+//            kt.send("esp54_eventHandlerTopic", message.toJSONString());
+//            kt.send("esp54_kafkaTranslatorTopic", message.toJSONString());
+//        }
+//        return jo;
+//    }
 
     public JSONObject deleteSession(String name, Long sessionId) {
         JSONObject jo = new JSONObject();

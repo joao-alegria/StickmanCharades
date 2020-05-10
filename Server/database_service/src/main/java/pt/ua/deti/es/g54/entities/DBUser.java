@@ -64,6 +64,12 @@ public class DBUser implements Serializable {
         orphanRemoval = true
     )
     private List<DBSession> mySessions = new ArrayList<>();
+    
+    @OneToMany(mappedBy="eventCreator")
+    private Set<DBEvent> events = new HashSet();
+    
+    @OneToMany(mappedBy="commandCreator")
+    private Set<DBCommand> commands = new HashSet();
 
     public DBUser() {}
 

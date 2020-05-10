@@ -78,16 +78,10 @@ public class SessionRest {
      * @param sessionId
      * @return 
      */
-    @PutMapping(value="/session/{sessionId}")
-    public JSONObject updateOrStartSession(@PathVariable Long sessionId, Principal principal){
-        logger.info(String.format(
-            "Update request for session %d by user %s",
-            sessionId,
-            principal.getName()
-        ));
-
-        return ss.updateSession(principal.getName(), sessionId, new JSONObject());
-    }
+//    @PutMapping(value="/session/{sessionId}")
+//    public JSONObject updateOrStartSession(@PathVariable Long sessionId, Principal principal){
+//        return ss.updateSession(principal.getName(), sessionId, new JSONObject());
+//    }
     
     @DeleteMapping(value="/session/{sessionId")
     public JSONObject deleteSession(@PathVariable Long sessionId, Principal principal){

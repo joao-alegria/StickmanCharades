@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -44,13 +45,19 @@ public class DBSession implements Serializable {
     @OneToMany(mappedBy="sessionInPlay")
     private Set<DBUser> players = new HashSet();
     
-    @Column
+    @OneToMany(mappedBy="targetSession")
+    private Set<DBEvent> events = new HashSet();
+    
+    @OneToMany(mappedBy="targetSession")
+    private Set<DBCommand> commands = new HashSet();
+    
+    @ElementCollection
     private List<String> words;
 
     public DBSession() {
     }
     
-    public DBSession(String title, Integer durationSeconds, DBUser creator, String[] words) {
+    public DBSession(String title, Integer durationSeconds, DBUser creator, List<String> words) {
         this.title=title;
         this.durationSeconds=durationSeconds;
         this.creator = creator;
@@ -58,7 +65,7 @@ public class DBSession implements Serializable {
         this.isAvailable=true;
         players.add(creator);
         creator.setSessionInPlay(this);
-        this.words=new ArrayList(Arrays.asList(words));
+        this.words=words;
     }
 
     public String getTitle() {

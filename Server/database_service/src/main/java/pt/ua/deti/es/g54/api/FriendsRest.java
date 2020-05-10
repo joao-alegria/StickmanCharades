@@ -38,9 +38,6 @@ public class FriendsRest {
 //    @Autowired
 //    private ConsumerFactory consumerFactory;
     
-    @Autowired
-    SimpMessagingTemplate simpMessagingTemplate;
-    
     private KafkaConsumer consumer;
 
     @GetMapping(value = "/friends")
