@@ -4,8 +4,8 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
     <appender name="elastic" class="com.internetitem.logback.elasticsearch.ElasticsearchAppender">
-        <url>http://${ELASTICSEARCH_USER}:${ELASTICSEARCH_PASSWORD}@${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_bulk</url>
-        <index>${ELASTICSEARCH_INDEX}</index>
+        <url>http://${LOGGING_USER}:${LOGGING_PASSWORD}@${LOGGING_HOST}:${LOGGING_PORT}/_bulk</url>
+        <index>${LOGGING_INDEX}</index>
         <loggerName>elastic-appender</loggerName> <!-- optional -->
         <errorLoggerName>elastic-appender-error</errorLoggerName> <!-- optional -->
         <includeCallerData>true</includeCallerData> <!-- optional (default false) -->
