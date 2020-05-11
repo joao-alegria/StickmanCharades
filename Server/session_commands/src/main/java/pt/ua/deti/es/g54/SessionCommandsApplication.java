@@ -17,6 +17,7 @@ import java.util.Map;
 public class SessionCommandsApplication {
 
     private static final Logger logger = LoggerFactory.getLogger(SessionCommandsApplication.class);
+    
 
     public static void main(String[] args) {
         List<String> requiredEnvVariables = Arrays.asList(
@@ -36,8 +37,10 @@ public class SessionCommandsApplication {
         if (variablesMissing) {
             System.exit(1);
         }
-
-        System.setProperty("KAFKA_BOOTSTRAP_SERVERS", System.getenv().get("KAFKA_BOOTSTRAP_SERVERS"));
+        
+        if(System.getenv().get("KAFKA_BOOTSTRAP_SERVERS")!=null && (!System.getenv().get("KAFKA_BOOTSTRAP_SERVERS").equals(""))){
+            Constants.KAFKA_BOOTSTRAP_SERVER=System.getenv().get("KAFKA_BOOTSTRAP_SERVERS");
+        }
 
         logger.info("Launching application");
         SpringApplication.run(SessionCommandsApplication.class, args);

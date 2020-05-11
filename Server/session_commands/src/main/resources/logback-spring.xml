@@ -47,7 +47,7 @@
     </appender>
 
   <root level="INFO">
-      <appender-ref ref="elastic" />
+      <!--<appender-ref ref="elastic" />-->
       <appender-ref ref="stdout" />
   </root>
 </configuration>

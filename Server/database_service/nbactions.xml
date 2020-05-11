@@ -77,6 +77,9 @@
             <goals>
                 <goal>install</goal>
             </goals>
+            <properties>
+                <Env.KAFKA_BOOTSTRAP_SERVERS>localhost:9092</Env.KAFKA_BOOTSTRAP_SERVERS>
+            </properties>
         </action>
         <action>
             <actionName>test</actionName>
@@ -97,7 +100,8 @@
                 <goal>surefire:test</goal>
             </goals>
             <properties>
-                <test>${packageClassName}</test>
+                <Env.KAFKA_BOOTSTRAP_SERVERS>localhost:9092</Env.KAFKA_BOOTSTRAP_SERVERS>
+                
                 
                 
                 
