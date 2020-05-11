@@ -187,7 +187,7 @@ pipeline {
                                 ssh -o StrictHostKeyChecking=no -l esp54 192.168.160.103 "
                                     docker pull 192.168.160.99:5000/esp54-server-database_service:$VERSION_DATABASE_SERVICE
                                     docker stop esp54-server-database_service && docker rm esp54-server-database_service || echo No container up. Continue
-                                    docker run -p 54880:8080 -d --name=esp54-server-database_service \
+                                    docker run -p 54882:8082 -d --name=esp54-server-database_service \
                                         --network shared_postgres \
                                         --network bridge \
                                         -e PERSISTENCE_HOST=db \
@@ -217,7 +217,7 @@ pipeline {
                                 ssh -o StrictHostKeyChecking=no -l esp54 192.168.160.103 "
                                     docker pull 192.168.160.99:5000/esp54-server-event_handler:$VERSION_EVENT_HANDLER
                                     docker stop esp54-server-event_handler && docker rm esp54-server-event_handler || echo No container up. Continue
-                                    docker run -p 54880:8080 -d --name=esp54-server-event_handler \
+                                    docker run -p 54883:8083 -d --name=esp54-server-event_handler \
                                         --network shared_postgres \
                                         --network bridge \
                                         -e KAFKA_BOOTSTRAP_SERVERS=192.168.160.103:9092 \
@@ -242,7 +242,7 @@ pipeline {
                                 ssh -o StrictHostKeyChecking=no -l esp54 192.168.160.103 "
                                     docker pull 192.168.160.99:5000/esp54-server-kafka_translator:$VERSION_KAFKA_TRANSLATOR
                                     docker stop esp54-server-kafka_translator && docker rm esp54-server-kafka_translator || echo No container up. Continue
-                                    docker run -p 54880:8080 -d --name=esp54-server-kafka_translator \
+                                    docker run -p 54884:8084 -d --name=esp54-server-kafka_translator \
                                         --network shared_postgres \
                                         --network bridge \
                                         -e KAFKA_BOOTSTRAP_SERVERS=192.168.160.103:9092 \
@@ -267,7 +267,7 @@ pipeline {
                                 ssh -o StrictHostKeyChecking=no -l esp54 192.168.160.103 "
                                     docker pull 192.168.160.99:5000/esp54-server-session_commands:$VERSION_SESSION_COMMANDS
                                     docker stop esp54-server-session_commands && docker rm esp54-server-session_commands || echo No container up. Continue
-                                    docker run -p 54880:8080 -d --name=esp54-server-session_commands \
+                                    docker run -p 54885:8085 -d --name=esp54-server-session_commands \
                                         --network shared_postgres \
                                         --network bridge \
                                         -e KAFKA_BOOTSTRAP_SERVERS=192.168.160.103:9092 \
