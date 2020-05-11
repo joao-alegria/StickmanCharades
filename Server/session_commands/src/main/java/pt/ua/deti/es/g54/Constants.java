@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package pt.ua.deti.es.g54.services;
+package pt.ua.deti.es.g54;
 
 /**
  *
  * @author joaoalegria
  */
-class UserService {
-    
+public class Constants {
+    public static String KAFKA_BOOTSTRAP_SERVER="localhost:9092";
 }

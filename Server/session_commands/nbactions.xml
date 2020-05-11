@@ -71,20 +71,6 @@
             <goals>
                 <goal>install</goal>
             </goals>
-            <properties>
-                <Env.PERSISTENCE_HOST>localhost</Env.PERSISTENCE_HOST>
-                <Env.PERSISTENCE_PORT>5432</Env.PERSISTENCE_PORT>
-                <Env.PERSISTENCE_DB>postgres</Env.PERSISTENCE_DB>
-                <Env.PERSISTENCE_USER>postgres</Env.PERSISTENCE_USER>
-                <Env.PERSISTENCE_PASSWORD>postgres</Env.PERSISTENCE_PASSWORD>
-                
-                
-                
-                
-                
-                <Env.KAFKA_HOST>localhost</Env.KAFKA_HOST>
-                <Env.KAFKA_POSRT>9092</Env.KAFKA_POSRT>
-            </properties>
         </action>
         <action>
             <actionName>test</actionName>

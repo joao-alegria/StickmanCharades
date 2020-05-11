@@ -1,7 +1,6 @@
 package pt.ua.deti.es.g54.websocket;
 
 import java.util.ArrayList;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
