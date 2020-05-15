@@ -30,6 +30,13 @@
                 <Env.ELASTICSEARCH_PORT>9200</Env.ELASTICSEARCH_PORT>
                 <Env.ELASTICSEARCH_USER>esp54</Env.ELASTICSEARCH_USER>
                 <Env.ELASTICSEARCH_PASSWORD>passwordesp54</Env.ELASTICSEARCH_PASSWORD>
+                <Env.LOGGING_PORT>9999</Env.LOGGING_PORT>
+                <Env.LOGGING_USER>test</Env.LOGGING_USER>
+                <Env.LOGGING_PASSWORD>test</Env.LOGGING_PASSWORD>
+                <Env.LOGGING_INDEX>test</Env.LOGGING_INDEX>
+                <Env.MONITORING_HOST>localhost</Env.MONITORING_HOST>
+                <Env.MONITORING_PORT>9998</Env.MONITORING_PORT>
+                <Env.LOGGING_HOST>localhost</Env.LOGGING_HOST>
                 <Env.ELASTICSEARCH_INDEX>esp54-logs</Env.ELASTICSEARCH_INDEX>
 
                 
