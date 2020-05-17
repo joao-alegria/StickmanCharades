@@ -8,6 +8,7 @@ import java.lang.reflect.Type;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -27,12 +28,15 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.socket.WebSocketHttpHeaders;
+import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
@@ -103,10 +107,43 @@ public class StepsDefs {
         properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         consumer = new KafkaConsumer<String,String>(properties);
         
-        stompClient = new WebSocketStompClient(new SockJsClient(Arrays.asList(new WebSocketTransport(new StandardWebSocketClient()))));
+        //stompClient = new WebSocketStompClient(new SockJsClient(Arrays.asList(new WebSocketTransport(new StandardWebSocketClient()))));
+        //WebSocketHttpHeaders handshakeHeaders = new WebSocketHttpHeaders();
+        //handshakeHeaders.add("Authorization", "Basic am9hbzoxMjM0NTY3OA==");
+        //StompSession stompSession = stompClient.connect("ws://localhost:"+randomServerPort+"/game/skeletons",handshakeHeaders, new StompHeaders(), new DefaultStompSessionHandler()).get();
+    
+        /*
+        stompClient = new WebSocketStompClient(new StandardWebSocketClient());
+        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+        
         WebSocketHttpHeaders handshakeHeaders = new WebSocketHttpHeaders();
         handshakeHeaders.add("Authorization", "Basic am9hbzoxMjM0NTY3OA==");
-        StompSession stompSession = stompClient.connect("ws://localhost:"+randomServerPort+"/game/skeletons",handshakeHeaders, new StompHeaders(), new DefaultStompSessionHandler()).get();
+        
+        StompHeaders connectHeaders = new StompHeaders();
+        //connectHeaders.add("login", "test1");
+        //connectHeaders.add("passcode", "test");
+        
+        //stompClient.connect("ws://localhost:"+randomServerPort+"/game/skeletons/game/admin", new DefaultStompSessionHandler());
+        StompSession stompSession = stompClient.connect("ws://localhost:"+randomServerPort+"/game/skeletons", handshakeHeaders, connectHeaders, new DefaultStompSessionHandler()).get();
+        stompSession.subscribe("/game/admin", new StompFrameHandler() {
+
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return String.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                // ...
+                JSONObject json = (JSONObject) payload;//new JSONParser().parse(o.value());
+                System.out.println("\n\n\n\n\n\n\n\n\nHERE\n\n\n\n\n\n\n\n\n\n" + json);
+            }
+
+        });
+        
+        //new Scanner(System.in).nextLine();
+        */
+
     }
     
     private void changeCurrentUsername() {
@@ -406,18 +443,20 @@ public class StepsDefs {
         assertEquals(records.count(),1);
         for(ConsumerRecord<String,String> r : records){
             JSONObject json = (JSONObject) new JSONParser().parse(r.value());
-            System.out.println(json);
-//            assertEquals(json.get("username"), "testUser1");
-//            assertEquals(json.get("session"), "esp54_1");
-//            assertEquals(json.get("msg"), "Notification forwarded to admin.");
+            //System.out.println(json);
+            assertEquals(json.get("user"), "testUser1");
+            assertEquals(json.get("session"), "esp54_"+currentSessionId);
+            assertEquals(json.get("msg"), "Notified admin");
         }
         consumer.unsubscribe();
+        
+        
     }
 
     @When("I raise my left hand above my head")
     public void i_raise_my_left_hand_above_my_head() {
         String jsonBody = "{\"command\": \"notifyAdmin\", \"session\": \"esp54_"+currentSessionId+"\", \"username\":\"testUser1\",\"msg\":\"Notified admin\"}";
-        kt.send("esp54_commandsServiceTopic", jsonBody);
+        kt.send("esp54_kafkaTranslatorTopic", jsonBody);
     }
 
     @When("I perform the initial position\\(spread arms)")
@@ -490,6 +529,8 @@ public class StepsDefs {
 
         @Override
         public void handleFrame(StompHeaders stompHeaders, Object o) {
+//            JSONObject json = (JSONObject) o;//new JSONParser().parse(o.value());
+//            System.out.println("\n\n\n\n\n\n\n\n\nHERE\n\n\n\n\n\n\n\n\n\n" + json);
             blockingQueue.offer(new String((byte[]) o));
         }
 

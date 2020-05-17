@@ -80,13 +80,14 @@
                 <Env.PERSISTENCE_DB>postgres</Env.PERSISTENCE_DB>
                 <Env.PERSISTENCE_USER>postgres</Env.PERSISTENCE_USER>
                 <Env.PERSISTENCE_PASSWORD>postgres</Env.PERSISTENCE_PASSWORD>
+                <Env.KAFKA_BOOTSTRAP_SERVERS>localhost:9092</Env.KAFKA_BOOTSTRAP_SERVERS>
                 
                 
                 
                 
                 
-                <Env.KAFKA_HOST>localhost</Env.KAFKA_HOST>
-                <Env.KAFKA_POSRT>9092</Env.KAFKA_POSRT>
+                
+                
             </properties>
         </action>
         <action>
@@ -97,6 +98,9 @@
             <goals>
                 <goal>test</goal>
             </goals>
+            <properties>
+                <Env.KAFKA_BOOTSTRAP_SERVERS>localhost:9092</Env.KAFKA_BOOTSTRAP_SERVERS>
+            </properties>
         </action>
         <action>
             <actionName>test.single</actionName>
