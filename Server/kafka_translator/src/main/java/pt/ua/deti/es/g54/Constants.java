@@ -6,6 +6,4 @@ public class Constants {
 
     public static final String LISTENER_TOPIC = "esp54_kafkaTranslatorTopic";
 
-    public static String BOOTSTRAP_SERVERS="localhost:9092";
-
 }

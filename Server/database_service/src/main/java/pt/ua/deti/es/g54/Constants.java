@@ -11,6 +11,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -26,14 +27,16 @@ import org.springframework.kafka.core.ProducerFactory;
  */
 @Configuration
 public class Constants {
-    public static String KAFKA_BOOTSTRAP_SERVER="localhost:9092";
-    
+
+    @Value("${KAFKA_BOOTSTRAP_SERVERS}")
+    private String KAFKA_BOOTSTRAP_SERVERS;
+
     private ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> properties = new HashMap<>();
 
         properties.put(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                Constants.KAFKA_BOOTSTRAP_SERVER
+                KAFKA_BOOTSTRAP_SERVERS
         );
         properties.put(
                 ConsumerConfig.GROUP_ID_CONFIG,
@@ -55,7 +58,7 @@ public class Constants {
         Map<String, Object> properties = new HashMap<>();
         properties.put(
                 ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                Constants.KAFKA_BOOTSTRAP_SERVER
+                KAFKA_BOOTSTRAP_SERVERS
         );
         properties.put(
                 ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,

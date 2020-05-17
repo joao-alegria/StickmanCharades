@@ -12,6 +12,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import pt.ua.deti.es.g54.Constants;
@@ -34,6 +35,9 @@ public class EventHandler extends Thread {
 
     private boolean closed;
 
+    @Value("${KAFKA_BOOTSTRAP_SERVERS}")
+    private String KAFKA_BOOTSTRAP_SERVERS;
+
     public EventHandler(String sessionId, KafkaTemplate<String, String> kafkaTemplate) {
         logger.info(String.format(
             "Initializing EventHandler for session %s",
@@ -43,7 +47,7 @@ public class EventHandler extends Thread {
         Properties properties = new Properties();
         properties.put(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                Constants.BOOTSTRAP_SERVERS
+                KAFKA_BOOTSTRAP_SERVERS
         );
         properties.put(
                 ConsumerConfig.GROUP_ID_CONFIG,

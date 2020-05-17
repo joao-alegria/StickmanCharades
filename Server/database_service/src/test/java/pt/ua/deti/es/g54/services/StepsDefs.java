@@ -18,6 +18,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import static org.junit.Assert.assertEquals;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -48,11 +49,14 @@ public class StepsDefs {
     private static long currentSessionId;
 
     private KafkaConsumer consumer;
-    
+
+    @Value("${KAFKA_BOOTSTRAP_SERVERS}")
+    private String KAFKA_BOOTSTRAP_SERVERS;
+
     @Before
     public void stetUp(){
         Properties properties = new Properties();
-        properties.put("bootstrap.servers", "localhost:9092");
+        properties.put("bootstrap.servers", KAFKA_BOOTSTRAP_SERVERS);
         properties.put("group.id", "es_g54_group_test");
         properties.put("auto.offset.reset", "latest");
         properties.put("auto.commit.enable", "false");

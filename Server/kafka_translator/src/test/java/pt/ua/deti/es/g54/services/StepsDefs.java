@@ -21,6 +21,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -87,11 +88,14 @@ public class StepsDefs {
     private KafkaConsumer consumer;
     private WebSocketStompClient stompClient;
     BlockingQueue<String> blockingQueue;
-    
+
+    @Value("${KAFKA_BOOTSTRAP_SERVERS}")
+    private String KAFKA_BOOTSTRAP_SERVERS;
+
     @Before
     public void stetUp() throws InterruptedException, ExecutionException{
         Properties properties = new Properties();
-        properties.put("bootstrap.servers", "localhost:9092");
+        properties.put("bootstrap.servers", KAFKA_BOOTSTRAP_SERVERS);
         properties.put("group.id", "es_g54_group_test");
         properties.put("auto.offset.reset", "latest");
         properties.put("auto.commit.enable", "false");

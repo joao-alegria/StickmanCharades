@@ -10,6 +10,4 @@ public class Constants {
 
     public static final String DATABASE_SERVICE_TOPIC = "esp54_databaseServiceTopic";
 
-    public static String BOOTSTRAP_SERVERS="localhost:9092";
-
 }

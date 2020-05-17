@@ -29,13 +29,16 @@ public class SessionMapper extends Thread {
 
     private boolean closed;
 
+    @Value("${KAFKA_BOOTSTRAP_SERVERS}")
+    private String KAFKA_BOOTSTRAP_SERVERS;
+
     public SessionMapper(String session, SimpMessagingTemplate simpMessagingTemplate) {
         logger.info("Initializing SessionMapper for session " + session);
 
         Properties properties = new Properties();
         properties.put(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                Constants.BOOTSTRAP_SERVERS
+                KAFKA_BOOTSTRAP_SERVERS
         );
         properties.put(
                 ConsumerConfig.GROUP_ID_CONFIG,
