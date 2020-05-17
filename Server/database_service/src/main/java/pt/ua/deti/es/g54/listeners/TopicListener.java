@@ -1,6 +1,8 @@
 package pt.ua.deti.es.g54.listeners;
 
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.statsd.StatsdMeterRegistry;
 import java.util.List;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -52,6 +54,19 @@ public class TopicListener {
     @Autowired
     private GameEngine ge;
 
+    @Autowired
+    private StatsdMeterRegistry meterRegistry;
+    
+    private boolean countersCreated = false;
+
+    private Counter stopSession;
+
+    private Counter startSession;
+
+    private Counter wordGuess;
+
+    private Counter initialPosition;
+
     @KafkaListener(topics="esp54_databaseServiceTopic")
     private void receiveMessage(String command){
         logger.info("Record received on listening topic");
@@ -65,6 +80,17 @@ public class TopicListener {
     }
     
     public void processMessage(JSONObject json){
+        synchronized (meterRegistry) {
+            if (!countersCreated) {
+                stopSession = Counter.builder("esp54_stopSession").register(meterRegistry);
+                startSession = Counter.builder("esp54_startSession").register(meterRegistry);
+                wordGuess = Counter.builder("esp54_wordGuess").register(meterRegistry);
+                initialPosition = Counter.builder("esp54_initialPosition").register(meterRegistry);
+
+                countersCreated = true;
+            }
+        }
+        
         List<DBUser> listUser;
         DBSession targetSession;
         String[] processedSessionName;
@@ -72,6 +98,10 @@ public class TopicListener {
         switch((String)json.get("type")){
             case "execute":
                 if(((String)json.get("command")).equals("startSession")){
+                    synchronized (startSession) {
+                        startSession.increment();
+                    }
+                    
                     logger.info("Execute command start session received for session " + json.get("session"));
                     targetSession = null;
                     processedSessionName = ((String)json.get("session")).split("_");
@@ -85,6 +115,10 @@ public class TopicListener {
                         logger.error("Execute startSession command failed. No session session with name" + json.get("session"));
                     }
                 }else if(((String)json.get("command")).equals("stopSession")){
+                    synchronized (stopSession) {
+                        stopSession.increment();
+                    }
+                    
                     logger.info("Execute command stop session received for session " + json.get("session"));
                     targetSession = null;
                     processedSessionName = ((String)json.get("session")).split("_");
@@ -161,10 +195,18 @@ public class TopicListener {
                 DBEvent e = new DBEvent(eventCreator, targetSession, (String)json.get("event"), (Long)json.get("time"));
                 er.save(e);
                 if(((String)json.get("event")).equals("initialPosition")){
+                    synchronized (initialPosition) {
+                        initialPosition.increment();
+                    }
+                    
                     ge.registerPlayers((String)json.get("session"), targetSession, (String)json.get("username"));
                 }
                 break;
             case "wordGuess":
+                synchronized (wordGuess) {
+                    wordGuess.increment();
+                }
+                    
                 logger.info(String.format(
                     "Word guess received for session %s by user %s",
                     json.get("session"),

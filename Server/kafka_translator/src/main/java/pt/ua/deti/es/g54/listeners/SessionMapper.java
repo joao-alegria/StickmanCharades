@@ -8,7 +8,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import pt.ua.deti.es.g54.Constants;
@@ -29,10 +28,7 @@ public class SessionMapper extends Thread {
 
     private boolean closed;
 
-    @Value("${KAFKA_BOOTSTRAP_SERVERS}")
-    private String KAFKA_BOOTSTRAP_SERVERS;
-
-    public SessionMapper(String session, SimpMessagingTemplate simpMessagingTemplate) {
+    public SessionMapper(String session, SimpMessagingTemplate simpMessagingTemplate, String KAFKA_BOOTSTRAP_SERVERS) {
         logger.info("Initializing SessionMapper for session " + session);
 
         Properties properties = new Properties();

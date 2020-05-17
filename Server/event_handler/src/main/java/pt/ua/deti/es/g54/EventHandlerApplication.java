@@ -38,20 +38,4 @@ public class EventHandlerApplication {
 		SpringApplication.run(EventHandlerApplication.class, args);
 	}
 
-	/*
-	@Autowired
-	MeterRegistry registry;
-
-	@Bean
-	public ApplicationRunner runner() {
-		return (args) -> {
-			Counter c = Counter.builder("cenas3").tag("host","eventHandler").description("cenas mais detalhadas").register(registry);
-
-			while (true) {
-				Thread.sleep(1000);
-				c.increment(1);
-			}
-		};
-	}
-	*/
 }

@@ -33,6 +33,7 @@ import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
+import pt.ua.deti.es.g54.Constants;
 
 /**
  * Where all the steps of all features are defined here
@@ -477,7 +478,7 @@ public class StepsDefs {
 
     @Then("I should see the game session to be immediately stopped.")
     public void i_should_see_the_game_session_to_be_immediately_stopped() throws ParseException {
-        consumer.subscribe(Arrays.asList("esp54_commandsServiceTopic"));
+        consumer.subscribe(Arrays.asList(Constants.SESSION_COMMAND_TOPIC));
         ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
         consumer.commitSync();
         assertEquals(records.count(),1);

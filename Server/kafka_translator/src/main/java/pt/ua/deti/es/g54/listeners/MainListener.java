@@ -1,5 +1,7 @@
 package pt.ua.deti.es.g54.listeners;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.statsd.StatsdMeterRegistry;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.json.simple.JSONObject;
@@ -39,6 +41,17 @@ public class MainListener {
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
+    @Autowired
+    private StatsdMeterRegistry meterRegistry;
+    
+    private boolean countersCreated = false;
+    
+    private Counter notifyAdmin;
+    
+    private Counter stopSession;
+    
+    private Counter startSession;
+
     @Value("${KAFKA_BOOTSTRAP_SERVERS}")
     private String KAFKA_BOOTSTRAP_SERVERS;
 
@@ -74,6 +87,16 @@ public class MainListener {
 
     @KafkaListener(topics = Constants.LISTENER_TOPIC)
     public void listen(String message_string) {
+        synchronized (meterRegistry) {
+            if (!countersCreated) {
+                notifyAdmin = Counter.builder("esp54_notifyAdmin").register(meterRegistry);
+                startSession = Counter.builder("esp54_startSession").register(meterRegistry);
+                stopSession = Counter.builder("esp54_stopSession").register(meterRegistry);
+
+                countersCreated = true;
+            }
+        }
+        
         logger.info("Record received on listening topic");
 
         JSONObject message;
@@ -87,6 +110,10 @@ public class MainListener {
         String session = (String) message.get("session");
         switch ((String) message.get("command")) {
             case "notifyAdmin":
+                synchronized (notifyAdmin) {
+                    notifyAdmin.increment();
+                }
+                
                 String username = (String) message.get("username");
                 logger.info(String.format(
                     "Notify admin message received from user %s on session %s. Resending to admin websocket",
@@ -102,6 +129,10 @@ public class MainListener {
                 kafkaTemplate.send(session, notification.toJSONString());
                 break;
             case "stopSession":
+                synchronized (stopSession) {
+                    stopSession.increment();
+                }
+                
                 logger.info("Stop session message received");
 
                 synchronized (sessionMappers) {
@@ -119,10 +150,14 @@ public class MainListener {
                 }
                 break;
             case "startSession":
+                synchronized (startSession) {
+                    startSession.increment();
+                }
+                
                 logger.info("Start session message received");
 
                 if (!sessionMappers.containsKey(session)) {
-                    SessionMapper sessionMapper = new SessionMapper(session, simpMessagingTemplate);
+                    SessionMapper sessionMapper = new SessionMapper(session, simpMessagingTemplate, KAFKA_BOOTSTRAP_SERVERS);
                     synchronized (sessionMappers) {
                         sessionMappers.put(
                                 session,

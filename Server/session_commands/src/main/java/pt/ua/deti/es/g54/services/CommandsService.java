@@ -5,6 +5,8 @@
  */
 package pt.ua.deti.es.g54.services;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.statsd.StatsdMeterRegistry;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -45,6 +47,17 @@ public class CommandsService {
 
     @Value("${KAFKA_BOOTSTRAP_SERVERS}")
     private String KAFKA_BOOTSTRAP_SERVERS;
+    
+    @Autowired
+    private StatsdMeterRegistry meterRegistry;
+    
+    private boolean countersCreated = false;
+    
+    private Counter notifyAdmin;
+    
+    private Counter stopSession;
+    
+    private Counter startSession;
     
     private ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> properties = new HashMap<>();
@@ -115,9 +128,23 @@ public class CommandsService {
     
     
     public JSONObject processCommand(JSONObject json){
+        synchronized (meterRegistry) {
+            if (!countersCreated) {
+                notifyAdmin = Counter.builder("esp54_notifyAdmin").register(meterRegistry);
+                startSession = Counter.builder("esp54_startSession").register(meterRegistry);
+                stopSession = Counter.builder("esp54_stopSession").register(meterRegistry);
+
+                countersCreated = true;
+            }
+        }
+        
         JSONObject message;
         switch((String)json.get("command")){
             case "notifyAdmin":
+                synchronized (notifyAdmin) {
+                    notifyAdmin.increment();
+                }
+                
                 message=new JSONObject();
                 message.put("msg", "Notification forwarded to admin.");
                 message.put("session", (String)json.get("session"));
@@ -138,6 +165,10 @@ public class CommandsService {
                 ));
                 break;
             case "stopSession":
+                synchronized (stopSession) {
+                    stopSession.increment();
+                }
+                
                 message=new JSONObject();
                 message.put("msg", "Session ended.");
                 message.put("session", (String)json.get("session"));
@@ -162,6 +193,10 @@ public class CommandsService {
                 ));
                 break;
             case "startSession":
+                synchronized (startSession) {
+                    startSession.increment();
+                }
+                
                 message=new JSONObject();
                 message.put("msg", "Session started.");
                 message.put("session", (String)json.get("session"));
