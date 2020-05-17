@@ -32,63 +32,72 @@ pipeline {
                     branch 'master'
                 }
             }
-            failFast true
-            parallel {
-                stage('Database Service') {
-                    agent {
-                        docker {
-                            image '192.168.160.99:5000/esp54-server_pipeline_agent'
-                            registryUrl 'https://192.168.160.99:5000'
-                            args '-v /root/.m2:/root/.m2 -v /var/run/docker.sock:/var/run/docker.sock -v /dev/shm:/dev/shm'
-                        }
-                    }
+            agent {
+                docker {
+                    image '192.168.160.99:5000/esp54-server_pipeline_agent'
+                    registryUrl 'https://192.168.160.99:5000'
+                    args '-v /root/.m2:/root/.m2 -v /var/run/docker.sock:/var/run/docker.sock -v /dev/shm:/dev/shm --network esp54-tests'
+                }
+            }
+            stages {
+                stage('Setup kafka') {
                     steps {
                         dir('Server/database_service') {
-                            sh 'mvn clean verify'
+                            sh '''
+                                docker stop esp54-kafka-tests || echo "No container running"
+                                docker rm esp54-kafka-tests || echo "No container"
+
+                                docker run -d \
+                                    --network esp54-tests --network-alias \
+                                    --env ADVERTISED_HOST=kafka --env ADVERTISED_PORT=9092 \
+                                    --name esp54-kafka-tests spotify/kafka
+                            '''
+                        }
+                    }
+                }
+                stage('Database Service') {
+                    steps {
+                        dir('Server/database_service') {
+                            retry(5) {
+                                sh 'KAFKA_BOOTSTRAP_SERVERS=kafka:9092 mvn clean verify'
+                            }
                         }
                     }
                 }
                 stage('Event Handler') {
-                    agent {
-                        docker {
-                            image '192.168.160.99:5000/esp54-server_pipeline_agent'
-                            registryUrl 'https://192.168.160.99:5000'
-                            args '-v /root/.m2:/root/.m2 -v /var/run/docker.sock:/var/run/docker.sock -v /dev/shm:/dev/shm'
-                        }
-                    }
                     steps {
                         dir('Server/event_handler') {
-                            sh 'mvn clean verify'
+                            retry(5) {
+                                sh 'KAFKA_BOOTSTRAP_SERVERS=kafka:9092 mvn clean verify'
+                            }
                         }
                     }
                 }
                 stage('Kafka Translator') {
-                    agent {
-                        docker {
-                            image '192.168.160.99:5000/esp54-server_pipeline_agent'
-                            registryUrl 'https://192.168.160.99:5000'
-                            args '-v /root/.m2:/root/.m2 -v /var/run/docker.sock:/var/run/docker.sock -v /dev/shm:/dev/shm'
-                        }
-                    }
                     steps {
                         dir('Server/kafka_translator') {
-                            sh 'mvn clean verify'
+                            retry(5) {
+                                sh 'KAFKA_BOOTSTRAP_SERVERS=kafka:9092 mvn clean verify'
+                            }
                         }
                     }
                 }
                 stage('Session Commands') {
-                    agent {
-                        docker {
-                            image '192.168.160.99:5000/esp54-server_pipeline_agent'
-                            registryUrl 'https://192.168.160.99:5000'
-                            args '-v /root/.m2:/root/.m2 -v /var/run/docker.sock:/var/run/docker.sock -v /dev/shm:/dev/shm'
-                        }
-                    }
                     steps {
                         dir('Server/session_commands') {
-                            sh 'mvn clean verify'
+                            retry(5) {
+                                sh 'KAFKA_BOOTSTRAP_SERVERS=kafka:9092 mvn clean verify'
+                            }
                         }
                     }
+                }
+            }
+            post {
+                always {
+                    sh'''
+                        docker stop esp54-kafka-tests || echo "No container running"
+                        docker rm esp54-kafka-tests || echo "No container"
+                    '''
                 }
             }
         }
