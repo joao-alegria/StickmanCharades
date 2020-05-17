@@ -5,28 +5,19 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import io.github.bonigarcia.wdm.WebDriverManager;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-import junit.framework.Assert;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import static org.assertj.core.api.Assertions.assertThat;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.junit.After;
 import static org.junit.Assert.assertEquals;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -34,15 +25,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.test.EmbeddedKafkaBroker;
-import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
 import pt.ua.deti.es.g54.api.entities.UserData;
-import pt.ua.deti.es.g54.entities.DBSession;
-import pt.ua.deti.es.g54.entities.DBUser;
 import pt.ua.deti.es.g54.repository.SessionRepository;
 import pt.ua.deti.es.g54.repository.UserRepository;
 
@@ -50,16 +36,8 @@ import pt.ua.deti.es.g54.repository.UserRepository;
  * Where all the steps of all features are defined here
  * Each step has referenced on javadoc on what Scenario(s) of which Feature(s) it is used
  */
-@EnableKafka
 @TestPropertySource (locations={"classpath:application-test.properties"})
 @SpringBootTest (webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@EmbeddedKafka(
-    partitions = 1, 
-    topics={"esp54_databaseServiceTopic"},
-    brokerProperties = {
-        "listeners=PLAINTEXT://localhost:9092", 
-        "port=9092"
-})
 public class StepsDefs {
 
     private long MAX_WAIT_TIME = 500;
@@ -69,12 +47,18 @@ public class StepsDefs {
     private static String currentFriendname;
     private static long currentSessionId;
 
-    @Autowired
-    private EmbeddedKafkaBroker embeddedKafkaBroker;
-
+    private KafkaConsumer consumer;
+    
     @Before
-    public void before() {
-        System.setProperty("KAFKA_BOOTSTRAP_SERVERS", embeddedKafkaBroker.getBrokersAsString());
+    public void stetUp(){
+        Properties properties = new Properties();
+        properties.put("bootstrap.servers", "localhost:9092");
+        properties.put("group.id", "es_g54_group_test");
+        properties.put("auto.offset.reset", "latest");
+        properties.put("auto.commit.enable", "false");
+        properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        consumer = new KafkaConsumer<String,String>(properties);
     }
 
     @LocalServerPort
@@ -429,69 +413,52 @@ public class StepsDefs {
 
     @Then("I should be recognized by the platform")
     public void i_should_be_recognized_by_the_platform() throws ParseException, InterruptedException {
-        Properties properties = new Properties();
-        properties.put("bootstrap.servers", System.getProperty("KAFKA_BOOTSTRAP_SERVERS"));
-        properties.put("group.id", "es_g54_group_test"+currentUsername);
-        properties.put("auto.offset.reset", "earliest");
-        properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        KafkaConsumer consumer = new KafkaConsumer<String,String>(properties);
         consumer.subscribe(Arrays.asList("esp54_"+currentSessionId));
-        
-        ConsumerRecord<Integer, String> singleRecord = KafkaTestUtils.getSingleRecord(consumer, "esp54_"+currentSessionId);
-        JSONObject json = (JSONObject) new JSONParser().parse(singleRecord.value());
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
         consumer.commitSync();
-        consumer.close();
-        
-        assertEquals(json.get("type"), "gameInfo");
-        assertEquals(json.get("info"), "User Recognized.");
+        assertEquals(records.count(),1);
+        for(ConsumerRecord<String,String> r : records){
+            JSONObject json = (JSONObject) new JSONParser().parse(r.value());        
+            assertEquals(json.get("type"), "gameInfo");
+            assertEquals(json.get("info"), "User Recognized.");
+        }
+        consumer.unsubscribe();
     }
 
     @Then("if am the last user recognized, the game session should start.")
     public void if_am_the_last_user_recognized_the_game_session_should_start() throws ParseException {
-        Properties properties = new Properties();
-        properties.put("bootstrap.servers", System.getProperty("KAFKA_BOOTSTRAP_SERVERS"));
-        properties.put("group.id", "es_g54_group_test"+currentUsername);
-        properties.put("auto.offset.reset", "earliest");
-        properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        KafkaConsumer consumer = new KafkaConsumer<String,String>(properties);
         consumer.subscribe(Arrays.asList("esp54_commandsServiceTopic"));
-        
-        ConsumerRecord<Integer, String> singleRecord = KafkaTestUtils.getSingleRecord(consumer, "esp54_commandsServiceTopic");
-        JSONObject json = (JSONObject) new JSONParser().parse(singleRecord.value());
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
         consumer.commitSync();
-        consumer.close();
-        
-        assertEquals(json.get("command"), "startSession");
-        assertEquals(json.get("session"), "esp54_"+currentSessionId);
-        assertEquals(json.get("username"), currentUsername);
+        assertEquals(records.count(),1);
+        for(ConsumerRecord<String,String> r : records){
+            JSONObject json = (JSONObject) new JSONParser().parse(r.value());
+            assertEquals(json.get("command"), "startSession");
+            assertEquals(json.get("session"), "esp54_"+currentSessionId);
+            assertEquals(json.get("username"), currentUsername);
+        }
+        consumer.unsubscribe();
     }
 
     @When("I perform the stopping position\\(cross arms over head)")
     public void i_perform_the_stopping_position_cross_arms_over_head() {
-        String jsonBody = "{\"type\": \"execute\", \"command\": \"stopSession\"}";
+        String jsonBody = "{\"type\": \"execute\", \"command\": \"stopSession\", \"session\":\""+"esp54_"+currentSessionId+"\"}";
         kt.send("esp54_databaseServiceTopic", jsonBody);
     }
 
     @Then("I should see the game session to be immediately stopped.")
     public void i_should_see_the_game_session_to_be_immediately_stopped() throws ParseException {
-//        Properties properties = new Properties();
-//        properties.put("bootstrap.servers", System.getProperty("KAFKA_BOOTSTRAP_SERVERS"));
-//        properties.put("group.id", "es_g54_group_test");
-//        properties.put("auto.offset.reset", "latest");
-//        properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-//        properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-//        KafkaConsumer consumer = new KafkaConsumer<String,String>(properties);
 //        consumer.subscribe(Arrays.asList("esp54_eventHandlerTopic"));
-//
-//        ConsumerRecord<Integer, String> singleRecord = KafkaTestUtils.getSingleRecord(consumer, "esp54_eventHandlerTopic");
-//        JSONObject json = (JSONObject) new JSONParser().parse(singleRecord.value());
+//        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
 //        consumer.commitSync();
-//        consumer.close();
-//        assertEquals(json.get("username"), "testUser1");
-//        assertEquals(json.get("session"), "esp54_1");
-//        assertEquals(json.get("msg"), "Session ended.");
+//        assertEquals(records.count(),1);
+//        for(ConsumerRecord<String,String> r : records){
+//            JSONObject json = (JSONObject) new JSONParser().parse(r.value());
+//            assertEquals(json.get("username"), "testUser1");
+//            assertEquals(json.get("session"), "esp54_1");
+//            assertEquals(json.get("msg"), "Session ended.");
+//        }
+//        consumer.unsubscribe();
     }
 
 }

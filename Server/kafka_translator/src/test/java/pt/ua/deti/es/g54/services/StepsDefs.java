@@ -4,10 +4,15 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import java.lang.reflect.Type;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -19,7 +24,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.simp.stomp.StompHeaders;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.springframework.messaging.simp.stomp.StompSessionHandler;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.web.socket.WebSocketHttpHeaders;
+import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.messaging.WebSocketStompClient;
+import org.springframework.web.socket.sockjs.client.SockJsClient;
+import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
 /**
  * Where all the steps of all features are defined here
@@ -69,6 +85,8 @@ public class StepsDefs {
     //}
     
     private KafkaConsumer consumer;
+    private WebSocketStompClient stompClient;
+    BlockingQueue<String> blockingQueue;
     
     @Before
     public void stetUp() throws InterruptedException, ExecutionException{
@@ -80,7 +98,11 @@ public class StepsDefs {
         properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         consumer = new KafkaConsumer<String,String>(properties);
-
+        
+        stompClient = new WebSocketStompClient(new SockJsClient(Arrays.asList(new WebSocketTransport(new StandardWebSocketClient()))));
+        WebSocketHttpHeaders handshakeHeaders = new WebSocketHttpHeaders();
+        handshakeHeaders.add("Authorization", "Basic am9hbzoxMjM0NTY3OA==");
+        StompSession stompSession = stompClient.connect("ws://localhost:"+randomServerPort+"/game/skeletons",handshakeHeaders, new StompHeaders(), new DefaultStompSessionHandler()).get();
     }
     
     private void changeCurrentUsername() {
@@ -359,34 +381,38 @@ public class StepsDefs {
 //        entity = new HttpEntity(jsonBody, headers);
 //        
 //        result = restTemplate.exchange(server+randomServerPort+"/session/"+currentSessionId, HttpMethod.PUT, entity, String.class);
-//        assertEquals(result.getStatusCodeValue(),200);
+//        assertEquals(result.getStatusCodeValue(),200
+        currentSessionId++;
+        String jsonBody = "{\"command\": \"startSession\", \"session\": \"esp54_"+currentSessionId+"\"}";
+        kt.send("esp54_kafkaTranslatorTopic", jsonBody);
     }
 
     @When("I raise my right hand above my head")
     public void i_raise_my_right_hand_above_my_head() {
-        String jsonBody = "{\"command\": \"notifyAdmin\", \"session\": \"esp54_1\", \"username\":\"testUser1\"}";
-        kt.send("esp54_commandsServiceTopic", jsonBody);
+        String jsonBody = "{\"command\": \"notifyAdmin\", \"session\": \"esp54_"+currentSessionId+"\", \"username\":\"testUser1\",\"msg\":\"Notified admin\"}";
+        kt.send("esp54_kafkaTranslatorTopic", jsonBody);
     }
 
     @Then("I should be notified that a message was send to the admin")
     public void i_should_be_notified_that_a_message_was_send_to_the_admin() throws ParseException, InterruptedException {
-        consumer.subscribe(Arrays.asList("esp54_eventHandlerTopic"));
+//        System.out.println(blockingQueue.poll(1, TimeUnit.SECONDS));
+        consumer.subscribe(Arrays.asList("esp54_"+currentSessionId));
         ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
         consumer.commitSync();
         assertEquals(records.count(),1);
         for(ConsumerRecord<String,String> r : records){
             JSONObject json = (JSONObject) new JSONParser().parse(r.value());
             System.out.println(json);
-            assertEquals(json.get("username"), "testUser1");
-            assertEquals(json.get("session"), "esp54_1");
-            assertEquals(json.get("msg"), "Notification forwarded to admin.");
+//            assertEquals(json.get("username"), "testUser1");
+//            assertEquals(json.get("session"), "esp54_1");
+//            assertEquals(json.get("msg"), "Notification forwarded to admin.");
         }
         consumer.unsubscribe();
     }
 
     @When("I raise my left hand above my head")
     public void i_raise_my_left_hand_above_my_head() {
-        String jsonBody = "{\"command\": \"notifyAdmin\", \"session\": \"esp54_1\", \"username\":\"testUser1\"}";
+        String jsonBody = "{\"command\": \"notifyAdmin\", \"session\": \"esp54_"+currentSessionId+"\", \"username\":\"testUser1\",\"msg\":\"Notified admin\"}";
         kt.send("esp54_commandsServiceTopic", jsonBody);
     }
 
@@ -432,24 +458,50 @@ public class StepsDefs {
 
     @When("I perform the stopping position\\(cross arms over head)")
     public void i_perform_the_stopping_position_cross_arms_over_head() {
-        String jsonBody = "{\"command\": \"stopSession\", \"session\": \"esp54_1\", \"username\":\"testUser1\"}";
-        kt.send("esp54_commandsServiceTopic", jsonBody);
+//        String jsonBody = "{\"command\": \"stopSession\", \"session\": \"esp54_1\", \"username\":\"testUser1\"}";
+//        kt.send("esp54_commandsServiceTopic", jsonBody);
     }
 
     @Then("I should see the game session to be immediately stopped.")
     public void i_should_see_the_game_session_to_be_immediately_stopped() throws ParseException {
-        consumer.subscribe(Arrays.asList("esp54_eventHandlerTopic"));
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
-        consumer.commitSync();
-        assertEquals(records.count(),1);
-        for(ConsumerRecord<String,String> r : records){
-            JSONObject json = (JSONObject) new JSONParser().parse(r.value());
-            System.out.println(json);
-            assertEquals(json.get("username"), "testUser1");
-            assertEquals(json.get("session"), "esp54_1");
-            assertEquals(json.get("msg"), "Session ended.");
-        }
-        consumer.unsubscribe();
+//        consumer.subscribe(Arrays.asList("esp54_eventHandlerTopic"));
+//        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
+//        consumer.commitSync();
+//        assertEquals(records.count(),1);
+//        for(ConsumerRecord<String,String> r : records){
+//            JSONObject json = (JSONObject) new JSONParser().parse(r.value());
+//            System.out.println(json);
+//            assertEquals(json.get("username"), "testUser1");
+//            assertEquals(json.get("session"), "esp54_1");
+//            assertEquals(json.get("msg"), "Session ended.");
+//        }
+//        consumer.unsubscribe();
     }
     
+    class DefaultStompSessionHandler implements StompSessionHandler {
+        @Override
+        public Type getPayloadType(StompHeaders stompHeaders) {
+            return byte[].class;
+        }
+
+        @Override
+        public void handleFrame(StompHeaders stompHeaders, Object o) {
+            blockingQueue.offer(new String((byte[]) o));
+        }
+
+        @Override
+        public void afterConnected(StompSession ss, StompHeaders sh) {
+            ss.subscribe("/game/admin",this);
+        }
+
+        @Override
+        public void handleException(StompSession ss, StompCommand sc, StompHeaders sh, byte[] bytes, Throwable thrwbl) {
+//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void handleTransportError(StompSession ss, Throwable thrwbl) {
+//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+    }
 }

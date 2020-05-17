@@ -147,7 +147,7 @@ public class EventHandler extends Thread {
         JSONArray rightElbow = (JSONArray) getValueFromKey(positions, "RightElbow");
         JSONArray leftElbow = (JSONArray) getValueFromKey(positions, "LeftElbow");
         JSONArray leftShoulder = (JSONArray) getValueFromKey(positions, "LeftShoulder");
-        JSONArray rightShoulder = (JSONArray) getValueFromKey(positions, "RightShoulder");
+        JSONArray rightShoulder = (JSONArray) getValueFromKey(positions, "RightShoulder");    
         if ((((double)rightHand.get(1))>((double)head.get(1))) &&
             (((double)leftHand.get(1))>((double)head.get(1))) &&
                 (((((double)rightElbow.get(0))>((double)leftElbow.get(0))) &&
@@ -209,7 +209,7 @@ public class EventHandler extends Thread {
             event.put("session", session);
             event.put("username", username);
             event.put("time", System.currentTimeMillis());
-            kafkaTemplate.send(Constants.SESSION_COMMAND_TOPIC, event.toJSONString());
+            kafkaTemplate.send(Constants.DATABASE_SERVICE_TOPIC, event.toJSONString());   //VERIFY THIS!!!!!!!!!!!!!!!!!!!!!!!
         }
     }
 

@@ -2,7 +2,6 @@ package pt.ua.deti.es.g54.listeners;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -20,7 +19,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import pt.ua.deti.es.g54.Constants;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @EnableKafka

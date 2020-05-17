@@ -37,17 +37,8 @@ import org.springframework.test.context.TestPropertySource;
  * Where all the steps of all features are defined here
  * Each step has referenced on javadoc on what Scenario(s) of which Feature(s) it is used
  */
-@EnableKafka
 @TestPropertySource (locations={"classpath:application-test.properties"})
 @SpringBootTest (webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@EmbeddedKafka(
-    partitions = 1, 
-    controlledShutdown = false,
-    topics={"esp54_eventHandlerTopic"},
-    brokerProperties = {
-        "listeners=PLAINTEXT://localhost:9092", 
-        "port=9092"
-})
 public class StepsDefs {
 
     private long MAX_WAIT_TIME = 500;
@@ -56,14 +47,6 @@ public class StepsDefs {
     private static String currentUsername;
     private static String currentFriendname;
     private static long currentSessionId=0;
-
-    @Autowired
-    private EmbeddedKafkaBroker embeddedKafkaBroker;
-
-    @Before
-    public void before() {
-        System.setProperty("KAFKA_BOOTSTRAP_SERVERS", embeddedKafkaBroker.getBrokersAsString());
-    }
 
     @LocalServerPort
     int randomServerPort;
@@ -75,6 +58,20 @@ public class StepsDefs {
     private KafkaTemplate kt;
 
     private String server="http://localhost:";
+    
+    private KafkaConsumer consumer;
+    
+    @Before
+    public void stetUp(){
+        Properties properties = new Properties();
+        properties.put("bootstrap.servers", "localhost:9092");
+        properties.put("group.id", "es_g54_group_test");
+        properties.put("auto.offset.reset", "latest");
+        properties.put("auto.commit.enable", "false");
+        properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        consumer = new KafkaConsumer<String,String>(properties);
+    }
 
     //private static WebDriver driver;
 
@@ -387,7 +384,7 @@ public class StepsDefs {
          */
         currentSessionId++;
         String jsonBody = "{\"command\": \"startSession\", \"session\": \"esp54_"+currentSessionId+"\"}";
-        kt.send("esp54_"+currentSessionId, jsonBody);
+        kt.send("esp54_eventHandlerTopic", jsonBody);
     }
 
     @When("I raise my right hand above my head")
@@ -402,20 +399,17 @@ public class StepsDefs {
 
     @Then("I should be notified that a message was send to the admin")
     public void i_should_be_notified_that_a_message_was_send_to_the_admin() throws ParseException {
-        Properties properties = new Properties();
-        properties.put("bootstrap.servers", System.getProperty("KAFKA_BOOTSTRAP_SERVERS"));
-        properties.put("group.id", "es_g54_group_test");
-        properties.put("auto.offset.reset", "earliest");
-        properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        KafkaConsumer consumer = new KafkaConsumer<String,String>(properties);
-        consumer.subscribe(Arrays.asList("esp54_commandServiceTopic"));
-
-        ConsumerRecord<Integer, String> singleRecord = KafkaTestUtils.getSingleRecord(consumer, "esp54_commandServiceTopic");
-        JSONObject json = (JSONObject) new JSONParser().parse(singleRecord.value());
-        System.out.println(json);
+        consumer.subscribe(Arrays.asList("esp54_commandsServiceTopic"));
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
         consumer.commitSync();
-        consumer.close();
+        assertEquals(records.count(),1);
+        for(ConsumerRecord<String,String> r : records){
+            JSONObject json = (JSONObject) new JSONParser().parse(r.value());
+            assertEquals(json.get("username"), currentUsername);
+            assertEquals(json.get("command"), "notifyAdmin");
+            assertEquals(json.get("session"), "esp54_"+currentSessionId);
+        }
+        consumer.unsubscribe();
     }
 
     @When("I raise my left hand above my head")
@@ -430,6 +424,10 @@ public class StepsDefs {
 
     @When("I perform the initial position\\(spread arms)")
     public void i_perform_the_initial_position_spread_arms() throws ParseException {
+        consumer.subscribe(Arrays.asList("esp54_databaseServiceTopic"));
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
+        consumer.commitSync();
+        consumer.unsubscribe();
         String jsonBody = "{\"username\": \""+currentUsername+"\", \"positions\": {\"Head\": [2098.635,1708.936,0.0], \"Neck\": [2227.439,1410.903,0.0], \"LeftCollar\": [2252.219,1217.666,0.0], "
                 + "\"Torso\": [2314.787,729.7457,0.0], \"Waist\": [2356.344,278.0999,0.0], \"LeftShoulder\": [1860.994,1193.861,0.0], \"RightShoulder\": [2813.465,1175.847,0.0], "
                 + "\"LeftElbow\": [1751.346,713.7789,0.0], \"RightElbow\": [0.0,0.0,0.0], \"LeftWrist\": [0.0,0.0,0.0], \"RightWrist\": [0.0,0.0,0.0], \"LeftHand\": [0.0,1193.861,0.0], "
@@ -440,38 +438,21 @@ public class StepsDefs {
 
     @Then("I should be recognized by the platform")
     public void i_should_be_recognized_by_the_platform() throws ParseException, InterruptedException {
-        Properties properties = new Properties();
-        properties.put("bootstrap.servers", System.getProperty("KAFKA_BOOTSTRAP_SERVERS"));
-        properties.put("group.id", "es_g54_group_test"+currentUsername);
-        properties.put("auto.offset.reset", "latest");
-        properties.put("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
-        properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        KafkaConsumer consumer = new KafkaConsumer<Integer,String>(properties);
-        consumer.subscribe(Arrays.asList("esp54_"+currentSessionId));
-        
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {}
-
-        ConsumerRecords<Integer, String> records = consumer.poll(Duration.ofMillis(100));
-//        assertEquals(2, records.count());
-        for (ConsumerRecord<Integer,String> record : records){
-            JSONObject json = (JSONObject) new JSONParser().parse(record.value());
-            if (json.get("positions") != null) {
-                continue;
-            }
-            assertEquals(json.get("username"), currentUsername);
-            assertEquals(json.get("msg"), "User recognized.");
-        }
+        consumer.subscribe(Arrays.asList("esp54_databaseServiceTopic"));
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
         consumer.commitSync();
-        consumer.close();
+        assertEquals(records.count(),1);
+        for (ConsumerRecord<String,String> record : records){
+            JSONObject json = (JSONObject) new JSONParser().parse(record.value());
+            assertEquals(json.get("username"), currentUsername);
+            assertEquals(json.get("event"), "initialPosition");
+            assertEquals(json.get("session"), "esp54_"+currentSessionId);
+        }
+        consumer.unsubscribe();
     }
 
     @Then("if am the last user recognized, the game session should start.")
     public void if_am_the_last_user_recognized_the_game_session_should_start() {
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {}
         /*
         List<DBSession> sessions = sr.getSessionById(currentSessionId);
         assertEquals(sessions.size(), 1);
@@ -491,17 +472,18 @@ public class StepsDefs {
     }
 
     @Then("I should see the game session to be immediately stopped.")
-    public void i_should_see_the_game_session_to_be_immediately_stopped() {
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {}
-        /*
-        List<DBSession> sessions = sr.getSessionById(currentSessionId);
-        assertEquals(sessions.size(), 1);
-        DBSession session = sessions.get(0);
-        //assertEquals(session.getIsActive(), false); // TODO
-        //assertEquals(session.getIsAvailable(), false); // TODO
-         */
+    public void i_should_see_the_game_session_to_be_immediately_stopped() throws ParseException {
+        consumer.subscribe(Arrays.asList("esp54_commandsServiceTopic"));
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
+        consumer.commitSync();
+        assertEquals(records.count(),1);
+        for (ConsumerRecord<String,String> record : records){
+            JSONObject json = (JSONObject) new JSONParser().parse(record.value());
+            System.out.println(json);
+            assertEquals(json.get("command"), "stopSession");
+            assertEquals(json.get("session"), "esp54_"+currentSessionId);
+        }
+        consumer.unsubscribe();
     }
 
 }
