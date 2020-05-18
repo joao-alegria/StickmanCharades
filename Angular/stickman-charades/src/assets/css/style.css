@@ -8454,6 +8454,12 @@ del {
   position:relative;
 }
 
+
+.inverted-skeleton {
+  -webkit-transform: scaleY(-1);
+  transform: scaleY(-1);
+}
+
 @media (min-width: 1200px) {
   .container{
       max-width: 90vw;

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+    <!-- use Spring default values -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <appender name="elastic" class="com.internetitem.logback.elasticsearch.ElasticsearchAppender">
+        <url>http://${LOGGING_USER}:${LOGGING_PASSWORD}@${LOGGING_HOST}:${LOGGING_PORT}/_bulk</url>
+        <index>${LOGGING_INDEX}</index>
+        <loggerName>elastic-appender</loggerName> <!-- optional -->
+        <errorLoggerName>elastic-appender-error</errorLoggerName> <!-- optional -->
+        <includeCallerData>true</includeCallerData> <!-- optional (default false) -->
+        <authentication class="com.internetitem.logback.elasticsearch.config.BasicAuthentication" />
+        <properties>
+            <property>
+                <name>level</name>
+                <value>%level</value>
+            </property>
+            <property>
+                <name>thread</name>
+                <value>%thread</value>
+            </property>
+            <property>
+                <name>stacktrace</name>
+                <value>%ex</value>
+            </property>
+            <property>
+                <name>logger</name>
+                <value>%logger</value>
+            </property>
+            <property>
+                <name>logger</name>
+                <value>%logger</value>
+            </property>
+            <property>
+                <name>app_name</name>
+                <value>DatabaseService</value>
+            </property>
+        </properties>
+        <headers>
+            <header>
+                <name>Content-Type</name>
+                <value>application/json</value>
+            </header>
+        </headers>
+    </appender>
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+  <root level="INFO">
+      <appender-ref ref="elastic" />
+      <appender-ref ref="stdout" />
+  </root>
+</configuration>
