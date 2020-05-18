@@ -19,44 +19,44 @@
                             <div class="row">
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     <div class="single-form">
-                                         <label>* First Name</label>
-                                         <input type="text" name="" placeholder="Enter name">
+                                        <label>* First Name</label>
+                                        <input type="text" id="firstname" placeholder="Enter name" required>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     <div class="single-form">
-                                         <label>* Last Name</label>
-                                         <input type="text" name="" placeholder="Enter name">
+                                        <label>* Last Name</label>
+                                        <input type="text" id="lastname" placeholder="Enter name" required>
                                     </div>
                                 </div>
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                     <div class="single-form">
                                         <label>* Email Adderess</label>
-                                        <input type="email" name="" placeholder="Enter email">
+                                        <input type="email" id="useremail" placeholder="Enter email" required>
                                     </div>
                                 </div>
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                    <div class="single-form">
                                         <label>* Username</label>
-                                        <input type="text" name="" placeholder="Enter unique user name">
+                                        <input type="text" id="username" placeholder="Enter unique user name" required>
                                    </div>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     <div class="single-form">
-                                         <label>* Password</label>
-                                         <input type="password" name="" placeholder="Enter valid password">
+                                        <label>* Password</label>
+                                        <input type="password" id="userpassword" placeholder="Enter valid password" required>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                <div class="single-form">
+                                    <div class="single-form">
                                         <label>* Confirm Password</label>
-                                        <input type="password" name="" placeholder="Enter password again">
-                                </div>
+                                        <input type="password" id="passwordconfirmation" placeholder="Enter password again" required>
+                                    </div>
                                 </div>
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                     <div class="single-form d-flex">
-                                         <label>* Account Type :</label>
-                                         <!--Radio Select -->
+                                        <label>* Account Type :</label>
+                                        <!--Radio Select -->
                                         <div class="select-radio6">
                                             <div class="radio">
                                                 <input id="regularRadio" name="radio" type="radio" checked="">
@@ -71,8 +71,9 @@
                                  </div>
                             </div>
                         </form>
+                        <p class="error-paragraph" id="error"></p>
                         <p class="mt-30">Already have an account? <a routerLink="/login" class="blue-link-text">Sign in here.</a></p>
-                        <a href="#" class="btn hero-btn " data-animation="fadeInLeft" data-delay=".8s">Complete Registration</a>
+                        <button (click)="register()" class="btn hero-btn " data-animation="fadeInLeft" data-delay=".8s">Complete Registration</button>
                     </div>
                 </div>
             </div>
