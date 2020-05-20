@@ -23,9 +23,7 @@ export class LoginComponent implements OnInit {
         document.getElementById("error").innerHTML = "Incorrect username / password. Please try again.";
         //this.messageService.add({ severity: 'warn', summary: 'Username/Password may be incorrect.' });
       } else if (data.status == 0) {
-        //$("#error").text = "a";
-        document.getElementById("error").innerHTML = "Incorrect username / password. Please try again.";
-        //this.messageService.add({ severity: 'warn', summary: 'Try later. Something went wrong.' });
+        document.getElementById("error").innerHTML = "Something went wrong. Please try again later.";
       } else {
         localStorage.setItem("loggedIn", "true");
         localStorage.setItem("role", "USER"); // ADMIN

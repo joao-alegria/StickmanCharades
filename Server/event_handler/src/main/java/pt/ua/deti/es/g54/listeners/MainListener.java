@@ -1,5 +1,7 @@
 package pt.ua.deti.es.g54.listeners;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.statsd.StatsdMeterRegistry;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.json.simple.JSONObject;
@@ -38,6 +40,21 @@ public class MainListener {
     @Value("${KAFKA_BOOTSTRAP_SERVERS}")
     private String KAFKA_BOOTSTRAP_SERVERS;
 
+    @Autowired
+    private StatsdMeterRegistry meterRegistry;
+    
+    private boolean countersCreated = false;
+
+    private Counter notifyAdmin;
+
+    private Counter stopSession;
+
+    private Counter startSession;
+
+    private Counter wordGuess;
+
+    private Counter initialPosition;
+
     private ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> properties = new HashMap<>();
 
@@ -70,6 +87,18 @@ public class MainListener {
 
     @KafkaListener(topics = Constants.LISTENER_TOPIC)
     public void listen(String message_string) {
+        synchronized (meterRegistry) {
+            if (!countersCreated) {
+                notifyAdmin = Counter.builder("esp54_notifyAdmin").register(meterRegistry);
+                stopSession = Counter.builder("esp54_stopSession").register(meterRegistry);
+                startSession = Counter.builder("esp54_startSession").register(meterRegistry);
+                wordGuess = Counter.builder("esp54_wordGuess").register(meterRegistry);
+                initialPosition = Counter.builder("esp54_initialPosition").register(meterRegistry);
+
+                countersCreated = true;
+            }
+        }
+        
         logger.info("Record received on listening topic");
 
         JSONObject message;
@@ -83,6 +112,10 @@ public class MainListener {
         String session = (String) message.get("session");
         switch ((String) message.get("command")) {
             case "stopSession":
+                synchronized (stopSession) {
+                    stopSession.increment();
+                }
+                
                 logger.info("Stop session message received for session " + session);
                 synchronized (eventHandlers) {
                     EventHandler eventHandler = eventHandlers.get(session);
@@ -99,10 +132,14 @@ public class MainListener {
                 }
                 break;
             case "startSession":
+                synchronized (startSession) {
+                    startSession.increment();
+                }
+                
                 logger.info("Start session message received");
 
                 if (!eventHandlers.containsKey(session)) {
-                    EventHandler eventHandler = new EventHandler(session, kafkaTemplate);
+                    EventHandler eventHandler = new EventHandler(session, kafkaTemplate, KAFKA_BOOTSTRAP_SERVERS, notifyAdmin, stopSession, wordGuess, initialPosition);
                     synchronized (eventHandlers) {
                         eventHandlers.put(
                                 session,

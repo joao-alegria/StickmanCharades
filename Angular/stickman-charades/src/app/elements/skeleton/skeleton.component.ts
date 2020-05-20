@@ -1,10 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import * as d3 from 'd3';
 import * as $ from "jquery";
+
 //import { SocketClientService } from '../../socket-client.service';
 import * as SockJS from '../../../assets/js/sockjs.min.js'; 
 import * as Stomp from '../../../assets/js/stomp.min.js';
 import { over } from '../../../assets/js/sockjs.min.js';
+
+// was on master vv
+//import { Observable } from 'rxjs';
+//import * as Stomp from '../../../assets/js/stomp.min.js';
+//import * as SockJS from '../../../assets/js/sockjs.min.js';
+//import { SocketClientService } from '../../socket-client.service';
+// was on master ^^
 
 @Component({
   selector: 'app-skeleton',
@@ -16,6 +24,7 @@ export class SkeletonComponent implements OnInit {
   newMessage: string;
 
   mapping = ["Head", "Neck", "Torso", "Waist", "RightHip", "LeftHip", "RightKnee", "LeftKnee", "RightAnkle", "LeftAnkle", "RightHand", "RightWrist", "RightElbow", "RightShoulder", "RightCollar", "LeftCollar", "LeftShoulder", "LeftElbow", "LeftWrist", "LeftHand"]
+
 
   constructor() {}//private socketClient: SocketClientService) { }
 
@@ -124,6 +133,12 @@ export class SkeletonComponent implements OnInit {
     //(message) => {
     //  console.log(message);
     //})
+
+    // was on master vv
+    //this.socketClient.onMessage('/game/session/esp54_1', (message) => {
+    //  console.log(message);
+    //})
+    // was on master ^^
 
   }
 

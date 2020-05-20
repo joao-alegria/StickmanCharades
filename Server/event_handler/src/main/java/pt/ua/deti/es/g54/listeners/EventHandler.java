@@ -1,5 +1,6 @@
 package pt.ua.deti.es.g54.listeners;
 
+import io.micrometer.core.instrument.Counter;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -12,7 +13,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import pt.ua.deti.es.g54.Constants;
@@ -33,12 +33,17 @@ public class EventHandler extends Thread {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
+    private final Counter notifyAdmin;
+
+    private final Counter stopSession;
+
+    private final Counter wordGuess;
+
+    private final Counter initialPosition;
+
     private boolean closed;
 
-    @Value("${KAFKA_BOOTSTRAP_SERVERS}")
-    private String KAFKA_BOOTSTRAP_SERVERS;
-
-    public EventHandler(String sessionId, KafkaTemplate<String, String> kafkaTemplate) {
+    public EventHandler(String sessionId, KafkaTemplate<String, String> kafkaTemplate, String KAFKA_BOOTSTRAP_SERVERS, Counter notifyAdmin, Counter stopSession, Counter wordGuess, Counter initialPosition) {
         logger.info(String.format(
             "Initializing EventHandler for session %s",
             sessionId
@@ -67,6 +72,10 @@ public class EventHandler extends Thread {
 
         this.session = sessionId;
         this.kafkaTemplate = kafkaTemplate;
+        this.notifyAdmin = notifyAdmin;
+        this.stopSession = stopSession;
+        this.wordGuess = wordGuess;
+        this.initialPosition = initialPosition;
 
         closed = false;
     }
@@ -128,6 +137,10 @@ public class EventHandler extends Thread {
         if (message.containsKey("msg")){
             String msgTag = (String) getValueFromKey(message, "msg");
             if (msgTag.equals("wordGuess")) {
+                synchronized (wordGuess) {
+                    wordGuess.increment();
+                }
+
                 logger.info(String.format(
                     "WordGuess message received (%s). Sending to Database service.",
                     message.toJSONString()
@@ -159,6 +172,10 @@ public class EventHandler extends Thread {
                 ||
                 ((((double)rightElbow.get(0))<((double)leftElbow.get(0))) &&
                 (((double)rightHand.get(0))>((double)leftHand.get(0)))))) { //cross arms above head
+            synchronized (stopSession) {
+                stopSession.increment();
+            }
+
             logger.info(String.format(
                 "Stop session event from user %s on session %s",
                 username,
@@ -180,6 +197,10 @@ public class EventHandler extends Thread {
         else if ((((double)rightHand.get(1)) > ((double)head.get(1)))
                  ||
                  (((double)leftHand.get(1)) > ((double)head.get(1)))) {  //raise hand above head
+            synchronized (notifyAdmin) {
+                notifyAdmin.increment();
+            }
+
             logger.info(String.format(
                 "Notify admin event from user %s on session %s",
                 username,
@@ -203,6 +224,10 @@ public class EventHandler extends Thread {
         double leftDist = Math.abs(((double)leftHand.get(1)) - ((double)leftShoulder.get(1)));
         double rightDist = Math.abs(((double)rightHand.get(1)) - ((double)rightShoulder.get(1)));
         if (leftDist < 50 && rightDist < 50) {
+            synchronized (initialPosition) {
+                initialPosition.increment();
+            }
+
             logger.info(String.format(
                 "%s ready",
                 username

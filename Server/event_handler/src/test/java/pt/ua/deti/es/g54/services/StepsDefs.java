@@ -7,10 +7,14 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -28,11 +32,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
  */
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
+import pt.ua.deti.es.g54.Constants;
 
 /**
  * Where all the steps of all features are defined here
@@ -51,12 +57,9 @@ public class StepsDefs {
 
     @LocalServerPort
     int randomServerPort;
-    
-    @Autowired
-    private TestRestTemplate restTemplate;  
 
     @Autowired
-    private KafkaTemplate kt;
+    private KafkaTemplate<String, String> kt;
 
     private String server="http://localhost:";
     
@@ -477,7 +480,7 @@ public class StepsDefs {
 
     @Then("I should see the game session to be immediately stopped.")
     public void i_should_see_the_game_session_to_be_immediately_stopped() throws ParseException {
-        consumer.subscribe(Arrays.asList("esp54_commandsServiceTopic"));
+        consumer.subscribe(Arrays.asList(Constants.SESSION_COMMAND_TOPIC));
         ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
         consumer.commitSync();
         assertEquals(records.count(),1);
