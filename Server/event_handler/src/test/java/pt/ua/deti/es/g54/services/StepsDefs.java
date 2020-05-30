@@ -7,6 +7,7 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -48,11 +49,8 @@ import pt.ua.deti.es.g54.Constants;
 @SpringBootTest (webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StepsDefs {
 
-    private long MAX_WAIT_TIME = 500;
-
     private static int usernameCount = 0;
     private static String currentUsername;
-    private static String currentFriendname;
     private static long currentSessionId=0;
 
     @LocalServerPort
@@ -61,8 +59,6 @@ public class StepsDefs {
     @Autowired
     private KafkaTemplate<String, String> kt;
 
-    private String server="http://localhost:";
-    
     private KafkaConsumer consumer;
 
     @Value("${KAFKA_BOOTSTRAP_SERVERS}")
@@ -391,7 +387,7 @@ public class StepsDefs {
          */
         currentSessionId++;
         String jsonBody = "{\"command\": \"startSession\", \"session\": \"esp54_"+currentSessionId+"\"}";
-        kt.send("esp54_eventHandlerTopic", jsonBody);
+        kt.send(Constants.LISTENER_TOPIC, jsonBody);
     }
 
     @When("I raise my right hand above my head")
@@ -406,10 +402,10 @@ public class StepsDefs {
 
     @Then("I should be notified that a message was send to the admin")
     public void i_should_be_notified_that_a_message_was_send_to_the_admin() throws ParseException {
-        consumer.subscribe(Arrays.asList("esp54_commandsServiceTopic"));
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
+        consumer.subscribe(Collections.singletonList(Constants.SESSION_COMMAND_TOPIC));
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(15));
         consumer.commitSync();
-        assertEquals(records.count(),1);
+        assertEquals(1, records.count());
         for(ConsumerRecord<String,String> r : records){
             JSONObject json = (JSONObject) new JSONParser().parse(r.value());
             assertEquals(json.get("username"), currentUsername);
@@ -431,8 +427,8 @@ public class StepsDefs {
 
     @When("I perform the initial position\\(spread arms)")
     public void i_perform_the_initial_position_spread_arms() throws ParseException {
-        consumer.subscribe(Arrays.asList("esp54_databaseServiceTopic"));
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
+        consumer.subscribe(Collections.singletonList(Constants.DATABASE_SERVICE_TOPIC));
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(15));
         consumer.commitSync();
         consumer.unsubscribe();
         String jsonBody = "{\"username\": \""+currentUsername+"\", \"positions\": {\"Head\": [2098.635,1708.936,0.0], \"Neck\": [2227.439,1410.903,0.0], \"LeftCollar\": [2252.219,1217.666,0.0], "
@@ -445,10 +441,10 @@ public class StepsDefs {
 
     @Then("I should be recognized by the platform")
     public void i_should_be_recognized_by_the_platform() throws ParseException, InterruptedException {
-        consumer.subscribe(Arrays.asList("esp54_databaseServiceTopic"));
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
+        consumer.subscribe(Collections.singletonList(Constants.DATABASE_SERVICE_TOPIC));
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(15));
         consumer.commitSync();
-        assertEquals(records.count(),1);
+        assertEquals(1, records.count());
         for (ConsumerRecord<String,String> record : records){
             JSONObject json = (JSONObject) new JSONParser().parse(record.value());
             assertEquals(json.get("username"), currentUsername);
@@ -478,12 +474,12 @@ public class StepsDefs {
         kt.send("esp54_"+currentSessionId, jsonBody);
     }
 
-    @Then("I should see the game session to be immediately stopped.")
+    @Then("I should see the game session to be immediately stopped.") // next is this one
     public void i_should_see_the_game_session_to_be_immediately_stopped() throws ParseException {
         consumer.subscribe(Arrays.asList(Constants.SESSION_COMMAND_TOPIC));
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(15));
         consumer.commitSync();
-        assertEquals(records.count(),1);
+        assertEquals(1, records.count());
         for (ConsumerRecord<String,String> record : records){
             JSONObject json = (JSONObject) new JSONParser().parse(record.value());
             System.out.println(json);

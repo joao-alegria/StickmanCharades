@@ -6,6 +6,7 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -21,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.TestPropertySource;
+import pt.ua.deti.es.g54.Constants;
 
 /**
  * Where all the steps of all features are defined here
@@ -29,24 +31,9 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource (locations={"classpath:application-test.properties"})
 @SpringBootTest (webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StepsDefs {
-    
-    
-//    @Autowired
-//    private EmbeddedKafkaBroker embeddedKafkaBroker;
-
-    private long MAX_WAIT_TIME = 500;
 
     private static int usernameCount = 0;
     private static String currentUsername;
-    private static String currentFriendname;
-    private static long currentSessionId;
-
-    
-
-//    @Before
-//    public void before() {
-//        System.setProperty("KAFKA_BOOTSTRAP_SERVERS", embeddedKafkaBroker.getBrokersAsString());
-//    }
 
     @LocalServerPort
     int randomServerPort;
@@ -54,8 +41,6 @@ public class StepsDefs {
     @Autowired
     private KafkaTemplate<String, String> kt;
     
-    private String server="http://localhost:";
-
     //private static WebDriver driver;
 
     //static {
@@ -369,15 +354,15 @@ public class StepsDefs {
     @When("I raise my right hand above my head")
     public void i_raise_my_right_hand_above_my_head() {
         String jsonBody = "{\"command\": \"notifyAdmin\", \"session\": \"esp54_1\", \"username\":\"testUser1\"}";
-        kt.send("esp54_commandsServiceTopic", jsonBody);
+        kt.send(Constants.COMMANDS_SERVICE_TOPIC, jsonBody);
     }
 
     @Then("I should be notified that a message was send to the admin")
     public void i_should_be_notified_that_a_message_was_send_to_the_admin() throws ParseException, InterruptedException {
-        consumer.subscribe(Arrays.asList("esp54_eventHandlerTopic"));
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
+        consumer.subscribe(Collections.singletonList(Constants.EVENT_HANDLER_TOPIC));
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(15));
         consumer.commitSync();
-        assertEquals(records.count(),1);
+        assertEquals(1, records.count());
         for(ConsumerRecord<String,String> r : records){
             JSONObject json = (JSONObject) new JSONParser().parse(r.value());
             System.out.println(json);
@@ -391,7 +376,7 @@ public class StepsDefs {
     @When("I raise my left hand above my head")
     public void i_raise_my_left_hand_above_my_head() {
         String jsonBody = "{\"command\": \"notifyAdmin\", \"session\": \"esp54_1\", \"username\":\"testUser1\"}";
-        kt.send("esp54_commandsServiceTopic", jsonBody);
+        kt.send(Constants.COMMANDS_SERVICE_TOPIC, jsonBody);
     }
 
     @When("I perform the initial position\\(spread arms)")
@@ -437,15 +422,15 @@ public class StepsDefs {
     @When("I perform the stopping position\\(cross arms over head)")
     public void i_perform_the_stopping_position_cross_arms_over_head() {
         String jsonBody = "{\"command\": \"stopSession\", \"session\": \"esp54_1\", \"username\":\"testUser1\"}";
-        kt.send("esp54_commandsServiceTopic", jsonBody);
+        kt.send(Constants.COMMANDS_SERVICE_TOPIC, jsonBody);
     }
 
     @Then("I should see the game session to be immediately stopped.")
     public void i_should_see_the_game_session_to_be_immediately_stopped() throws ParseException {
-        consumer.subscribe(Arrays.asList("esp54_eventHandlerTopic"));
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
+        consumer.subscribe(Collections.singletonList(Constants.EVENT_HANDLER_TOPIC));
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(15));
         consumer.commitSync();
-        assertEquals(records.count(),1);
+        assertEquals(1, records.count());
         for(ConsumerRecord<String,String> r : records){
             JSONObject json = (JSONObject) new JSONParser().parse(r.value());
             System.out.println(json);
