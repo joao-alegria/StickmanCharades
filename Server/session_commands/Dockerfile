@@ -1,4 +1,4 @@
-FROM maven:3.6.3-jdk-8
+FROM adoptopenjdk/openjdk8-openj9:alpine-slim
 
 COPY target/*.jar /app.jar
 

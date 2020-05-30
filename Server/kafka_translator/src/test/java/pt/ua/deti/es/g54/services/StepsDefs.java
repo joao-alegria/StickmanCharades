@@ -7,6 +7,7 @@ import cucumber.api.java.en.When;
 import java.lang.reflect.Type;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
@@ -41,6 +42,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
+import pt.ua.deti.es.g54.Constants;
 
 /**
  * Where all the steps of all features are defined here
@@ -49,24 +51,10 @@ import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 @TestPropertySource (locations={"classpath:application-test.properties"})
 @SpringBootTest (webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StepsDefs {
-    
-    
-//    @Autowired
-//    private EmbeddedKafkaBroker embeddedKafkaBroker;
-
-    private long MAX_WAIT_TIME = 500;
 
     private static int usernameCount = 0;
     private static String currentUsername;
-    private static String currentFriendname;
     private static long currentSessionId;
-
-    
-
-//    @Before
-//    public void before() {
-//        System.setProperty("KAFKA_BOOTSTRAP_SERVERS", embeddedKafkaBroker.getBrokersAsString());
-//    }
 
     @LocalServerPort
     int randomServerPort;
@@ -74,8 +62,6 @@ public class StepsDefs {
     @Autowired
     private KafkaTemplate<String, String> kt;
     
-    private String server="http://localhost:";
-
     //private static WebDriver driver;
 
     //static {
@@ -425,25 +411,24 @@ public class StepsDefs {
 //        assertEquals(result.getStatusCodeValue(),200
         currentSessionId++;
         String jsonBody = "{\"command\": \"startSession\", \"session\": \"esp54_"+currentSessionId+"\"}";
-        kt.send("esp54_kafkaTranslatorTopic", jsonBody);
+        kt.send(Constants.LISTENER_TOPIC, jsonBody);
     }
 
     @When("I raise my right hand above my head")
     public void i_raise_my_right_hand_above_my_head() {
         String jsonBody = "{\"command\": \"notifyAdmin\", \"session\": \"esp54_"+currentSessionId+"\", \"username\":\"testUser1\",\"msg\":\"Notified admin\"}";
-        kt.send("esp54_kafkaTranslatorTopic", jsonBody);
+        kt.send(Constants.LISTENER_TOPIC, jsonBody);
     }
 
     @Then("I should be notified that a message was send to the admin")
     public void i_should_be_notified_that_a_message_was_send_to_the_admin() throws ParseException, InterruptedException {
 //        System.out.println(blockingQueue.poll(1, TimeUnit.SECONDS));
-        consumer.subscribe(Arrays.asList("esp54_"+currentSessionId));
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
+        consumer.subscribe(Collections.singletonList("esp54_" + currentSessionId));
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(15));
         consumer.commitSync();
-        assertEquals(records.count(),1);
+        assertEquals(1, records.count());
         for(ConsumerRecord<String,String> r : records){
             JSONObject json = (JSONObject) new JSONParser().parse(r.value());
-            //System.out.println(json);
             assertEquals(json.get("user"), "testUser1");
             assertEquals(json.get("session"), "esp54_"+currentSessionId);
             assertEquals(json.get("msg"), "Notified admin");
@@ -456,7 +441,7 @@ public class StepsDefs {
     @When("I raise my left hand above my head")
     public void i_raise_my_left_hand_above_my_head() {
         String jsonBody = "{\"command\": \"notifyAdmin\", \"session\": \"esp54_"+currentSessionId+"\", \"username\":\"testUser1\",\"msg\":\"Notified admin\"}";
-        kt.send("esp54_kafkaTranslatorTopic", jsonBody);
+        kt.send(Constants.LISTENER_TOPIC, jsonBody);
     }
 
     @When("I perform the initial position\\(spread arms)")
