@@ -34,23 +34,17 @@ pipeline {
             }
             agent any
             stages {
-                stage('Setup kafka') {
-                    steps {
-                        dir('Server/database_service') {
-                            sh '''
-                                docker stop esp54-kafka-tests || echo "No container running"
-                                docker rm esp54-kafka-tests || echo "No container"
-
-                                docker run -d \
-                                    --network esp54-tests --network-alias kafka \
-                                    --env ADVERTISED_HOST=kafka --env ADVERTISED_PORT=9092 \
-                                    --name esp54-kafka-tests spotify/kafka
-                            '''
-                        }
-                    }
-                }
                 stage('Database Service') {
                     steps {
+                        sh'''
+                            docker stop esp54-kafka-tests || echo "No container running"
+                            docker rm esp54-kafka-tests || echo "No container"
+
+                            docker run -d \
+                                --network esp54-tests --network-alias kafka \
+                                --env ADVERTISED_HOST=kafka --env ADVERTISED_PORT=9092 \
+                                --name esp54-kafka-tests spotify/kafka
+                        '''
                         dir('Server/database_service') {
                             retry(5) {
                                 sh 'KAFKA_BOOTSTRAP_SERVERS=kafka:9092 mvn clean verify'
@@ -60,6 +54,15 @@ pipeline {
                 }
                 stage('Event Handler') {
                     steps {
+                        sh'''
+                            docker stop esp54-kafka-tests || echo "No container running"
+                            docker rm esp54-kafka-tests || echo "No container"
+
+                            docker run -d \
+                                --network esp54-tests --network-alias kafka \
+                                --env ADVERTISED_HOST=kafka --env ADVERTISED_PORT=9092 \
+                                --name esp54-kafka-tests spotify/kafka
+                        '''
                         dir('Server/event_handler') {
                             retry(5) {
                                 sh 'KAFKA_BOOTSTRAP_SERVERS=kafka:9092 mvn clean verify'
@@ -69,6 +72,15 @@ pipeline {
                 }
                 stage('Kafka Translator') {
                     steps {
+                        sh'''
+                            docker stop esp54-kafka-tests || echo "No container running"
+                            docker rm esp54-kafka-tests || echo "No container"
+
+                            docker run -d \
+                                --network esp54-tests --network-alias kafka \
+                                --env ADVERTISED_HOST=kafka --env ADVERTISED_PORT=9092 \
+                                --name esp54-kafka-tests spotify/kafka
+                        '''
                         dir('Server/kafka_translator') {
                             retry(5) {
                                 sh 'KAFKA_BOOTSTRAP_SERVERS=kafka:9092 mvn clean verify'
@@ -78,6 +90,15 @@ pipeline {
                 }
                 stage('Session Commands') {
                     steps {
+                        sh'''
+                            docker stop esp54-kafka-tests || echo "No container running"
+                            docker rm esp54-kafka-tests || echo "No container"
+
+                            docker run -d \
+                                --network esp54-tests --network-alias kafka \
+                                --env ADVERTISED_HOST=kafka --env ADVERTISED_PORT=9092 \
+                                --name esp54-kafka-tests spotify/kafka
+                        '''
                         dir('Server/session_commands') {
                             retry(5) {
                                 sh 'KAFKA_BOOTSTRAP_SERVERS=kafka:9092 mvn clean verify'
