@@ -8,6 +8,7 @@ import cucumber.api.java.en.When;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -17,6 +18,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import static org.junit.Assert.assertEquals;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,7 +33,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
+import pt.ua.deti.es.g54.Constants;
 import pt.ua.deti.es.g54.api.entities.UserData;
+import pt.ua.deti.es.g54.entities.DBSession;
 import pt.ua.deti.es.g54.repository.SessionRepository;
 import pt.ua.deti.es.g54.repository.UserRepository;
 
@@ -41,11 +47,8 @@ import pt.ua.deti.es.g54.repository.UserRepository;
 @SpringBootTest (webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StepsDefs {
 
-    private long MAX_WAIT_TIME = 500;
-
     private static int usernameCount = 0;
     private static String currentUsername;
-    private static String currentFriendname;
     private static long currentSessionId;
 
     private KafkaConsumer consumer;
@@ -79,10 +82,10 @@ public class StepsDefs {
     
     @Autowired
     private SessionRepository sr;
-    
+
     @Autowired
     private UserRepository ur;
-    
+
     private String server="http://localhost:";
 
     //private static WebDriver driver;
@@ -118,7 +121,7 @@ public class StepsDefs {
         HttpEntity entity = new HttpEntity(headers);
         
         ResponseEntity<String> result = restTemplate.exchange(server+randomServerPort+"/login", HttpMethod.GET, entity, String.class);
-        assertEquals(result.getStatusCodeValue(),200);
+        assertEquals(200, result.getStatusCodeValue());
     }
 
     @When("I choose the option to create a game session")
@@ -367,8 +370,8 @@ public class StepsDefs {
         ResponseEntity<String> result = restTemplate.exchange(server+randomServerPort+"/session", HttpMethod.POST, entity, String.class);
         JSONObject json = (JSONObject)new JSONParser().parse(result.getBody());
         currentSessionId=(long)json.get("id");
-        assertEquals(result.getStatusCodeValue(),200);
-        
+        assertEquals(200, result.getStatusCodeValue());
+
 //        jsonBody = new JSONObject();
 //
 //        entity = new HttpEntity(jsonBody, headers);
@@ -380,7 +383,7 @@ public class StepsDefs {
     @When("I raise my right hand above my head")
     public void i_raise_my_right_hand_above_my_head() {
         String jsonBody = "{\"type\": \"event\", \"event\": \"raisedRightHand\", \"username\":\"testUser1\", \"session\":\"esp54_1\", \"time\":12345}";
-        kt.send("esp54_databaseServiceTopic", jsonBody);
+        kt.send(Constants.DATABASE_SERVICE_TOPIC, jsonBody);
     }
 
     @Then("I should be notified that a message was send to the admin")
@@ -406,21 +409,21 @@ public class StepsDefs {
     @When("I raise my left hand above my head")
     public void i_raise_my_left_hand_above_my_head() {
         String jsonBody = "{\"type\": \"event\", \"event\": \"raisedLeftHand\", \"username\":\"testUser1\", \"session\":\"esp54_1\", \"time\":12345}";
-        kt.send("esp54_databaseServiceTopic", jsonBody);
+        kt.send(Constants.DATABASE_SERVICE_TOPIC, jsonBody);
     }
 
     @When("I perform the initial position\\(spread arms)")
     public void i_perform_the_initial_position_spread_arms() throws ParseException {
         String jsonBody = "{\"type\": \"event\", \"event\": \"initialPosition\", \"username\":\""+currentUsername+"\", \"session\":\""+"esp54_"+currentSessionId+"\", \"time\":12345}";
-        kt.send("esp54_databaseServiceTopic", jsonBody);
+        kt.send(Constants.DATABASE_SERVICE_TOPIC, jsonBody);
     }
 
     @Then("I should be recognized by the platform")
     public void i_should_be_recognized_by_the_platform() throws ParseException, InterruptedException {
-        consumer.subscribe(Arrays.asList("esp54_"+currentSessionId));
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
+        consumer.subscribe(Collections.singletonList("esp54_" + currentSessionId));
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(15));
         consumer.commitSync();
-        assertEquals(records.count(),1);
+        assertEquals(1, records.count());
         for(ConsumerRecord<String,String> r : records){
             JSONObject json = (JSONObject) new JSONParser().parse(r.value());        
             assertEquals(json.get("type"), "gameInfo");
@@ -431,10 +434,10 @@ public class StepsDefs {
 
     @Then("if am the last user recognized, the game session should start.")
     public void if_am_the_last_user_recognized_the_game_session_should_start() throws ParseException {
-        consumer.subscribe(Arrays.asList("esp54_commandsServiceTopic"));
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
+        consumer.subscribe(Collections.singletonList(Constants.COMMANDS_SERVICE_TOPIC));
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(15));
         consumer.commitSync();
-        assertEquals(records.count(),1);
+        assertEquals(1, records.count());
         for(ConsumerRecord<String,String> r : records){
             JSONObject json = (JSONObject) new JSONParser().parse(r.value());
             assertEquals(json.get("command"), "startSession");
@@ -447,7 +450,7 @@ public class StepsDefs {
     @When("I perform the stopping position\\(cross arms over head)")
     public void i_perform_the_stopping_position_cross_arms_over_head() {
         String jsonBody = "{\"type\": \"execute\", \"command\": \"stopSession\", \"session\":\""+"esp54_"+currentSessionId+"\"}";
-        kt.send("esp54_databaseServiceTopic", jsonBody);
+        kt.send(Constants.DATABASE_SERVICE_TOPIC, jsonBody);
     }
 
     @Then("I should see the game session to be immediately stopped.")
