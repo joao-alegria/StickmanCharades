@@ -3,6 +3,7 @@ package pt.ua.deti.es.g54.api;
 import pt.ua.deti.es.g54.repository.SessionRepository;
 import pt.ua.deti.es.g54.services.SessionService;
 import java.security.Principal;
+import java.util.Optional;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +13,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -33,10 +34,19 @@ public class SessionRest {
     private SessionService ss;
 
     @GetMapping(value="/session")
-    public JSONObject getAllSessions(Principal principal){
+    public JSONObject getAllSessions(Principal principal,@RequestParam Optional<Boolean> available, @RequestParam Optional<Boolean> active){
         logger.info("Get all session for user " + principal.getName());
 
-        return ss.getAllSessions(principal.getName());
+        boolean act=false;
+        boolean ava=false;
+        if(active.isPresent()){
+            act=active.get();
+        }
+        if(available.isPresent()){
+            ava=available.get();
+        }
+        
+        return ss.getAllSessions(principal.getName(), ava, act);
     }
     
     @PostMapping(value="/session")

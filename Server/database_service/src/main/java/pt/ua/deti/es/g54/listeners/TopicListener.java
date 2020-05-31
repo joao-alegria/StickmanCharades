@@ -14,6 +14,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import pt.ua.deti.es.g54.Constants;
 import pt.ua.deti.es.g54.entities.DBCommand;
 import pt.ua.deti.es.g54.entities.DBEvent;
 import pt.ua.deti.es.g54.entities.DBSession;
@@ -67,7 +68,7 @@ public class TopicListener {
 
     private Counter initialPosition;
 
-    @KafkaListener(topics="esp54_databaseServiceTopic")
+    @KafkaListener(topics= Constants.LISTENING_TOPIC)
     private void receiveMessage(String command){
         logger.info("Record received on listening topic");
 

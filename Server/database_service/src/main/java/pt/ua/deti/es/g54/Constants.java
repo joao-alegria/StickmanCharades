@@ -28,6 +28,12 @@ import org.springframework.kafka.core.ProducerFactory;
 @Configuration
 public class Constants {
 
+    public static final String LISTENING_TOPIC = "esp54_databaseServiceTopic";
+
+    public static final String DATABASE_SERVICE_TOPIC = "esp54_databaseServiceTopic";
+
+    public static final String COMMANDS_SERVICE_TOPIC = "esp54_commandsServiceTopic";
+
     @Value("${KAFKA_BOOTSTRAP_SERVERS}")
     private String KAFKA_BOOTSTRAP_SERVERS;
 

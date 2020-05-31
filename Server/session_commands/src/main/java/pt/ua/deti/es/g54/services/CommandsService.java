@@ -31,6 +31,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.stereotype.Service;
+import pt.ua.deti.es.g54.Constants;
 
 /**
  *
@@ -115,7 +116,7 @@ public class CommandsService {
     @Autowired
     private KafkaTemplate<String, String> kt;
     
-    @KafkaListener(topics="esp54_commandsServiceTopic")
+    @KafkaListener(topics=Constants.COMMANDS_SERVICE_TOPIC)
     private void receiveCommand(String command){
         logger.info("Record received on listening topic");
         try {
@@ -153,10 +154,10 @@ public class CommandsService {
                 message.put("session", (String)json.get("session"));
                 message.put("command", "notifyAdmin");
                 message.put("msg", "Notify admin.");
-                kt.send("esp54_kafkaTranslatorTopic", message.toJSONString());
+                kt.send(Constants.KAFKA_TRANSLATOR_TOPIC, message.toJSONString());
                 kt.flush();
                 message.put("type", "command");
-                kt.send("esp54_databaseServiceTopic", message.toJSONString());
+                kt.send(Constants.DATABASE_SERVICE_TOPIC, message.toJSONString());
                 kt.flush();
                 logger.info(String.format(
                     "Notify admin command sent for session %s by user %s",
@@ -174,16 +175,16 @@ public class CommandsService {
                 message.put("session", (String)json.get("session"));
                 message.put("username", (String)json.get("username"));
                 message.put("command", "stopSession");
-                kt.send("esp54_eventHandlerTopic", message.toJSONString());
+                kt.send(Constants.EVENT_HANDLER_TOPIC, message.toJSONString());
                 kt.flush();
-                kt.send("esp54_kafkaTranslatorTopic", message.toJSONString());
+                kt.send(Constants.KAFKA_TRANSLATOR_TOPIC, message.toJSONString());
                 kt.flush();
                 message.put("type", "execute");
-                kt.send("esp54_databaseServiceTopic", message.toJSONString());
+                kt.send(Constants.DATABASE_SERVICE_TOPIC, message.toJSONString());
                 kt.flush();
                 
                 message.put("type", "command");
-                kt.send("esp54_databaseServiceTopic", message.toJSONString());
+                kt.send(Constants.DATABASE_SERVICE_TOPIC, message.toJSONString());
                 kt.flush();
 
                 logger.info(String.format(
@@ -202,16 +203,16 @@ public class CommandsService {
                 message.put("session", (String)json.get("session"));
                 message.put("username", (String)json.get("username"));
                 message.put("command", "startSession");
-                kt.send("esp54_eventHandlerTopic", message.toJSONString());
+                kt.send(Constants.EVENT_HANDLER_TOPIC, message.toJSONString());
                 kt.flush();
-                kt.send("esp54_kafkaTranslatorTopic", message.toJSONString());
+                kt.send(Constants.KAFKA_TRANSLATOR_TOPIC, message.toJSONString());
                 kt.flush();
                 message.put("type", "execute");
-                kt.send("esp54_databaseServiceTopic", message.toJSONString());
+                kt.send(Constants.DATABASE_SERVICE_TOPIC, message.toJSONString());
                 kt.flush();
                 
                 message.put("type", "command");
-                kt.send("esp54_databaseServiceTopic", message.toJSONString());
+                kt.send(Constants.DATABASE_SERVICE_TOPIC, message.toJSONString());
                 kt.flush();
 
                 logger.info(String.format(

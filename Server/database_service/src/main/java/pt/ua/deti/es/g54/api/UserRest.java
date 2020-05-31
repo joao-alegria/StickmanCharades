@@ -1,11 +1,13 @@
 package pt.ua.deti.es.g54.api;
 
+import java.security.Principal;
 import pt.ua.deti.es.g54.api.entities.UserData;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.json.simple.JSONObject;
 
 import pt.ua.deti.es.g54.services.UserService;
 import org.slf4j.Logger;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import pt.ua.deti.es.g54.entities.DBUser;
 
 /**
  *
@@ -35,10 +38,14 @@ public class UserRest {
     UserService userService;
 
     @GetMapping(value="/login")
-    public ResponseEntity<String> login(){
+    public ResponseEntity<String> login(Principal principal){
+        JSONObject json = new JSONObject();
+        json.put("msg", "Login Successful");
+        DBUser user = userService.getUser(principal.getName());
+        json.put("admin", user.isAdmin());
         logger.info("Login Successful");
 
-        return ResponseEntity.ok("Login Successful");
+        return ResponseEntity.ok(json.toJSONString());
     }
 
     private String buildErrorMsg(List<String> malformedFields, String prefix) {
@@ -112,7 +119,7 @@ public class UserRest {
     }
 
     @GetMapping(value="/logout")
-    public ResponseEntity<String> logout(){
+    public ResponseEntity<String> logout(Principal principal){
         logger.info("Logout successful");
 
         return ResponseEntity.ok("Logout successful");

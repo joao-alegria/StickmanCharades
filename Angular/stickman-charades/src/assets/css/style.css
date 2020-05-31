@@ -8432,11 +8432,6 @@ del {
   font-weight: normal;
 }
 
-.reqs table, th, td {
-  border: 1px solid black;
-  padding-right: 10px;
-  padding-left: 5px;
-}
 
 .reqs th, caption {
   text-align: center;

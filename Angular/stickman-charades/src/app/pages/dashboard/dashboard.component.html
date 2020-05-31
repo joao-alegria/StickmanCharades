@@ -1,5 +1,47 @@
 <app-header></app-header>
 
-<p class="mt-100">Dashboard Here</p>
+<h1 class="mt-100" style="text-align: center;">Dashboard</h1>
 
-<app-skeleton></app-skeleton>
+<div class="container">
+    <h3>Active Sessions</h3>
+    <table class="table table-striped">
+        <tbody *ngFor="let session of objectKeys(sessions)">
+            <td>{{session}}</td>
+            <td>{{sessions[session]["title"]}}</td>
+            <td>{{sessions[session]["creator"]}}</td>
+            <td style="text-align: right;">
+                <button type="button" class="btn btn-secondary" (click)="goToSession(session)">Watch</button>
+            </td>
+        </tbody>
+
+    </table>
+
+</div>
+
+<!-- Modal -->
+<div *ngIf="currentSession>-1" class="modal " id="myModal" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="margin:auto">
+                <app-skeleton [session]="currentSession"></app-skeleton>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<notifier-container></notifier-container>
+<ng-template #customNotification let-notificationData="notification">
+    <my-custom-alert type="notificationData.type" (click)="notificationClicked(notificationData.message)">
+        {{ notificationData.message.msg }}
+    </my-custom-alert>
+</ng-template>

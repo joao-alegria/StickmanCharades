@@ -25,8 +25,28 @@ export class VsService {
 
     let headers = new HttpHeaders();
     headers = headers.append("Authorization", "Basic " + btoa(username + ":" + password));
-    await this.http.get(this.endpoints["vsEndpoint"] + this.endpoints["login"],
+    return await this.http.get(this.endpoints["vsEndpoint"] + this.endpoints["login"],
       {
+        headers: headers,
+        observe: 'response'
+      }
+    ).toPromise();
+  }
+
+  async getSessions() {
+    if (this.endpoints == undefined) {
+      await this.loadEndpoints().then(data => { this.endpoints = data })
+    }
+
+    let headers = new HttpHeaders();
+    headers = headers.append("Authorization", "Basic " + localStorage.getItem("TOKEN"));
+
+    let params = new HttpParams();
+    // params = params.append("active", "true");
+
+    return await this.http.get(this.endpoints["vsEndpoint"] + this.endpoints["session"],
+      {
+        params: params,
         headers: headers,
         observe: 'response'
       }
@@ -62,7 +82,21 @@ export class VsService {
   }
 
   async register(firstname: string, lastname: string, email: string, username: string, password: string, accountType: string) {
+    if (this.endpoints == undefined) {
+      await this.loadEndpoints().then(data => { this.endpoints = data })
+    }
 
+    let data = {}
+    data["username"] = username
+    data["password"] = password
+    data["email"] = email
+    if (accountType == "ADMIN") {
+      data["admin"] = true
+    } else {
+      data["admin"] = false
+    }
+
+    return await this.http.post(this.endpoints["vsEndpoint"] + this.endpoints["register"], data, { observe: 'response' }).toPromise();
   }
 
   async getBlueprints() {

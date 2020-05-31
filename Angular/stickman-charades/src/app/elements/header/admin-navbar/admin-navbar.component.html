@@ -1,25 +1,25 @@
 <div class="row align-items-center">
     <!-- Logo -->
-    <div class="col-xl-2 col-lg-2 col-md-1">
+    <div class="col-xs-2 col-xl-2 col-lg-2 col-md-1">
         <div class="logo">
             <a routerLink="/dashboard"><img src="assets/img/logo/logo.png" alt=""></a>
         </div>
     </div>
-    <div class="col-xl-10 col-lg-10 col-md-10">
-    <div class="menu-main d-flex align-items-center justify-content-end">
-        <!-- Main-menu -->
-        <div class="main-menu f-right d-none d-lg-block">
-            <nav> 
-                <ul id="navigation"> 
-                    <li id="dashboard-tab"><a routerLink="/dashboard">Dashboard</a></li>
-                </ul>
-            </nav>
-        </div>
-        <div class="header-right-btn f-right d-none d-lg-block">
-            <button (click)="logout()" class="btn header-btn">Log Out</button>
+    <div class="col-xs-10 col-xl-10 col-lg-10 col-md-10">
+        <div class="menu-main d-flex align-items-center justify-content-end">
+            <!-- Main-menu -->
+            <div class="main-menu f-right d-none d-lg-block">
+                <nav>
+                    <ul id="navigation">
+                        <li id="dashboard-tab"><a routerLink="/dashboard">Dashboard</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="header-right-btn f-right d-none d-lg-block">
+                <button (click)="logout()" class="btn header-btn">Log Out</button>
+            </div>
         </div>
     </div>
-    </div>   
     <!-- Mobile Menu -->
     <div class="col-12">
         <div class="mobile_menu d-block d-lg-none"></div>

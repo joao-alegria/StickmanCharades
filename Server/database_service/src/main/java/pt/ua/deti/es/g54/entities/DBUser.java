@@ -40,6 +40,9 @@ public class DBUser implements Serializable {
     private String password;
 
     @Column
+    private boolean admin = true;
+    
+    @Column
     private boolean enabled = true;
     
     @ManyToMany(mappedBy= "users", cascade = CascadeType.MERGE)
@@ -76,10 +79,19 @@ public class DBUser implements Serializable {
     public DBUser(UserData userData, String password) {
         this.username = userData.getUsername();
         this.email = userData.getEmail();
+        this.admin=userData.isAdmin();
         this.password = password;
         this.roles = new HashSet<>();
     }
 
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+    
     public Long getId() {
         return id;
     }

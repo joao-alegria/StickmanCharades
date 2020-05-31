@@ -78,4 +78,12 @@ public class UserService {
 
         return ResponseEntity.ok("Registration successful");
     }
+
+    public DBUser getUser(String username) {
+        List<DBUser> users = ur.getUserByUsername(username);
+        if(users.size()==1){
+            return users.get(0);
+        }
+       return null;
+    }
 }
