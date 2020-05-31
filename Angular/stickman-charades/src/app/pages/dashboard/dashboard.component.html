@@ -42,6 +42,6 @@
 <notifier-container></notifier-container>
 <ng-template #customNotification let-notificationData="notification">
     <my-custom-alert type="notificationData.type" (click)="notificationClicked(notificationData.message)">
-        {{ notificationData.message.msg }}
+        {{ notificationData.message.msg }} | Session: {{notificationData.message.session}}
     </my-custom-alert>
 </ng-template>

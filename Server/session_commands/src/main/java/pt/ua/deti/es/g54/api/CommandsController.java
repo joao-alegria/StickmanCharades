@@ -34,7 +34,7 @@ public class CommandsController {
         logger.info("Start session command received");
         JSONObject command = new JSONObject();
         command.put("command", "startSession");
-        command.put("session", sessionId);
+        command.put("session", "esp54_"+sessionId);
         command.put("username", principal.getName());
         System.out.println(principal.getName());
         return cs.processCommand(command);
@@ -45,7 +45,7 @@ public class CommandsController {
         logger.info("Stop session command received");
         JSONObject command = new JSONObject();
         command.put("command", "stopSession");
-        command.put("session", sessionId);
+        command.put("session", "esp54_"+sessionId);
         command.put("username", principal.getName());
         return cs.processCommand(command);
     }
@@ -55,7 +55,7 @@ public class CommandsController {
         logger.info("Notify admin command received");
         JSONObject command = new JSONObject();
         command.put("command", "notifyAdmin");
-        command.put("session", sessionId);
+        command.put("session", "esp54_"+sessionId);
         command.put("username", principal.getName());
         return cs.processCommand(command);
     }

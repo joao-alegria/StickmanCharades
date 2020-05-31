@@ -5,6 +5,7 @@ import * as $ from "jquery";
 // import { SocketClientService } from '../../socket-client.service';
 import * as SockJS from '../../../assets/js/sockjs.min.js';
 import * as Stomp from '../../../assets/js/stomp.min.js';
+import { VsService } from 'src/app/vs.service.js';
 // import { over } from '../../../assets/js/sockjs.min.js';
 
 
@@ -27,7 +28,7 @@ export class SkeletonComponent implements OnInit {
 
   mapping = ["Head", "Neck", "Torso", "Waist", "RightHip", "LeftHip", "RightKnee", "LeftKnee", "RightAnkle", "LeftAnkle", "RightHand", "RightWrist", "RightElbow", "RightShoulder", "RightCollar", "LeftCollar", "LeftShoulder", "LeftElbow", "LeftWrist", "LeftHand"]
 
-  constructor() { }//private socketClient: SocketClientService) { }
+  constructor(private vs: VsService) { }//private socketClient: SocketClientService) { }
 
   @Input()
   public set session(session: number) {
@@ -115,25 +116,29 @@ export class SkeletonComponent implements OnInit {
   }
 
   newSocket(session) {
-    var wsocket = new SockJS('http://localhost:8084/game/skeletons', null, { headers: { 'Authorization': 'Basic ' + localStorage.getItem("TOKEN") } });
-    this.client = Stomp.Stomp.over(wsocket);
-    let _this = this
-    _this.client.connect({}, function (frame) {
-      _this.client.subscribe('/game/esp54_' + session, message => {
-        console.info(message)
-        this.clear()
-        // let data = { "index": 0, "positions": { "Head": [2098.635, 1708.936, 0.0], "Neck": [2227.439, 1410.903, 0.0], "LeftCollar": [2252.219, 1217.666, 0.0], "Torso": [2314.787, 729.7457, 0.0], "Waist": [2356.344, 278.0999, 0.0], "LeftShoulder": [1860.994, 1193.861, 0.0], "RightShoulder": [2813.465, 1175.847, 0.0], "LeftElbow": [1751.346, 713.7789, 0.0], "RightElbow": [0.0, 0.0, 0.0], "LeftWrist": [0.0, 0.0, 0.0], "RightWrist": [0.0, 0.0, 0.0], "LeftHand": [0.0, 1800.0, 0.0], "RightHand": [0.0, 0.0, 0.0], "LeftHip": [0.0, 0.0, 0.0], "RightHip": [2672.045, 226.5393, 0.0], "LeftKnee": [0.0, 0.0, 0.0], "RightKnee": [0.0, 0.0, 0.0], "LeftAnkle": [0.0, 0.0, 0.0], "RightAnkle": [0.0, 0.0, 0.0] } }
-        let data = JSON.parse(message);
-        let positions = [];
-        for (let tmp of this.mapping) {
-          if (tmp in data["positions"]) {
-            positions.push({ x: data["positions"][tmp][0] / 10, y: data["positions"][tmp][1] / 10, z: data["positions"][tmp][2] / 10 })
-          } else {
-            positions.push(positions[positions.length - 1])//??????
+    this.vs.getEndpoints().then(endpoints => {
+      var wsocket = new SockJS(endpoints["websocket"] + '/game/skeletons', { headers: { 'Authorization': 'Basic ' + localStorage.getItem("TOKEN") } });
+      this.client = Stomp.Stomp.over(wsocket);
+      let _this = this
+      _this.client.connect({}, function (frame) {
+        _this.client.subscribe('/game/session/esp54_' + session, message => {
+          let data = JSON.parse(message.body);
+          console.log(data)
+          if (data.hasOwnProperty("positions")) {
+            _this.clear()
+            // let data = { "username": "joao", "positions": { "Head": [2098.635, 1708.936, 0.0], "Neck": [2227.439, 1410.903, 0.0], "LeftCollar": [2252.219, 1217.666, 0.0], "Torso": [2314.787, 729.7457, 0.0], "Waist": [2356.344, 278.0999, 0.0], "LeftShoulder": [1860.994, 1193.861, 0.0], "RightShoulder": [2813.465, 1175.847, 0.0], "LeftElbow": [1751.346, 713.7789, 0.0], "RightElbow": [0.0, 0.0, 0.0], "LeftWrist": [0.0, 0.0, 0.0], "RightWrist": [0.0, 0.0, 0.0], "LeftHand": [0.0, 1800.0, 0.0], "RightHand": [0.0, 0.0, 0.0], "LeftHip": [0.0, 0.0, 0.0], "RightHip": [2672.045, 226.5393, 0.0], "LeftKnee": [0.0, 0.0, 0.0], "RightKnee": [0.0, 0.0, 0.0], "LeftAnkle": [0.0, 0.0, 0.0], "RightAnkle": [0.0, 0.0, 0.0] } }
+            let positions = [];
+            for (let tmp of _this.mapping) {
+              if (tmp in data["positions"]) {
+                positions.push({ x: data["positions"][tmp][0] / 10, y: data["positions"][tmp][1] / 10, z: data["positions"][tmp][2] / 10 })
+              } else {
+                positions.push(positions[positions.length - 1])//??????
+              }
+            }
+            _this.draw(positions)
           }
-        }
-        this.draw(positions)
-      });
+        });
+      })
     });
   }
 

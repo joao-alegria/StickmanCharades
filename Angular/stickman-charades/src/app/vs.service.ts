@@ -18,6 +18,14 @@ export class VsService {
     return this.http.get("assets/endpoints.json").toPromise()
   }
 
+  async getEndpoints() {
+    if (this.endpoints == undefined) {
+      await this.loadEndpoints().then(data => { this.endpoints = data })
+    }
+
+    return this.endpoints
+  }
+
   async login(username: string, password: string) {
     if (this.endpoints == undefined) {
       await this.loadEndpoints().then(data => { this.endpoints = data })
@@ -42,7 +50,7 @@ export class VsService {
     headers = headers.append("Authorization", "Basic " + localStorage.getItem("TOKEN"));
 
     let params = new HttpParams();
-    // params = params.append("active", "true");
+    // params = params.append("active", "True");
 
     return await this.http.get(this.endpoints["vsEndpoint"] + this.endpoints["session"],
       {

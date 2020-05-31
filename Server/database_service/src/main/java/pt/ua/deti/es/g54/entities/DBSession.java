@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -42,13 +43,16 @@ public class DBSession implements Serializable {
     @Column
     private Boolean isAvailable;
     
-    @OneToMany(mappedBy="sessionInPlay")
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,mappedBy="sessionInPlay")
     private Set<DBUser> players = new HashSet();
     
-    @OneToMany(mappedBy="targetSession")
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,mappedBy="targetSession")
     private Set<DBEvent> events = new HashSet();
     
-    @OneToMany(mappedBy="targetSession")
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,mappedBy="targetSession")
     private Set<DBCommand> commands = new HashSet();
     
     @ElementCollection

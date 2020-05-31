@@ -23,21 +23,27 @@ export class DashboardComponent implements OnInit {
   constructor(private notifierService: NotifierService, private vs: VsService) { }
 
   ngOnInit(): void {
-    var wsocket = new SockJS('http://localhost:8084/game/skeletons', null, { headers: { 'Authorization': 'Basic ' + localStorage.getItem("TOKEN") } });
-    this.client = Stomp.Stomp.over(wsocket);
-    let _this = this
-    _this.client.connect({}, function (frame) {
-      _this.client.subscribe('/game/admin', message => {
-        console.info(message)
-        this.notifierService.show({
-          type: "warning",
-          message: message,
-          template: this.customNotificationTmpl
-        })
+    this.vs.getEndpoints().then(endpoints => {
+      var wsocket = new SockJS(endpoints["websocket"] + '/game/skeletons', { headers: { 'Authorization': 'Basic ' + localStorage.getItem("TOKEN") } });
+      this.client = Stomp.Stomp.over(wsocket);
+      let _this = this
+      _this.client.connect({}, function (frame) {
+        _this.client.subscribe('/game/admin', message => {
+          console.info(message)
+          _this.notify(JSON.parse(message.body))
+        });
       });
-    });
-    this.sessions = [];
-    this.update();
+      this.sessions = [];
+      this.update();
+    })
+  }
+
+  notify(message) {
+    this.notifierService.show({
+      type: "warning",
+      message: message,
+      template: this.customNotificationTmpl
+    })
   }
 
   update() {
