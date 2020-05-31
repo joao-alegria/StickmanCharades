@@ -4,8 +4,18 @@ using UnityEngine;
 
 public static class SessionData {
 
+    private static int sessionId;
     private static string kafkaTopic;
     private static Dictionary<string, string> kafkaProps;
+
+    public static int SessionId {
+        get {
+            return sessionId;
+        }
+        set {
+            sessionId = value;
+        }
+    }
 
     public static string KafkaTopic {
         get {
