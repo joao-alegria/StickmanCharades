@@ -31,8 +31,11 @@ public class UserRest {
     
     private static final Logger logger = LoggerFactory.getLogger(UserRest.class);
 
-    Matcher emailMatcher = Pattern.compile( // https://regular-expressions.mobi/email.html?wlr=1
-            "\\A[a-z0-9!#$%&'*+/=?^_‘{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_‘{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\z").matcher("");
+    /**
+     * // https://regular-expressions.mobi/email.html?wlr=1
+     */
+    public static final String emailPattern = "\\A[a-z0-9!#$%&'*+/=?^_‘{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_‘{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\z";
+    private final Matcher emailMatcher = Pattern.compile(emailPattern).matcher("");
 
     @Autowired
     UserService userService;
@@ -42,13 +45,14 @@ public class UserRest {
         JSONObject json = new JSONObject();
         json.put("msg", "Login Successful");
         DBUser user = userService.getUser(principal.getName());
+
         json.put("admin", user.isAdmin());
         logger.info("Login Successful");
 
         return ResponseEntity.ok(json.toJSONString());
     }
 
-    private String buildErrorMsg(List<String> malformedFields, String prefix) {
+    public static String buildErrorMsg(List<String> malformedFields, String prefix) {
         if (!malformedFields.isEmpty()) {
             String missingFieldsOutput;
             if (malformedFields.size() > 1) {

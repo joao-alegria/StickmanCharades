@@ -7,8 +7,6 @@ public class UserData {
     private char[] password;
 
     private String email;
-    
-    private boolean admin;
 
     public String getUsername() {
         return username;
@@ -34,13 +32,4 @@ public class UserData {
         this.email = email;
     }
 
-    public boolean isAdmin() {
-        return admin;
-    }
-
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
-    }
-    
-    
 }

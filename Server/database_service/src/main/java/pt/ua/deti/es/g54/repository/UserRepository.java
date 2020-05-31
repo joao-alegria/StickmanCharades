@@ -27,4 +27,10 @@ public interface UserRepository extends JpaRepository<DBUser, Long>{
     @Query(value = "SELECT g from DBRole g WHERE g.name = 'ROLE_USER'")
     public List<DBRole> getRole();
 
+    @Query(value = "SELECT COUNT(g) FROM DBUser u, DBRole g WHERE g.name = 'ROLE_ADMIN'")
+    long adminUsersCounts();
+
+    @Query(value = "SELECT g from DBRole g WHERE g.name = 'ROLE_ADMIN'")
+    List<DBRole> getAdminRole();
+
 }
