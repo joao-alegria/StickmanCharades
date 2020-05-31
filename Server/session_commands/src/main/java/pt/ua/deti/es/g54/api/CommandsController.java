@@ -44,7 +44,7 @@ public class CommandsController {
     public JSONObject stopSession(@PathVariable String sessionId, Principal principal){
         logger.info("Stop session command received");
         JSONObject command = new JSONObject();
-        command.put("command", "startSession");
+        command.put("command", "stopSession");
         command.put("session", sessionId);
         command.put("username", principal.getName());
         return cs.processCommand(command);
