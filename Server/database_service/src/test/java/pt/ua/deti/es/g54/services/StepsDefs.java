@@ -383,7 +383,7 @@ public class StepsDefs {
     @When("I raise my right hand above my head")
     public void i_raise_my_right_hand_above_my_head() {
         String jsonBody = "{\"type\": \"event\", \"event\": \"raisedRightHand\", \"username\":\"testUser1\", \"session\":\"esp54_1\", \"time\":12345}";
-        kt.send(Constants.DATABASE_SERVICE_TOPIC, jsonBody);
+        kt.send(Constants.LISTENING_TOPIC, jsonBody);
     }
 
     @Then("I should be notified that a message was send to the admin")
@@ -409,13 +409,13 @@ public class StepsDefs {
     @When("I raise my left hand above my head")
     public void i_raise_my_left_hand_above_my_head() {
         String jsonBody = "{\"type\": \"event\", \"event\": \"raisedLeftHand\", \"username\":\"testUser1\", \"session\":\"esp54_1\", \"time\":12345}";
-        kt.send(Constants.DATABASE_SERVICE_TOPIC, jsonBody);
+        kt.send(Constants.LISTENING_TOPIC, jsonBody);
     }
 
     @When("I perform the initial position\\(spread arms)")
     public void i_perform_the_initial_position_spread_arms() throws ParseException {
         String jsonBody = "{\"type\": \"event\", \"event\": \"initialPosition\", \"username\":\""+currentUsername+"\", \"session\":\""+"esp54_"+currentSessionId+"\", \"time\":12345}";
-        kt.send(Constants.DATABASE_SERVICE_TOPIC, jsonBody);
+        kt.send(Constants.LISTENING_TOPIC, jsonBody);
     }
 
     @Then("I should be recognized by the platform")
@@ -450,7 +450,7 @@ public class StepsDefs {
     @When("I perform the stopping position\\(cross arms over head)")
     public void i_perform_the_stopping_position_cross_arms_over_head() {
         String jsonBody = "{\"type\": \"execute\", \"command\": \"stopSession\", \"session\":\""+"esp54_"+currentSessionId+"\"}";
-        kt.send(Constants.DATABASE_SERVICE_TOPIC, jsonBody);
+        kt.send(Constants.LISTENING_TOPIC, jsonBody);
     }
 
     @Then("I should see the game session to be immediately stopped.")
