@@ -1,7 +1,6 @@
 package pt.ua.deti.es.g54.repository;
 
 import pt.ua.deti.es.g54.entities.DBSession;
-import pt.ua.deti.es.g54.entities.DBUser;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,7 +18,13 @@ public interface SessionRepository extends JpaRepository<DBSession, Long>{
     public List<DBSession> getSessionById(@Param("id") Long id);
 
 //    @Query(value = "SELECT s FROM DBSession s INNER JOIN DBUser u ON s.creator=u.id WHERE u.username != :name AND  s.isAvailable=true" )
-    @Query(value = "SELECT s FROM DBSession s WHERE s.isAvailable=true" )
+    @Query(value = "SELECT s FROM DBSession s" )
     public List<DBSession> getAllSessions(@Param("name") String name);
+    
+    @Query(value = "SELECT s FROM DBSession s WHERE s.isAvailable=true" )
+    public List<DBSession> getAllAvailableSessions(@Param("name") String name);
+    
+    @Query(value = "SELECT s FROM DBSession s WHERE s.isActive=true" )
+    public List<DBSession> getAllActiveSessions(@Param("name") String name);
     
 }

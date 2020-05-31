@@ -1,5 +1,6 @@
 {
     "vsEndpoint": "http://localhost:8082",
     "login": "/login",
-    "register": "/register"
+    "register": "/register",
+    "session": "/session"
 }

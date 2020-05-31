@@ -77,7 +77,7 @@ public class SessionMapper extends Thread {
 
             for (ConsumerRecord<String, String> record : records) {
                 logger.error(String.format(
-                    "Resending parsing received record for session %s websoctet",
+                    "Resending parsing received record for session %s websocket",
                     session
                 ));
 

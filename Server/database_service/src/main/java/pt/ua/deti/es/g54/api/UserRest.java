@@ -1,11 +1,13 @@
 package pt.ua.deti.es.g54.api;
 
+import java.security.Principal;
 import pt.ua.deti.es.g54.api.entities.UserData;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.json.simple.JSONObject;
 
 import pt.ua.deti.es.g54.services.UserService;
 import org.slf4j.Logger;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import pt.ua.deti.es.g54.entities.DBUser;
 
 /**
  *
@@ -28,20 +31,28 @@ public class UserRest {
     
     private static final Logger logger = LoggerFactory.getLogger(UserRest.class);
 
-    Matcher emailMatcher = Pattern.compile( // https://regular-expressions.mobi/email.html?wlr=1
-            "\\A[a-z0-9!#$%&'*+/=?^_‘{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_‘{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\z").matcher("");
+    /**
+     * // https://regular-expressions.mobi/email.html?wlr=1
+     */
+    public static final String emailPattern = "\\A[a-z0-9!#$%&'*+/=?^_‘{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_‘{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\z";
+    private final Matcher emailMatcher = Pattern.compile(emailPattern).matcher("");
 
     @Autowired
     UserService userService;
 
     @GetMapping(value="/login")
-    public ResponseEntity<String> login(){
+    public ResponseEntity<String> login(Principal principal){
+        JSONObject json = new JSONObject();
+        json.put("msg", "Login Successful");
+        DBUser user = userService.getUser(principal.getName());
+
+        json.put("admin", user.isAdmin());
         logger.info("Login Successful");
 
-        return ResponseEntity.ok("Login Successful");
+        return ResponseEntity.ok(json.toJSONString());
     }
 
-    private String buildErrorMsg(List<String> malformedFields, String prefix) {
+    public static String buildErrorMsg(List<String> malformedFields, String prefix) {
         if (!malformedFields.isEmpty()) {
             String missingFieldsOutput;
             if (malformedFields.size() > 1) {
@@ -112,7 +123,7 @@ public class UserRest {
     }
 
     @GetMapping(value="/logout")
-    public ResponseEntity<String> logout(){
+    public ResponseEntity<String> logout(Principal principal){
         logger.info("Logout successful");
 
         return ResponseEntity.ok("Logout successful");

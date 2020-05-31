@@ -80,6 +80,13 @@ public class DBUser implements Serializable {
         this.roles = new HashSet<>();
     }
 
+    public DBUser(String email, String password) {
+        this.username = "admin";
+        this.email = email;
+        this.password = password;
+        this.roles = new HashSet<>();
+    }
+
     public Long getId() {
         return id;
     }
@@ -150,6 +157,13 @@ public class DBUser implements Serializable {
     public void setSessionInPlay(DBSession sessionInPlay) {
         this.sessionInPlay = sessionInPlay;
     }
-    
-    
+
+    public boolean isAdmin() {
+        for (DBRole role : roles) {
+            if (role.getName().equals("ROLE_ADMIN")) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

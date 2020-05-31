@@ -18,31 +18,26 @@ export class LoginComponent implements OnInit {
   }
 
   async login() {
-    await this.vs.login($("#username").val().trim(), $("#userpassword").val().trim()).catch(data => {
+    await this.vs.login($("#username").val().trim(), $("#userpassword").val().trim()).then(data => {
+      localStorage.setItem("loggedIn", "true");
+      localStorage.setItem("TOKEN", btoa($("#username").val().trim() + ":" + $("#userpassword").val().trim()));
+      if (data.body["admin"]) {
+        localStorage.setItem("role", "ADMIN");
+      } else {
+        localStorage.setItem("role", "USER");
+      }
+      if (localStorage.getItem("role") == "ADMIN") {
+        this.router.navigate(["/dashboard"]);
+      } else {
+        this.router.navigate(["/download"]);
+      }
+    }).catch(data => {
       if (data.status == 401) {
         document.getElementById("error").innerHTML = "Incorrect username / password. Please try again.";
         //this.messageService.add({ severity: 'warn', summary: 'Username/Password may be incorrect.' });
       } else if (data.status == 0) {
         document.getElementById("error").innerHTML = "Something went wrong. Please try again later.";
-      } else {
-        localStorage.setItem("loggedIn", "true");
-        localStorage.setItem("role", "USER"); // ADMIN
-        if (localStorage.getItem("role") == "ADMIN") {
-
-          this.router.navigate(["/dashboard"]);
-        } else {
-          this.router.navigate(["/download"]);
-        }
       }
-      console.log(data);
     })
-    // localStorage.setItem("loggedIn", "true");
-    // localStorage.setItem("role", "ADMIN"); // USER / ADMIN
-    // if(localStorage.getItem("role") == "ADMIN") {
-
-    //   this.router.navigate(["/dashboard"]);
-    // } else {
-    //   this.router.navigate(["/download"]);
-    // }
   }
 }

@@ -148,11 +148,11 @@ public class CommandsService {
                 
                 message=new JSONObject();
                 message.put("msg", "Notification forwarded to admin.");
-                message.put("session", (String)json.get("session"));
                 message.put("username", (String)json.get("username"));
-                message.put("command", "notifyAdmin");
-                kt.send(Constants.EVENT_HANDLER_TOPIC, message.toJSONString());
+                kt.send((String)json.get("session"), message.toJSONString());
                 kt.flush();
+                message.put("session", (String)json.get("session"));
+                message.put("command", "notifyAdmin");
                 message.put("msg", "Notify admin.");
                 kt.send(Constants.KAFKA_TRANSLATOR_TOPIC, message.toJSONString());
                 kt.flush();

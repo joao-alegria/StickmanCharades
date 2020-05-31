@@ -37,18 +37,23 @@ public class SessionService {
     @Autowired
     private KafkaTemplate<String,String>  kt;
 
-    public JSONObject getAllSessions(String name) {
+    public JSONObject getAllSessions(String name, boolean available, boolean active) {
         JSONObject jo = new JSONObject();
-        List<DBSession> listSessions = sr.getAllSessions(name);
+        List<DBSession> listSessions;
+        if(available){
+            listSessions = sr.getAllAvailableSessions(name);
+        }else if(active){
+            listSessions = sr.getAllActiveSessions(name);
+        }else{
+            listSessions = sr.getAllSessions(name);
+        }
         Map<Long, Map<String, String>> sessions = new HashMap();
         if(!listSessions.isEmpty()){
             for(DBSession s : listSessions){
-                if(s.getCreator().getUsername().equals(name)){
-                    Map<String, String> details = new HashMap();
-                    details.put("creator", s.getCreator().getUsername());
-                    details.put("title", s.getTitle());
-                    sessions.put(s.getId(), details);
-                }
+                Map<String, String> details = new HashMap();
+                details.put("creator", s.getCreator().getUsername());
+                details.put("title", s.getTitle());
+                sessions.put(s.getId(), details);
             }
         }
         jo.put("sessions", sessions);

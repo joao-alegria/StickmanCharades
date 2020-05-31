@@ -1,7 +1,7 @@
 Important: values need to be double format
 Example:
 
-{"index": 0, "data": {"Head": [2098.635,1708.936,0.0], "Neck": [2227.439,1410.903,0.0], "LeftCollar": [2252.219,1217.666,0.0], "Torso": [2314.787,729.7457,0.0], "Waist": [2356.344,278.0999,0.0], "LeftShoulder": [1860.994,1193.861,0.0], "RightShoulder": [2813.465,1175.847,0.0], "LeftElbow": [1751.346,713.7789,0.0], "RightElbow": [0.0,0.0,0.0], "LeftWrist": [0.0,0.0,0.0], "RightWrist": [0.0,0.0,0.0], "LeftHand": [0.0,1800.0,0.0], "RightHand": [0.0,0.0,0.0], "LeftHip": [0.0,0.0,0.0], "RightHip": [2672.045,226.5393,0.0], "LeftKnee": [0.0,0.0,0.0], "RightKnee": [0.0,0.0,0.0], "LeftAnkle": [0.0,0.0,0.0], "RightAnkle": [0.0,0.0,0.0]}}
+{"username": "joao", "positions": {"Head": [2098.635,1708.936,0.0], "Neck": [2227.439,1410.903,0.0], "LeftCollar": [2252.219,1217.666,0.0], "Torso": [2314.787,729.7457,0.0], "Waist": [2356.344,278.0999,0.0], "LeftShoulder": [1860.994,1193.861,0.0], "RightShoulder": [2813.465,1175.847,0.0], "LeftElbow": [1751.346,713.7789,0.0], "RightElbow": [0.0,0.0,0.0], "LeftWrist": [0.0,0.0,0.0], "RightWrist": [0.0,0.0,0.0], "LeftHand": [0.0,1800.0,0.0], "RightHand": [0.0,0.0,0.0], "LeftHip": [0.0,0.0,0.0], "RightHip": [2672.045,226.5393,0.0], "LeftKnee": [0.0,0.0,0.0], "RightKnee": [0.0,0.0,0.0], "LeftAnkle": [0.0,0.0,0.0], "RightAnkle": [0.0,0.0,0.0]}}
 
 
 Other examples but not supported since not all values are in double format

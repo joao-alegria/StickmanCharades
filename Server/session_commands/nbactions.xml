@@ -18,6 +18,13 @@
                 <Env.ELASTICSEARCH_PASSWORD>passwordesp54</Env.ELASTICSEARCH_PASSWORD>
                 <Env.ELASTICSEARCH_INDEX>esp54-logs</Env.ELASTICSEARCH_INDEX>
                 <Env.KAFKA_BOOTSTRAP_SERVERS>localhost:9092</Env.KAFKA_BOOTSTRAP_SERVERS>
+                <Env.LOGGING_HOST>192.168.160.103</Env.LOGGING_HOST>
+                <Env.LOGGING_PORT>9200</Env.LOGGING_PORT>
+                <Env.LOGGING_USER>esp54</Env.LOGGING_USER>
+                <Env.LOGGING_PASSWORD>passwordesp54</Env.LOGGING_PASSWORD>
+                <Env.LOGGING_INDEX>esp54-logs</Env.LOGGING_INDEX>
+                <Env.MONITORING_HOST>192.168.160.103</Env.MONITORING_HOST>
+                <Env.MONITORING_PORT>8125</Env.MONITORING_PORT>
                 
                 
                 
