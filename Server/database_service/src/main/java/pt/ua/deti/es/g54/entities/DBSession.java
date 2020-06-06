@@ -1,8 +1,6 @@
 package pt.ua.deti.es.g54.entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,18 +42,18 @@ public class DBSession implements Serializable {
     private Boolean isAvailable;
     
     @OneToMany(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,mappedBy="sessionInPlay")
+            fetch = FetchType.EAGER,mappedBy="sessionInPlay")
     private Set<DBUser> players = new HashSet();
     
     @OneToMany(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,mappedBy="targetSession")
+            fetch = FetchType.EAGER,mappedBy="targetSession")
     private Set<DBEvent> events = new HashSet();
     
     @OneToMany(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,mappedBy="targetSession")
+            fetch = FetchType.EAGER,mappedBy="targetSession")
     private Set<DBCommand> commands = new HashSet();
     
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> words;
 
     public DBSession() {
