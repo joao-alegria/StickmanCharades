@@ -14,8 +14,8 @@ using SimpleJSON;
 
 public class Create_Menu_AnimatorFunctions : AnimatorFunctions {
 
-	private readonly string baseURL = "http://192.168.160.103:54882/";
-	private readonly string commandsURL = "http://192.168.160.103:54885/";
+	private readonly string baseURL = "http://192.168.160.20:54081/database/";
+	private readonly string commandsURL = "http://192.168.160.20:54081/commands/";
 
 	void executeOrder() {
 		if(GameObject.Find("Btn Open Session").GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("press")) {
@@ -27,7 +27,7 @@ public class Create_Menu_AnimatorFunctions : AnimatorFunctions {
 
 			titleInput.text = "testing_01";
 			durationInput.text = "600";
-			wordsInput.text = "bola, arvore";
+			wordsInput.text = "bola,arvore";
 
 			if(int.TryParse(durationInput.text, out int durationInput_int)) {
 				JSONArray words = new JSONArray(); 

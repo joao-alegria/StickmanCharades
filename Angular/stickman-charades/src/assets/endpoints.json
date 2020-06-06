@@ -1,5 +1,5 @@
 {
-    "vsEndpoint": "http://localhost:8082",
+    "vsEndpoint": "http://192.168.160.20:54081/database",
     "login": "/login",
     "register": "/register",
     "session": "/session"

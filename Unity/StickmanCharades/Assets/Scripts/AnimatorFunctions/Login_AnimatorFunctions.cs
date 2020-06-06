@@ -17,7 +17,7 @@ public class Login_AnimatorFunctions : AnimatorFunctions {
 
 	public Text warningMessage;
 
-	private readonly string baseURL = "http://192.168.160.103:54882/";
+	private readonly string baseURL = "http://192.168.160.20:54081/database/";
 
 	void executeOrder() {
 		if(GameObject.Find("Btn Login").GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("press")) {
@@ -26,7 +26,7 @@ public class Login_AnimatorFunctions : AnimatorFunctions {
 			TMP_InputField usernameInput = GameObject.Find("UsernameInput").GetComponent<TMP_InputField>();
 			TMP_InputField passwordInput = GameObject.Find("PasswordInput").GetComponent<TMP_InputField>();
 
-			usernameInput.text = "filipe";
+			usernameInput.text = "jack";
 			passwordInput.text = "12345678";
 
 			StartCoroutine(GetLogin(baseURL+"login", authenticate(usernameInput.text,passwordInput.text), token => {

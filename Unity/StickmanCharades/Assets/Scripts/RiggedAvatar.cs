@@ -27,7 +27,7 @@ public class RiggedAvatar : MonoBehaviour {
 
     void Start() {
 
-        /* DEBUGGING */
+        /* DEBUGGING 
         SessionData.KafkaTopic = "esp54_1";
         SessionData.KafkaProps = new Dictionary<string, string> {
             { "group.id","test" },
@@ -71,7 +71,7 @@ public class RiggedAvatar : MonoBehaviour {
         }
         */
         frameCtr++;
-        if(frameCtr%60 == 0) {
+        if(frameCtr%3 == 0) {
             try {
                 var consumeResult = kafkaConsumer.Consume(1);
                 

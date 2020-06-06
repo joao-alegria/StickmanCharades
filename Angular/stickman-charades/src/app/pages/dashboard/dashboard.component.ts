@@ -23,7 +23,7 @@ export class DashboardComponent implements OnInit {
   constructor(private notifierService: NotifierService, private vs: VsService) { }
 
   ngOnInit(): void {
-    var wsocket = new SockJS('http://localhost:8084/game/skeletons', null, { headers: { 'Authorization': 'Basic ' + localStorage.getItem("TOKEN") } });
+    var wsocket = new SockJS('http://192.168.160.20:54081/websocket/game/skeletons', null, { headers: { 'Authorization': 'Basic ' + localStorage.getItem("TOKEN") } });
     this.client = Stomp.Stomp.over(wsocket);
     let _this = this
     _this.client.connect({}, function (frame) {

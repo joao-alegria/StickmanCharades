@@ -3407,7 +3407,7 @@ hr {
 
 /* line 131, ../../../sponDon TI/Running Project/259.Finance_HTML/assets/scss/_h1-hero.scss */
 .hero-area2 {
-  background-image: url(../img/hero/hero2.jpg);
+  /*background-image: url(../img/hero/hero2.jpg);*/
   background-size: cover;
   background-repeat: no-repeat;
   min-height: 56px;
