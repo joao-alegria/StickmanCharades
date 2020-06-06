@@ -63,7 +63,7 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no -l esp54 $RUNTIME_VM "
                             docker pull $DOCKER_REGISTRY/esp54-web:${VERSION}
                             docker stop esp54-web && docker rm esp54-web || echo No container up. Continue
-                            docker run -p 54080:80 -d --name=esp54-web $DOCKER_REGISTRY/esp54-web:${VERSION}
+                            docker run -p 54081:80 -d --name=esp54-web $DOCKER_REGISTRY/esp54-web:${VERSION}
                         "
                     '''
                 }

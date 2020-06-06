@@ -208,17 +208,6 @@ pipeline {
                         }
                     }
                 }
-                stage('Nginx') {
-                    agent any
-                    steps {
-                        dir('Server/nginx') {
-                            sh '''
-                                docker build -t $DOCKER_REGISTRY/esp54-rest-proxy .
-                                docker push $DOCKER_REGISTRY/esp54-rest-proxy
-                            '''
-                        }
-                    }
-                }
             }
         }
         stage('Deploy') {
@@ -319,20 +308,6 @@ pipeline {
                                         -e MONITORING_HOST=$MONITORING_HOST \
                                         -e MONITORING_PORT=$MONITORING_PORT \
                                         $DOCKER_REGISTRY/esp54-server-session_commands:$VERSION_SESSION_COMMANDS
-                                "
-                            '''
-                        }
-                    }
-                }
-                stage('Nginx') {
-                    agent any
-                    steps {
-                        sshagent(credentials: ['esp54-ssh-runtime-vm-20']) {
-                            sh '''
-                                ssh -o StrictHostKeyChecking=no -l esp54 $RUNTIME_VM "
-                                    docker pull $DOCKER_REGISTRY/esp54-rest-proxy
-                                    docker stop esp54-rest-proxy && docker rm esp54-rest-proxy || echo No container up. Continue
-                                    docker run -p 54081:80 -d --name=esp54-rest-proxy $DOCKER_REGISTRY/esp54-rest-proxy
                                 "
                             '''
                         }
