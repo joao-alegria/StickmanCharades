@@ -188,6 +188,7 @@ public class EventHandler extends Thread {
 
             event.put("command", "stopSession");
             event.put("session", session);
+            event.put("username", username);
 
             kafkaTemplate.send(Constants.SESSION_COMMAND_TOPIC, event.toJSONString());
 

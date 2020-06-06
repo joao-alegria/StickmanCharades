@@ -137,6 +137,18 @@ export class SkeletonComponent implements OnInit {
             }
             _this.draw(positions)
           }
+          else {
+            if (data.hasOwnProperty("type")) {
+              if (data["type"] == "gameOrder") {
+                if (data.hasOwnProperty("msg")) {
+                  if (data["msg"] == "Session ended.") {
+                    this.clearSocket()
+                    $('#myModal').modal('hide')
+                  }
+                }
+              }
+            }
+          }
         });
       })
     });

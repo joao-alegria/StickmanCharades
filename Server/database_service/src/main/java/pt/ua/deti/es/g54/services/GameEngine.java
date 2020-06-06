@@ -101,11 +101,17 @@ public class GameEngine{
         return true;
     }
     
-    public void stopGame(String sessionTopic, DBSession session){
+    public void stopGame(String sessionTopic){
         logger.info("Stopping game associated with listenning topic " + sessionTopic);
 
         for(OngoingGame game:games){
-            games.remove(game);
+            if(game.getSessionTopic().equals(sessionTopic)){
+                games.remove(game);
+                JSONObject message = new JSONObject();
+                message.put("msg", "Session ended.");
+                message.put("type", "gameOrder");
+                kt.send(sessionTopic, message.toJSONString());
+            }
         }
     }
     

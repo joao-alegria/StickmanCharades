@@ -6,11 +6,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <script>
-        var wsocket = new SockJS('http://192.168.160.103:54884/game/skeletons'); // localhost:8080
+        var wsocket = new SockJS('http://localhost:8084/game/skeletons'); // localhost:8080
         var client = Stomp.over(wsocket);
         client.connect({}, function (frame) {
-            client.subscribe('/game/admin', message => {
-                console.info(message)
+            client.subscribe('/game/session/esp54_1', message => {
                 console.info(JSON.parse(message.body))
             });
         });
