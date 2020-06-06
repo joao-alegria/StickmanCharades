@@ -14,8 +14,8 @@ pipeline {
         }
     }
     environment {
-        RUNTIME_VM=192.168.160.99:5000
-        DOCKER_REGISTRY=192.168.160.99:5000
+        RUNTIME_VM = "192.168.160.99:5000"
+        DOCKER_REGISTRY = "192.168.160.99:5000"
         VERSION = """${sh(
             returnStdout:true,
             script: 'jq -r .version Angular/stickman-charades/package.json'

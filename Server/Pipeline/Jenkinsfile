@@ -8,17 +8,17 @@ pipeline {
     }
     agent any
     environment {
-        RUNTIME_VM=192.168.160.20
-        DOCKER_REGISTRY=192.168.160.99:5000
-        PERSISTENCE_HOST=192.168.160.20
-        PERSISTENCE_PORT=5432
-        PERSISTENCE_DB=esp54
-        KAFKA_BOOTSTRAP_SERVERS=192.168.160.20:9093
-        LOGGING_HOST=192.168.160.103
-        LOGGING_PORT=9200
-        LOGGING_INDEX=esp54-logs
-        MONITORING_HOST=192.168.160.103
-        MONITORING_PORT=8125
+        RUNTIME_VM = "192.168.160.20"
+        DOCKER_REGISTRY = "192.168.160.99:5000"
+        PERSISTENCE_HOST = "192.168.160.20"
+        PERSISTENCE_PORT = "5432"
+        PERSISTENCE_DB = "esp54"
+        KAFKA_BOOTSTRAP_SERVERS = "192.168.160.20:9093"
+        LOGGING_HOST = "192.168.160.103"
+        LOGGING_PORT = "9200"
+        LOGGING_INDEX = "esp54-logs"
+        MONITORING_HOST = "192.168.160.103"
+        MONITORING_PORT = "8125"
         VERSION_DATABASE_SERVICE = """${sh(
             returnStdout:true,
             script: 'sed -e \'s/xmlns=".*"//g\' Server/database_service/pom.xml | xmllint --xpath "//project/version/text()" -'
