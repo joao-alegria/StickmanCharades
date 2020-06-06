@@ -213,7 +213,7 @@ pipeline {
                     steps {
                         dir('Server/nginx') {
                             sh '''
-                                docker build -t esp54-rest-proxy .
+                                docker build -t $DOCKER_REGISTRY/esp54-rest-proxy .
                                 docker push $DOCKER_REGISTRY/esp54-rest-proxy
                             '''
                         }
