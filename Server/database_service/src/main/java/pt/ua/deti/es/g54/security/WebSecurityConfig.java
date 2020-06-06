@@ -23,7 +23,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/admin/**").hasRole("ADMIN")
             .antMatchers("/register").permitAll()
             .antMatchers("/login").authenticated()
-            .antMatchers("/friends/**", "/session/**", "/game/**").hasRole("USER")
+            .antMatchers("/friends/**", "/game/**").hasRole("USER")
+            .antMatchers("/session/**").access("hasRole('USER') or hasRole('ADMIN')")
             .and().httpBasic()
             .and().logout().logoutUrl("/logout").invalidateHttpSession(true).deleteCookies("JSESSIONID").clearAuthentication(true)
             .and().csrf().disable();

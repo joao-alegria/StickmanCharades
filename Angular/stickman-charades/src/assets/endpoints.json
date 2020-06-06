@@ -1,5 +1,6 @@
 {
     "vsEndpoint": "http://192.168.160.20:54081/database",
+    "websocket": "http://192.168.160.20:54081/websocket",
     "login": "/login",
     "register": "/register",
     "session": "/session"

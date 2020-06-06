@@ -126,7 +126,6 @@ public class MainListener {
                 notification.put("user", username);
                 notification.put("msg", message.get("msg"));
                 simpMessagingTemplate.convertAndSend("/game/admin", notification.toJSONString());
-                kafkaTemplate.send(session, notification.toJSONString());
                 break;
             case "stopSession":
                 synchronized (stopSession) {

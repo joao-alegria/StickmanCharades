@@ -14,6 +14,8 @@ pipeline {
         }
     }
     environment {
+        RUNTIME_VM = "192.168.160.20"
+        DOCKER_REGISTRY = "192.168.160.99:5000"
         VERSION = """${sh(
             returnStdout:true,
             script: 'jq -r .version Angular/stickman-charades/package.json'
@@ -45,8 +47,8 @@ pipeline {
                 dir('Angular/stickman-charades') {
                     sh '''
                         docker build -t esp54-web:${VERSION} --file Dockerfile-prod .
-                        docker tag esp54-web:${VERSION} 192.168.160.99:5000/esp54-web:${VERSION}
-                        docker push 192.168.160.99:5000/esp54-web:$VERSION
+                        docker tag esp54-web:${VERSION} $DOCKER_REGISTRY/esp54-web:${VERSION}
+                        docker push $DOCKER_REGISTRY/esp54-web:$VERSION
                     '''
                 }
             }
@@ -56,12 +58,12 @@ pipeline {
                 branch 'master'
             }
             steps {
-                sshagent(credentials: ['esp54-ssh-runtime-vm']) {
+                sshagent(credentials: ['esp54-ssh-runtime-vm-20']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no -l esp54 192.168.160.103 "
-                            docker pull 192.168.160.99:5000/esp54-web:${VERSION}
+                        ssh -o StrictHostKeyChecking=no -l esp54 $RUNTIME_VM "
+                            docker pull $DOCKER_REGISTRY/esp54-web:${VERSION}
                             docker stop esp54-web && docker rm esp54-web || echo No container up. Continue
-                            docker run -p 54080:80 -d --name=esp54-web 192.168.160.99:5000/esp54-web:${VERSION}
+                            docker run -p 54080:80 -d --name=esp54-web $DOCKER_REGISTRY/esp54-web:${VERSION}
                         "
                     '''
                 }

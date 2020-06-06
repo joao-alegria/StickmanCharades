@@ -8,6 +8,19 @@ pipeline {
     }
     agent any
     environment {
+        RUNTIME_VM = "192.168.160.20"
+        DOCKER_REGISTRY = "192.168.160.99:5000"
+        PERSISTENCE_HOST = "192.168.160.20"
+        PERSISTENCE_PORT = "5432"
+        PERSISTENCE_DB = "esp54"
+        PERSISTENCE_CREDS = credentials('esp54-persistence')
+        KAFKA_BOOTSTRAP_SERVERS = "192.168.160.20:9093"
+        LOGGING_HOST = "192.168.160.103"
+        LOGGING_PORT = "9200"
+        LOGGING_INDEX = "esp54-logs"
+        LOGGING_CREDS = credentials('esp54-logging')
+        MONITORING_HOST = "192.168.160.103"
+        MONITORING_PORT = "8125"
         VERSION_DATABASE_SERVICE = """${sh(
             returnStdout:true,
             script: 'sed -e \'s/xmlns=".*"//g\' Server/database_service/pom.xml | xmllint --xpath "//project/version/text()" -'
@@ -137,8 +150,8 @@ pipeline {
 
                                     docker build -t esp54-server-database_service:$VERSION_DATABASE_SERVICE .
 
-                                    docker tag esp54-server-database_service:$VERSION_DATABASE_SERVICE 192.168.160.99:5000/esp54-server-database_service:$VERSION_DATABASE_SERVICE
-                                    docker push 192.168.160.99:5000/esp54-server-database_service:$VERSION_DATABASE_SERVICE
+                                    docker tag esp54-server-database_service:$VERSION_DATABASE_SERVICE $DOCKER_REGISTRY/esp54-server-database_service:$VERSION_DATABASE_SERVICE
+                                    docker push $DOCKER_REGISTRY/esp54-server-database_service:$VERSION_DATABASE_SERVICE
                                 '''
                             }
                         }
@@ -154,8 +167,8 @@ pipeline {
 
                                     docker build -t esp54-server-event_handler:$VERSION_EVENT_HANDLER .
 
-                                    docker tag esp54-server-event_handler:$VERSION_EVENT_HANDLER 192.168.160.99:5000/esp54-server-event_handler:$VERSION_EVENT_HANDLER
-                                    docker push 192.168.160.99:5000/esp54-server-event_handler:$VERSION_EVENT_HANDLER
+                                    docker tag esp54-server-event_handler:$VERSION_EVENT_HANDLER $DOCKER_REGISTRY/esp54-server-event_handler:$VERSION_EVENT_HANDLER
+                                    docker push $DOCKER_REGISTRY/esp54-server-event_handler:$VERSION_EVENT_HANDLER
                                 '''
                             }
                         }
@@ -171,8 +184,8 @@ pipeline {
 
                                     docker build -t esp54-server-kafka_translator:$VERSION_KAFKA_TRANSLATOR .
 
-                                    docker tag esp54-server-kafka_translator:$VERSION_KAFKA_TRANSLATOR 192.168.160.99:5000/esp54-server-kafka_translator:$VERSION_KAFKA_TRANSLATOR
-                                    docker push 192.168.160.99:5000/esp54-server-kafka_translator:$VERSION_KAFKA_TRANSLATOR
+                                    docker tag esp54-server-kafka_translator:$VERSION_KAFKA_TRANSLATOR $DOCKER_REGISTRY/esp54-server-kafka_translator:$VERSION_KAFKA_TRANSLATOR
+                                    docker push $DOCKER_REGISTRY/esp54-server-kafka_translator:$VERSION_KAFKA_TRANSLATOR
                                 '''
                             }
                         }
@@ -188,10 +201,21 @@ pipeline {
 
                                     docker build -t esp54-server-session_commands:$VERSION_SESSION_COMMANDS .
 
-                                    docker tag esp54-server-session_commands:$VERSION_SESSION_COMMANDS 192.168.160.99:5000/esp54-server-session_commands:$VERSION_SESSION_COMMANDS
-                                    docker push 192.168.160.99:5000/esp54-server-session_commands:$VERSION_SESSION_COMMANDS
+                                    docker tag esp54-server-session_commands:$VERSION_SESSION_COMMANDS $DOCKER_REGISTRY/esp54-server-session_commands:$VERSION_SESSION_COMMANDS
+                                    docker push $DOCKER_REGISTRY/esp54-server-session_commands:$VERSION_SESSION_COMMANDS
                                 '''
                             }
+                        }
+                    }
+                }
+                stage('Nginx') {
+                    agent any
+                    steps {
+                        dir('Server/nginx') {
+                            sh '''
+                                docker build -t $DOCKER_REGISTRY/esp54-rest-proxy .
+                                docker push $DOCKER_REGISTRY/esp54-rest-proxy
+                            '''
                         }
                     }
                 }
@@ -206,26 +230,26 @@ pipeline {
                 stage('Database Service') {
                     agent any
                     steps {
-                        sshagent(credentials: ['esp54-ssh-runtime-vm']) {
+                        sshagent(credentials: ['esp54-ssh-runtime-vm-20']) {
                             sh '''
-                                ssh -o StrictHostKeyChecking=no -l esp54 192.168.160.103 "
-                                    docker pull 192.168.160.99:5000/esp54-server-database_service:$VERSION_DATABASE_SERVICE
+                                ssh -o StrictHostKeyChecking=no -l esp54 $RUNTIME_VM "
+                                    docker pull $DOCKER_REGISTRY/esp54-server-database_service:$VERSION_DATABASE_SERVICE
                                     docker stop esp54-server-database_service && docker rm esp54-server-database_service || echo No container up. Continue
                                     docker run -p 54882:8082 -d --name=esp54-server-database_service \
-                                        -e PERSISTENCE_HOST=192.168.160.103 \
-                                        -e PERSISTENCE_PORT=5432 \
-                                        -e PERSISTENCE_DB=esp54 \
-                                        -e PERSISTENCE_USER=esp54 \
-                                        -e PERSISTENCE_PASSWORD=esp54 \
-                                        -e KAFKA_BOOTSTRAP_SERVERS=192.168.160.103:9092 \
-                                        -e LOGGING_HOST=192.168.160.103 \
-                                        -e LOGGING_PORT=9200 \
-                                        -e LOGGING_USER=esp54 \
-                                        -e LOGGING_PASSWORD=passwordesp54 \
-                                        -e LOGGING_INDEX=esp54-logs \
-                                        -e MONITORING_HOST=192.168.160.103 \
-                                        -e MONITORING_PORT=8125 \
-                                        192.168.160.99:5000/esp54-server-database_service:$VERSION_DATABASE_SERVICE
+                                        -e PERSISTENCE_HOST=$PERSISTENCE_HOST \
+                                        -e PERSISTENCE_PORT=$PERSISTENCE_PORT \
+                                        -e PERSISTENCE_DB=$PERSISTENCE_DB \
+                                        -e PERSISTENCE_USER=$PERSISTENCE_CREDS_USR \
+                                        -e PERSISTENCE_PASSWORD=$PERSISTENCE_CREDS_PSW \
+                                        -e KAFKA_BOOTSTRAP_SERVERS=$KAFKA_BOOTSTRAP_SERVERS \
+                                        -e LOGGING_HOST=$LOGGING_HOST \
+                                        -e LOGGING_PORT=$LOGGING_PORT \
+                                        -e LOGGING_USER=$LOGGING_CREDS_USR \
+                                        -e LOGGING_PASSWORD=$LOGGING_CREDS_PSW \
+                                        -e LOGGING_INDEX=$LOGGING_INDEX \
+                                        -e MONITORING_HOST=$MONITORING_HOST \
+                                        -e MONITORING_PORT=$MONITORING_PORT \
+                                        $DOCKER_REGISTRY/esp54-server-database_service:$VERSION_DATABASE_SERVICE
                                 "
                             '''
                         }
@@ -234,21 +258,21 @@ pipeline {
                 stage('Event Handler') {
                     agent any
                     steps {
-                        sshagent(credentials: ['esp54-ssh-runtime-vm']) {
+                        sshagent(credentials: ['esp54-ssh-runtime-vm-20']) {
                             sh '''
-                                ssh -o StrictHostKeyChecking=no -l esp54 192.168.160.103 "
-                                    docker pull 192.168.160.99:5000/esp54-server-event_handler:$VERSION_EVENT_HANDLER
+                                ssh -o StrictHostKeyChecking=no -l esp54 $RUNTIME_VM "
+                                    docker pull $DOCKER_REGISTRY/esp54-server-event_handler:$VERSION_EVENT_HANDLER
                                     docker stop esp54-server-event_handler && docker rm esp54-server-event_handler || echo No container up. Continue
                                     docker run -p 54883:8083 -d --name=esp54-server-event_handler \
-                                        -e KAFKA_BOOTSTRAP_SERVERS=192.168.160.103:9092 \
-                                        -e LOGGING_HOST=192.168.160.103 \
-                                        -e LOGGING_PORT=9200 \
-                                        -e LOGGING_USER=esp54 \
-                                        -e LOGGING_PASSWORD=passwordesp54 \
-                                        -e LOGGING_INDEX=esp54-logs \
-                                        -e MONITORING_HOST=192.168.160.103 \
-                                        -e MONITORING_PORT=8125 \
-                                        192.168.160.99:5000/esp54-server-event_handler:$VERSION_EVENT_HANDLER
+                                        -e KAFKA_BOOTSTRAP_SERVERS=$KAFKA_BOOTSTRAP_SERVERS \
+                                        -e LOGGING_HOST=$LOGGING_HOST \
+                                        -e LOGGING_PORT=$LOGGING_PORT \
+                                        -e LOGGING_USER=$LOGGING_CREDS_USR \
+                                        -e LOGGING_PASSWORD=$LOGGING_CREDS_PSW \
+                                        -e LOGGING_INDEX=$LOGGING_INDEX \
+                                        -e MONITORING_HOST=$MONITORING_HOST \
+                                        -e MONITORING_PORT=$MONITORING_PORT \
+                                        $DOCKER_REGISTRY/esp54-server-event_handler:$VERSION_EVENT_HANDLER
                                 "
                             '''
                         }
@@ -257,21 +281,21 @@ pipeline {
                 stage('Kafka Translator') {
                     agent any
                     steps {
-                        sshagent(credentials: ['esp54-ssh-runtime-vm']) {
+                        sshagent(credentials: ['esp54-ssh-runtime-vm-20']) {
                             sh '''
-                                ssh -o StrictHostKeyChecking=no -l esp54 192.168.160.103 "
-                                    docker pull 192.168.160.99:5000/esp54-server-kafka_translator:$VERSION_KAFKA_TRANSLATOR
+                                ssh -o StrictHostKeyChecking=no -l esp54 $RUNTIME_VM "
+                                    docker pull $DOCKER_REGISTRY/esp54-server-kafka_translator:$VERSION_KAFKA_TRANSLATOR
                                     docker stop esp54-server-kafka_translator && docker rm esp54-server-kafka_translator || echo No container up. Continue
                                     docker run -p 54884:8084 -d --name=esp54-server-kafka_translator \
-                                        -e KAFKA_BOOTSTRAP_SERVERS=192.168.160.103:9092 \
-                                        -e LOGGING_HOST=192.168.160.103 \
-                                        -e LOGGING_PORT=9200 \
-                                        -e LOGGING_USER=esp54 \
-                                        -e LOGGING_PASSWORD=passwordesp54 \
-                                        -e LOGGING_INDEX=esp54-logs \
-                                        -e MONITORING_HOST=192.168.160.103 \
-                                        -e MONITORING_PORT=8125 \
-                                        192.168.160.99:5000/esp54-server-kafka_translator:$VERSION_KAFKA_TRANSLATOR
+                                        -e KAFKA_BOOTSTRAP_SERVERS=$KAFKA_BOOTSTRAP_SERVERS \
+                                        -e LOGGING_HOST=$LOGGING_HOST \
+                                        -e LOGGING_PORT=$LOGGING_PORT \
+                                        -e LOGGING_USER=$LOGGING_CREDS_USR \
+                                        -e LOGGING_PASSWORD=$LOGGING_CREDS_PSW \
+                                        -e LOGGING_INDEX=$LOGGING_INDEX \
+                                        -e MONITORING_HOST=$MONITORING_HOST \
+                                        -e MONITORING_PORT=$MONITORING_PORT \
+                                        $DOCKER_REGISTRY/esp54-server-kafka_translator:$VERSION_KAFKA_TRANSLATOR
                                 "
                             '''
                         }
@@ -280,21 +304,35 @@ pipeline {
                 stage('Session Command') {
                     agent any
                     steps {
-                        sshagent(credentials: ['esp54-ssh-runtime-vm']) {
+                        sshagent(credentials: ['esp54-ssh-runtime-vm-20']) {
                             sh '''
-                                ssh -o StrictHostKeyChecking=no -l esp54 192.168.160.103 "
-                                    docker pull 192.168.160.99:5000/esp54-server-session_commands:$VERSION_SESSION_COMMANDS
+                                ssh -o StrictHostKeyChecking=no -l esp54 $RUNTIME_VM "
+                                    docker pull $DOCKER_REGISTRY/esp54-server-session_commands:$VERSION_SESSION_COMMANDS
                                     docker stop esp54-server-session_commands && docker rm esp54-server-session_commands || echo No container up. Continue
                                     docker run -p 54885:8085 -d --name=esp54-server-session_commands \
-                                        -e KAFKA_BOOTSTRAP_SERVERS=192.168.160.103:9092 \
-                                        -e LOGGING_HOST=192.168.160.103 \
-                                        -e LOGGING_PORT=9200 \
-                                        -e LOGGING_USER=esp54 \
-                                        -e LOGGING_PASSWORD=passwordesp54 \
-                                        -e LOGGING_INDEX=esp54-logs \
-                                        -e MONITORING_HOST=192.168.160.103 \
-                                        -e MONITORING_PORT=8125 \
-                                        192.168.160.99:5000/esp54-server-session_commands:$VERSION_SESSION_COMMANDS
+                                        -e KAFKA_BOOTSTRAP_SERVERS=$KAFKA_BOOTSTRAP_SERVERS \
+                                        -e LOGGING_HOST=$LOGGING_HOST \
+                                        -e LOGGING_PORT=$LOGGING_PORT \
+                                        -e LOGGING_USER=$LOGGING_CREDS_USR \
+                                        -e LOGGING_PASSWORD=$LOGGING_CREDS_PSW \
+                                        -e LOGGING_INDEX=$LOGGING_INDEX \
+                                        -e MONITORING_HOST=$MONITORING_HOST \
+                                        -e MONITORING_PORT=$MONITORING_PORT \
+                                        $DOCKER_REGISTRY/esp54-server-session_commands:$VERSION_SESSION_COMMANDS
+                                "
+                            '''
+                        }
+                    }
+                }
+                stage('Nginx') {
+                    agent any
+                    steps {
+                        sshagent(credentials: ['esp54-ssh-runtime-vm-20']) {
+                            sh '''
+                                ssh -o StrictHostKeyChecking=no -l esp54 $RUNTIME_VM "
+                                    docker pull $DOCKER_REGISTRY/esp54-rest-proxy
+                                    docker stop esp54-rest-proxy && docker rm esp54-rest-proxy || echo No container up. Continue
+                                    docker run -p 54081:80 -d --name=esp54-rest-proxy $DOCKER_REGISTRY/esp54-rest-proxy
                                 "
                             '''
                         }

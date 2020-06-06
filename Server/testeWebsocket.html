@@ -9,8 +9,7 @@
         var wsocket = new SockJS('http://localhost:8084/game/skeletons'); // localhost:8080
         var client = Stomp.over(wsocket);
         client.connect({}, function (frame) {
-            client.subscribe('/game/admin', message => {
-                console.info(message)
+            client.subscribe('/game/session/esp54_1', message => {
                 console.info(JSON.parse(message.body))
             });
         });

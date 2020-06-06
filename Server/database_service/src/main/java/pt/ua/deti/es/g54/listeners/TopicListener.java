@@ -127,7 +127,8 @@ public class TopicListener {
                     if(!listSessions.isEmpty()){
                         targetSession=listSessions.get(0);
                         targetSession.setIsActive(false);
-                        ge.stopGame((String)json.get("session"), targetSession);
+                        targetSession.setIsAvailable(false);
+                        ge.stopGame((String)json.get("session"));
                         sr.save(targetSession);
                     }else{
                         logger.error("Execute stopSession command failed. No session session with name" + json.get("session"));

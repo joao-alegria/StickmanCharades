@@ -43,6 +43,8 @@ public class EventHandler extends Thread {
 
     private boolean closed;
 
+    private long lastNotifyAdminTimestamp;
+
     public EventHandler(String sessionId, KafkaTemplate<String, String> kafkaTemplate, String KAFKA_BOOTSTRAP_SERVERS, Counter notifyAdmin, Counter stopSession, Counter wordGuess, Counter initialPosition) {
         logger.info(String.format(
             "Initializing EventHandler for session %s",
@@ -78,6 +80,8 @@ public class EventHandler extends Thread {
         this.initialPosition = initialPosition;
 
         closed = false;
+
+        lastNotifyAdminTimestamp = -1;
     }
 
     public void sessionClosed() {
@@ -96,7 +100,7 @@ public class EventHandler extends Thread {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
 
             for (ConsumerRecord<String, String> record : records) {
-                logger.error("Parsing a record");
+                logger.info("Parsing a record");
                 JSONObject json;
                 try {
                     json = (JSONObject) parser.parse(record.value());
@@ -184,6 +188,7 @@ public class EventHandler extends Thread {
 
             event.put("command", "stopSession");
             event.put("session", session);
+            event.put("username", username);
 
             kafkaTemplate.send(Constants.SESSION_COMMAND_TOPIC, event.toJSONString());
 
@@ -194,9 +199,10 @@ public class EventHandler extends Thread {
 
             kafkaTemplate.send(Constants.DATABASE_SERVICE_TOPIC, event.toJSONString());
         }
-        else if ((((double)rightHand.get(1)) > ((double)head.get(1)))
+        else if (((((double)rightHand.get(1)) > ((double)head.get(1)))
                  ||
-                 (((double)leftHand.get(1)) > ((double)head.get(1)))) {  //raise hand above head
+                 (((double)leftHand.get(1)) > ((double)head.get(1)))) &&  // raise hand above head
+                 System.currentTimeMillis() - lastNotifyAdminTimestamp >= 5000) {  // alert with a interval of 5 seconds
             synchronized (notifyAdmin) {
                 notifyAdmin.increment();
             }
@@ -219,6 +225,8 @@ public class EventHandler extends Thread {
             event.put("time", System.currentTimeMillis());
 
             kafkaTemplate.send(Constants.DATABASE_SERVICE_TOPIC, event.toJSONString());
+
+            lastNotifyAdminTimestamp = System.currentTimeMillis();
         }
 
         double leftDist = Math.abs(((double)leftHand.get(1)) - ((double)leftShoulder.get(1)));
