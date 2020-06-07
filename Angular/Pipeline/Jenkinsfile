@@ -8,8 +8,7 @@ pipeline {
     }
     agent {
         docker {
-            image '192.168.160.99:5000/esp54-web_pipeline_agent'
-            registryUrl 'https://192.168.160.99:5000'
+            filename 'Angular/Pipeline/AgentDockerfile'
             args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
