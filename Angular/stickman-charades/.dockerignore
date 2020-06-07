@@ -2,5 +2,6 @@ node_modules
 dist
 .*
 *.md
-Dockerfile
+Dockerfile-prod
+Dockerfile-dev
 package-lock.json
