@@ -15,7 +15,7 @@ import javax.persistence.Id;
 public class DBFriendInvite implements Serializable{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     @Column
