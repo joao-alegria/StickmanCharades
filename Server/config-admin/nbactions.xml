@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>run</actionName>
+            <packagings>
+                <packaging>jar</packaging>
+            </packagings>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
+            </goals>
+            <properties>
+                <exec.args>-classpath %classpath pt.ua.deti.es.g54.DatabaseServiceApplication</exec.args>
+                <exec.executable>java</exec.executable>
+                <Env.KAFKA_BOOTSTRAP_SERVERS>localhost:9092</Env.KAFKA_BOOTSTRAP_SERVERS>
+                <Env.PERSISTENCE_HOST>localhost</Env.PERSISTENCE_HOST>
+                <Env.PERSISTENCE_PORT>5432</Env.PERSISTENCE_PORT>
+                <Env.PERSISTENCE_DB>postgres</Env.PERSISTENCE_DB>
+                <Env.PERSISTENCE_USER>postgres</Env.PERSISTENCE_USER>
+                <Env.PERSISTENCE_PASSWORD>postgres</Env.PERSISTENCE_PASSWORD>
+                <Env.KAFKA_BOOTSTRAP_SERVERS>localhost:9092</Env.KAFKA_BOOTSTRAP_SERVERS>
+                
+                
+                
+                
+
+
+
+                <Env.ELASTICSEARCH_HOST>192.168.160.103</Env.ELASTICSEARCH_HOST>
+                <Env.ELASTICSEARCH_PORT>9200</Env.ELASTICSEARCH_PORT>
+                <Env.ELASTICSEARCH_USER>esp54</Env.ELASTICSEARCH_USER>
+                <Env.ELASTICSEARCH_PASSWORD>passwordesp54</Env.ELASTICSEARCH_PASSWORD>
+                <Env.LOGGING_PORT>9999</Env.LOGGING_PORT>
+                <Env.LOGGING_USER>test</Env.LOGGING_USER>
+                <Env.LOGGING_PASSWORD>test</Env.LOGGING_PASSWORD>
+                <Env.LOGGING_INDEX>test</Env.LOGGING_INDEX>
+                <Env.MONITORING_HOST>localhost</Env.MONITORING_HOST>
+                <Env.MONITORING_PORT>9998</Env.MONITORING_PORT>
+                <Env.LOGGING_HOST>localhost</Env.LOGGING_HOST>
+                <Env.ELASTICSEARCH_INDEX>esp54-logs</Env.ELASTICSEARCH_INDEX>
+
+                
+                
+                
+                
+
+            </properties>
+        </action>
+        <action>
+            <actionName>debug</actionName>
+            <packagings>
+                <packaging>jar</packaging>
+            </packagings>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
+            </goals>
+            <properties>
+                <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath
+                    pt.ua.deti.es.g54.DatabaseServiceApplication</exec.args>
+                <exec.executable>java</exec.executable>
+                <jpda.listen>true</jpda.listen>
+            </properties>
+        </action>
+        <action>
+            <actionName>profile</actionName>
+            <packagings>
+                <packaging>jar</packaging>
+            </packagings>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
+            </goals>
+            <properties>
+                <exec.args>-classpath %classpath pt.ua.deti.es.g54.DatabaseServiceApplication</exec.args>
+                <exec.executable>java</exec.executable>
+            </properties>
+        </action>
+        <action>
+            <actionName>build</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>install</goal>
+            </goals>
+            <properties>
+                <Env.KAFKA_BOOTSTRAP_SERVERS>localhost:9092</Env.KAFKA_BOOTSTRAP_SERVERS>
+            </properties>
+        </action>
+        <action>
+            <actionName>test</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>test</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>test.single</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>test-compile</goal>
+                <goal>surefire:test</goal>
+            </goals>
+            <properties>
+                <Env.KAFKA_BOOTSTRAP_SERVERS>localhost:9092</Env.KAFKA_BOOTSTRAP_SERVERS>
+                
+                
+                
+                
+                
+                
+                
+                
+            </properties>
+        </action>
+        <action>
+            <actionName>integration-test.single</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>integration-test</goal>
+            </goals>
+            <properties>
+                <test>DummyToSkipUnitTests</test>
+                <failIfNoTests>false</failIfNoTests>
+                
+                
+                
+                
+                
+                
+                
+                
+            </properties>
+        </action>
+    </actions>

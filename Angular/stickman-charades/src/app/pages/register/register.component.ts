@@ -27,7 +27,7 @@ export class RegisterComponent implements OnInit {
       accountType = "USER";
     }
 
-    await this.vs.register($("#firstname").val().trim(), $("#lastname").val().trim(), $("#useremail").val().trim(), $("#username").val().trim(), $("#userpassword").val().trim(), accountType).catch(async () => {
+    await this.vs.register($("#firstname").val().trim(), $("#lastname").val().trim(), $("#useremail").val().trim(), $("#username").val().trim(), $("#userpassword").val().trim()).catch(async () => {
 
       await this.vs.login($("#username").val().trim(), $("#userpassword").val().trim()).then(data => {
         localStorage.setItem("loggedIn", "true");

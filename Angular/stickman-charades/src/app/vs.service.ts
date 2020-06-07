@@ -89,7 +89,7 @@ export class VsService {
     }))
   }
 
-  async register(firstname: string, lastname: string, email: string, username: string, password: string, accountType: string) {
+  async register(firstname: string, lastname: string, email: string, username: string, password: string) {
     if (this.endpoints == undefined) {
       await this.loadEndpoints().then(data => { this.endpoints = data })
     }
@@ -98,11 +98,6 @@ export class VsService {
     data["username"] = username
     data["password"] = password
     data["email"] = email
-    if (accountType == "ADMIN") {
-      data["admin"] = true
-    } else {
-      data["admin"] = false
-    }
 
     return await this.http.post(this.endpoints["vsEndpoint"] + this.endpoints["register"], data, { observe: 'response' }).toPromise();
   }
