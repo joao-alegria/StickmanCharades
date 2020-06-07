@@ -145,6 +145,7 @@ export class SkeletonComponent implements OnInit {
                     _this.clearSocket()
                     _this.clear()
                     $('#myModal').hide()
+                    $('.modal-backdrop').hide()
                   }
                 }
               }
