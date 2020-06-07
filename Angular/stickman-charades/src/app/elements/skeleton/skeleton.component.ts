@@ -143,7 +143,8 @@ export class SkeletonComponent implements OnInit {
                 if (data.hasOwnProperty("msg")) {
                   if (data["msg"] == "Session ended.") {
                     _this.clearSocket()
-                    $('#myModal').modal('hide')
+                    _this.clear()
+                    $('#myModal').hide()
                   }
                 }
               }
