@@ -36,6 +36,10 @@ export class DashboardComponent implements OnInit {
       this.sessions = [];
       this.update();
     })
+
+    $("#myModal").on("hidden.bs.modal", function () {
+      this.update()
+    });
   }
 
   notify(message) {

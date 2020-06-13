@@ -16,6 +16,7 @@ public class Create_Menu_AnimatorFunctions : AnimatorFunctions {
 
 	private readonly string baseURL = "http://192.168.160.20:54081/database/";
 	private readonly string commandsURL = "http://192.168.160.20:54081/commands/";
+	private readonly string kafkaURL = "192.168.160.20:9093"; // "localhost:9092"
 
 	void executeOrder() {
 		if(GameObject.Find("Btn Open Session").GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("press")) {
@@ -25,9 +26,9 @@ public class Create_Menu_AnimatorFunctions : AnimatorFunctions {
 			TMP_InputField durationInput = GameObject.Find("DurationInput").GetComponent<TMP_InputField>();
 			TMP_InputField wordsInput = GameObject.Find("WordsInput").GetComponent<TMP_InputField>();
 
-			titleInput.text = "testing_01";
+			titleInput.text = "test01";
 			durationInput.text = "600";
-			wordsInput.text = "bola,arvore";
+			wordsInput.text = "tree,ball";
 
 			if(int.TryParse(durationInput.text, out int durationInput_int)) {
 				JSONArray words = new JSONArray(); 
@@ -55,7 +56,7 @@ public class Create_Menu_AnimatorFunctions : AnimatorFunctions {
 				SessionData.KafkaTopic = "esp54_"+SessionData.SessionId; //"esp54_1"; //"actor0002";
 				SessionData.KafkaProps = new Dictionary<string, string> {
 					{ "group.id","test" },
-					{ "bootstrap.servers", "192.168.160.103:9092" }, // "localhost:9092"
+					{ "bootstrap.servers", kafkaURL }, 
 					{ "enable.auto.commit", "false" },
 					{ "auto.offset.reset", "latest" }
 				};

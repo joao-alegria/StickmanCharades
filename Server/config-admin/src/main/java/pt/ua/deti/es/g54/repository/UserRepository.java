@@ -1,0 +1,27 @@
+package pt.ua.deti.es.g54.repository;
+
+import pt.ua.deti.es.g54.entities.DBRole;
+import pt.ua.deti.es.g54.entities.DBUser;
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+/**
+ *
+ * @author joaoalegria
+ */
+@Repository
+public interface UserRepository extends JpaRepository<DBUser, Long>{
+
+    @Query(value = "SELECT COUNT(u) FROM DBUser u WHERE u.email = :email")
+    long getEmailCount(@Param("email") String email);
+
+    @Query(value = "SELECT COUNT(g) FROM DBUser u, DBRole g WHERE g.name = 'ROLE_ADMIN'")
+    long adminUsersCounts();
+
+    @Query(value = "SELECT g from DBRole g WHERE g.name = 'ROLE_ADMIN'")
+    List<DBRole> getAdminRole();
+
+}

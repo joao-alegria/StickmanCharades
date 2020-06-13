@@ -93,7 +93,7 @@ public class SessionRest {
 //        return ss.updateSession(principal.getName(), sessionId, new JSONObject());
 //    }
     
-    @DeleteMapping(value="/session/{sessionId")
+    @DeleteMapping(value="/session/{sessionId}")
     public JSONObject deleteSession(@PathVariable Long sessionId, Principal principal){
         logger.info(String.format(
             "Delete requet for session %d by user %s",

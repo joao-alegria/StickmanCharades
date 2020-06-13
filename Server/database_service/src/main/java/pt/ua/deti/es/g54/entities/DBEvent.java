@@ -23,7 +23,7 @@ import javax.persistence.ManyToOne;
 public class DBEvent implements Serializable{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     @ManyToOne(cascade = CascadeType.MERGE)

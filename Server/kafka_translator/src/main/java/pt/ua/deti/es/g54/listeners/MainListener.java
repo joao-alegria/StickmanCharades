@@ -39,9 +39,6 @@ public class MainListener {
     private SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate;
-
-    @Autowired
     private StatsdMeterRegistry meterRegistry;
     
     private boolean countersCreated = false;

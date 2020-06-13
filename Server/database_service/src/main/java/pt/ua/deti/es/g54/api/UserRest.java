@@ -34,8 +34,7 @@ public class UserRest {
     /**
      * // https://regular-expressions.mobi/email.html?wlr=1
      */
-    public static final String emailPattern = "\\A[a-z0-9!#$%&'*+/=?^_‘{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_‘{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\z";
-    private final Matcher emailMatcher = Pattern.compile(emailPattern).matcher("");
+    private final Matcher emailMatcher = Pattern.compile("\\A[a-z0-9!#$%&'*+/=?^_‘{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_‘{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\z").matcher("");
 
     @Autowired
     UserService userService;
