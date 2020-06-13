@@ -50,7 +50,7 @@ export class VsService {
     headers = headers.append("Authorization", "Basic " + localStorage.getItem("TOKEN"));
 
     let params = new HttpParams();
-    // params = params.append("active", "True");
+    params = params.append("active", "True");
 
     return await this.http.get(this.endpoints["vsEndpoint"] + this.endpoints["session"],
       {
@@ -61,33 +61,6 @@ export class VsService {
     ).toPromise();
   }
 
-  async whoami() {
-    if (this.endpoints == undefined) {
-      await this.loadEndpoints().then(data => { this.endpoints = data })
-    }
-    return this.http.get(this.endpoints["vsEndpoint"] + this.endpoints["whoami"], { withCredentials: true }).toPromise();
-  }
-
-  async checkLoggedIn() {
-    await $(document).ready(() => this.ngZone.run(() => {
-      this.whoami().then(data => {
-        localStorage.setItem("role", data["role"])
-        localStorage.setItem("username", data["username"])
-        if (localStorage.getItem("role") == "ADMIN") {
-          $("#adminNav").show()
-          $("#tenantNav").hide()
-        } else {
-          $("#adminNav").hide()
-          $("#tenantNav").show()
-        }
-        $("#myNav").show()
-        return data["role"]
-      }).catch(error => {
-        $("#myNav").hide()
-        this.router.navigate(["/", "login"])
-      })
-    }))
-  }
 
   async register(firstname: string, lastname: string, email: string, username: string, password: string, accountType: string) {
     if (this.endpoints == undefined) {
@@ -107,10 +80,4 @@ export class VsService {
     return await this.http.post(this.endpoints["vsEndpoint"] + this.endpoints["register"], data, { observe: 'response' }).toPromise();
   }
 
-  async getBlueprints() {
-    if (this.endpoints == undefined) {
-      await this.loadEndpoints().then(data => { this.endpoints = data })
-    }
-    return this.http.get(this.endpoints["vsEndpoint"] + this.endpoints["vsblueprints"], { withCredentials: true }).toPromise();
-  }
 }

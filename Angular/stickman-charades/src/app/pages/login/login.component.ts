@@ -21,6 +21,7 @@ export class LoginComponent implements OnInit {
     await this.vs.login($("#username").val().trim(), $("#userpassword").val().trim()).then(data => {
       localStorage.setItem("loggedIn", "true");
       localStorage.setItem("TOKEN", btoa($("#username").val().trim() + ":" + $("#userpassword").val().trim()));
+
       if (data.body["admin"]) {
         localStorage.setItem("role", "ADMIN");
       } else {

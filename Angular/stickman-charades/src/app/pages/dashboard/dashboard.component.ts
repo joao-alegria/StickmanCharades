@@ -46,8 +46,8 @@ export class DashboardComponent implements OnInit {
     })
   }
 
-  update() {
-    this.vs.getSessions().then((data) => { this.sessions = data.body["sessions"] })
+  async update() {
+    await this.vs.getSessions().then((data) => { this.sessions = data.body["sessions"] })
   }
 
   notificationClicked(data) {
