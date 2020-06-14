@@ -9,10 +9,12 @@ import { AboutComponent } from './pages/about/about.component';
 import { ContactComponent } from './pages/contact/contact.component';
 import { DownloadComponent } from './pages/download/download.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { DocumentationComponent } from './pages/documentation/documentation.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'about', component: AboutComponent },
+  { path: 'documentation', component: DocumentationComponent },
   { path: 'contact', component: ContactComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },

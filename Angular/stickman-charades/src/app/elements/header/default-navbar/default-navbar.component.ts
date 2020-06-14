@@ -17,6 +17,8 @@ export class DefaultNavbarComponent implements OnInit {
       document.getElementById("about-tab").className = "active";
     } else if (this.router.url == "/contact") {
       document.getElementById("contact-tab").className = "active";
+    } else if (this.router.url.includes("/documentation")) {
+      document.getElementById("documentation-tab").className = "active";
     }
   }
 

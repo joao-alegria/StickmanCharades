@@ -20,6 +20,7 @@ import { ScrollupComponent } from './elements/scrollup/scrollup.component';
 import { SkeletonComponent } from './elements/skeleton/skeleton.component';
 
 import { NotifierModule } from "angular-notifier";
+import { DocumentationComponent } from './pages/documentation/documentation.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { NotifierModule } from "angular-notifier";
     ContactFormComponent,
     routingComponents,
     SkeletonComponent,
+    DocumentationComponent,
 
   ],
   imports: [
