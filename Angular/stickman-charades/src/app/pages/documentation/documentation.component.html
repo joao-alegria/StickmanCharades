@@ -112,6 +112,7 @@
             <h2>Manual</h2>
             <p>This manual is mainly intended for the system's end-user. A detailed description of how to download,
                 install and make the first steps on our Charades platform.</p>
+            <p>Download here for offline reading: <a href="https://github.com/aspedrosa/StickmanCharades/blob/master/Documentation/Stickman%20Charades%20-%20User%20Manual.pdf" style="color:cornflowerblue"> Stickman Charades User Manual</a></p>
             <h3>Installation</h3>
             <p>Installing Stickman Charade’s desktop application is a very straightforward process, you only need to
                 have at least 50Mb of free disk space, access to the Internet and a web browser such as Brave installed.
@@ -172,148 +173,148 @@
         </div>
         <div id="specification" style="padding-top: 100px;">
             <h2>Specification</h2>
-            <h2>Usage Scenarios</h2>
+            <h4>Usage Scenarios</h4>
             <p class="mb-20">With the personas defined, we can proceed to studying the most probable and appropriate use
                 cases. At this stage, the scenarios have a high-level nature and are open to updates. The personas are
                 here used to easily present these usage scenarios:</p>
 
-            <h2>Solution Requirements</h2>
+            <h4>Solution Requirements</h4>
             <div id="scenario">
-                <b>Project Specific</b><br>
-                Scenario 1 – Game Session Start
+                <p><b>Project Specific</b></p>
+                <p>Scenario 1 – Game Session Start</p>
                 <p>Jack starts a game with the Millers already inside a session and the actual game is initialized with
                     the defined configurations and the chosen avatars.</p>
-                Scenario 2 – In-Game Acting
+                <p>Scenario 2 – In-Game Acting</p>
                 <p>The Millers take turns being the actors that perform based on the charades they are given
                     (automatically assigned).</p>
-                Scenario 3 – In-Game Answering
+                <p>Scenario 3 – In-Game Answering</p>
                 <p>Peter is playing in a session and watching another participant perform a charade. He thinks he knows
                     the answer, so he types it and submits. All participants are notified if the answer is correct,
                     which ends the turn of the actor and awards a point to Peter, or if it is incorrect, in which case
                     the turn keeps going and Peter may try another guess if the rules of the game session allow it.</p>
-                Scenario 4 – In-Game Commands
+                <p>Scenario 4 – In-Game Commands</p>
                 <p>The current actor performs a specific movement that is interpreted by the platform and pauses the
                     game.</p>
-                Scenario 5 – Spectator Mode
+                <p>Scenario 5 – Spectator Mode</p>
                 <p>Frances is tired of playing, but still wants to be in the game session and interact with her family,
                     so she decides to change her status from player to spectator, so she can watch her family play and
                     still have fun by spending time with them.</p>
-                Scenario 6 – Exiting Session
+                <p>Scenario 6 – Exiting Session</p>
                 <p>Peter plays for a while in an open session but decides to search for a more crowded one, so he exits
                     the current session he is in and goes back to the list of open sessions.</p>
-                Scenario 7 – Automatic Ending Session
+                <p>Scenario 7 – Automatic Ending Session
                 <p>The system ends the session according to the rules (e.g. all rounds have been completed) and presents
                     the results to all session players, as well as the winner.</p>
-                Scenario 8 – Ending Session
+                <p>Scenario 8 – Ending Session</p>
                 <p>It’s late, so Jack and his family decide to stop playing, and Jack ends the game session they are in.
                     With that, the session results and the winner are shown to all player.</p>
-                Scenario 9 – Closing Session
+                <p>Scenario 9 – Closing Session</p>
                 <p>Jack closes (deletes) session and all players are duly notified.</p>
 
-                <b>Generic</b><br>
-                Scenario 1 – Registration
+                <p><b>Generic</b></p>
+                <p>Scenario 1 – Registration</p>
                 <p>Jack creates an account for him, his wife and his mother-in-law so that they can play together.</p>
-                Scenario 2 – Authentication
+                <p>Scenario 2 – Authentication</p>
                 <p>Frances logs in with her credentials so that Jack can identify her when creating a session.</p>
-                Scenario 3 – Private Session Creation
+                <p>Scenario 3 – Private Session Creation</p>
                 <p>Jack creates a game session open only to players invited by him.</p>
-                Scenario 4 – Session Configuration
+                <p>Scenario 4 – Session Configuration</p>
                 <p>Jack decides the rules of the session (such as how the actors are chosen, how many points are needed
                     for a player to win, how many rounds, etc.) through the configuration panel.</p>
-                Scenario 5 – Session Invitation
+                <p>Scenario 5 – Session Invitation</p>
                 <p>Jack invites his wife, her siblings and his mother-in-law through their usernames.</p>
-                Scenario 6 – Invitation Acceptance
+                <p>Scenario 6 – Invitation Acceptance</p>
                 <p>Frances accepts the invitation received by Jack and joins the session created by him.</p>
-                Scenario 7 – Public Session Creation
+                <p>Scenario 7 – Public Session Creation</p>
                 <p>Peter creates a game session open to anyone.</p>
-                Scenario 8 – Public Session Listing
+                <p>Scenario 8 – Public Session Listing</p>
                 <p>Jack checks the list of currently open sessions (created by friends or anonymous users) so that he
                     can practice before playing with his mother-in-law.</p>
-                Scenario 9 – Public Session Entrance
+                <p>Scenario 9 – Public Session Entrance</p>
                 <p>Jack enters Peter’s game session and waits for the game to start.</p>
-                Scenario 10 – Avatar Choice
+                <p>Scenario 10 – Avatar Choice</p>
                 <p>Peter customizes an avatar that will represent him in game sessions, choosing between options such as
                     color of the avatar (and perhaps height or event 3D model).</p>
             </div>
 
 
-            <p class="mb-20">We now move on to the functional and non-functional requirements of the system. Consider
+            <p class="mb-20 mt-100">We now move on to the functional and non-functional requirements of the system. Consider
                 functional requirements as the descriptions of ways the product must behave, whereas non-functional
                 requirements, also known as quality attributes, are descriptions of the general software
                 characteristics. These requirements are presented in the table below.</p>
             <div class="reqs">
                 <table style="width:90%">
                     <tr>
-                        <th>Functional (The solution must…)</th>
-                        <th>Non-Functional</th>
+                        <th><p><b>Functional (The solution must…)</b></p></th>
+                        <th><p><b>Non-Functional</b></p></th>
                     </tr>
                     <tr>
-                        <td>Be able to accept registrations and account deletions.</td>
-                        <td>Registration and authentication must be seamless to users.</td>
+                        <td><p>Be able to accept registrations and account deletions.</p></td>
+                        <td><p>Registration and authentication must be seamless to users.</p></td>
                     </tr>
                     <tr>
-                        <td>Be able to authenticate already registered users.</td>
-                        <td>Web interface must be very simple and intuitive.</td>
+                        <td><p>Be able to authenticate already registered users.</p></td>
+                        <td><p>Web interface must be very simple and intuitive.</p></td>
                     </tr>
                     <tr>
-                        <td>Store and make available the basic information of each user.</td>
-                        <td>User information must be quickly accessible.</td>
+                        <td><p>Store and make available the basic information of each user.</p></td>
+                        <td><p>User information must be quickly accessible.</p></td>
                     </tr>
                     <tr>
-                        <td>Allow the hosting (creation) of game sessions.</td>
-                        <td>Requests / invitations / notifications must not take longer than 5 seconds to be
-                            transmitted.</td>
+                        <td><p>Allow the hosting (creation) of game sessions.</p></td>
+                        <td><p>Requests / invitations / notifications must not take longer than 5 seconds to be
+                            transmitted.</p></td>
                     </tr>
                     <tr>
-                        <td>Allow the invitation / acceptance by a host of other users to a session.</td>
-                        <td>Open sessions listing must not take longer than 3 seconds to refresh.</td>
+                        <td><p>Allow the invitation / acceptance by a host of other users to a session.</p></td>
+                        <td><p>Open sessions listing must not take longer than 3 seconds to refresh.</p></td>
                     </tr>
                     <tr>
-                        <td>Allow the listing of open sessions.</td>
-                        <td>Avatar movement streaming must not have a delay longer than 1 second.</td>
+                        <td><p>Allow the listing of open sessions.</p></td>
+                        <td><p>Avatar movement streaming must not have a delay longer than 1 second.</p></td>
                     </tr>
                     <tr>
-                        <td>Allow requests for entering sessions.</td>
-                        <td>Results presentation must be done in less than 5 seconds.</td>
+                        <td><p>Allow requests for entering sessions.</p></td>
+                        <td><p>Results presentation must be done in less than 5 seconds.</p></td>
                     </tr>
                     <tr>
-                        <td>Allow the definition of a charade solution.</td>
+                        <td><p>Allow the definition of a charade solution.</p></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>Allow the starting/ending of a game by the host.</td>
+                        <td><p>Allow the starting/ending of a game by the host.</p></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>Automatically recognize input devices.</td>
+                        <td><p>Automatically recognize input devices.</p></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>Define users without camera as passive session players.</td>
+                        <td><p>Define users without camera as passive session players.</p></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>Accept attempts / suggestions by session players.</td>
+                        <td><p>Accept attempts / suggestions by session players.</p></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>Detect when a player solves the charade.</td>
+                        <td><p>Detect when a player solves the charade.</p></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>Notify players when the game ends.</td>
+                        <td><p>Notify players when the game ends.</p></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>Define the actor of the current round (either random or the winner of the previous round).
-                        </td>
+                        <td><p>Define the actor of the current round (either random or the winner of the previous round).
+                        </p></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>Present the session results at the end of each round.</td>
+                        <td><p>Present the session results at the end of each round.</p></td>
                         <td></td>
                     </tr>
-                    <caption>Table 1: Solution requirements of our system.</caption>
+                    <caption><p>Table 1: Solution requirements of our system.</p></caption>
                 </table>
             </div>
 
@@ -323,34 +324,34 @@
 
             <div class="">
                 <ul class="unordered-list">
-                    <li><b>Charade Session:</b> the core of the project, a Charade Session is a room in which people
+                    <li><p><b>Charade Session:</b> the core of the project, a Charade Session is a room in which people
                         take turns being actors (the ones who receive a theme and must perform to the camera in order to
                         give hints to the charade solution) and participants (the ones who take guesses while watching a
-                        video of an avatar mimicking the current actor’s movements);
+                        video of an avatar mimicking the current actor’s movements);</p>
                         <ul style="padding-top: 5px">
-                            <li><b>Private Session:</b> a session can be private, as in only friends or people invited
-                                by the host player can participate or watch;</li>
-                            <li><b>Public Session:</b> a session can be public, in which anyone can request to enter the
+                            <li><p><b>Private Session:</b> a session can be private, as in only friends or people invited
+                                by the host player can participate or watch;</p></li>
+                            <li><p><b>Public Session:</b> a session can be public, in which anyone can request to enter the
                                 session and play or watch others play (as spectators), so it doesn’t need invitation nor
-                                do the players need to be friends.</li>
+                                do the players need to be friends.</p></li>
                         </ul>
                     </li>
-                    <li><b>Avatar Creation:</b> for anonymity, shyness, or just to have fun, all players have Avatars
+                    <li><p><b>Avatar Creation:</b> for anonymity, shyness, or just to have fun, all players have Avatars
                         (models that can be customized and are shown to others when a player is acting a charade) and
-                        have a menu where they can create or customize them;</li>
-                    <li><b>Seamless Interaction:</b> players can play a game of charade and interact with each other
+                        have a menu where they can create or customize them;</p></li>
+                    <li><p><b>Seamless Interaction:</b> players can play a game of charade and interact with each other
                         when in a session, having an Avatar representing them with a fast transmission and reliable GUI
-                        that is easy to learn and use;</li>
-                    <li><b>Streaming of Avatar:</b> in a Charade Session, all movements done in front of the camera are
+                        that is easy to learn and use;</p></li>
+                    <li><p><b>Streaming of Avatar:</b> in a Charade Session, all movements done in front of the camera are
                         captured by it and replicated by the server in a video, represented by the actor’s Avatar, that
                         it streams to all participants in the session so they can watch the movements and take their
-                        guesses;</li>
-                    <li><b>Hosting of Sessions:</b> any user can host a session of the game and decide the ruleset, if
+                        guesses;</p></li>
+                    <li><p><b>Hosting of Sessions:</b> any user can host a session of the game and decide the ruleset, if
                         the session is Private or Public, and choose to invite friends. The host can decide when the
-                        game ends, and even remove players from the session if needed;</li>
-                    <li><b>List of Sessions:</b> all users will have access to a list that shows all public sessions
+                        game ends, and even remove players from the session if needed;</p></li>
+                    <li><p><b>List of Sessions:</b> all users will have access to a list that shows all public sessions
                         that they can join, and even private sessions from their friends and family, to which they can
-                        request entry and await acceptance by the host of the private session.</li>
+                        request entry and await acceptance by the host of the private session.</p></li>
                 </ul>
             </div>
 
@@ -388,9 +389,11 @@
         <div id="test" style="padding-top: 100px;">
             <h2>Test</h2>
 
+            <p class="mb-20">This section contains the cucumber tests defined for component integration.</p>
+
             <div id="cucumber">
 
-                <b>Feature: Users can create a new game session</b><br>
+                <p><b>Feature: Users can create a new game session</b><br>
                 &emsp;As an authenticated user wanting to play a game with friends or family<br>&emsp;I want to be able
                 to create a new game session on the platform<br>&emsp;So that I can invite friends or have random people
                 join and play with me.<br>
@@ -402,9 +405,9 @@
                 &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;When I execute the previous
                 steps<br>&emsp;&emsp;And I fill in and submit the form,<br>&emsp;&emsp;Then I should see a message
                 informing me about the success/failure of the operation<br>&emsp;&emsp;And (if successful) I should be
-                redirected to the session lobby.<br><br>
+                redirected to the session lobby.<br><br></p>
 
-                <b>Feature: Users can join a game session</b><br>
+                <p><b>Feature: Users can join a game session</b><br>
                 &emsp;As an authenticated user wanting to play a game with friends or family<br>&emsp;I want to be able
                 to join a game session on the platform<br>&emsp;So that I can play a game of charades with my
                 friends.<br>
@@ -416,9 +419,9 @@
                 &emsp;Scenario: User joins session of another user.<br>
                 &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I see the game session I want in the game
                 session list,<br>&emsp;&emsp;When I click the join button of that session,<br>&emsp;&emsp;Then I should
-                see the game session lobby.<br><br>
+                see the game session lobby.<br><br></p>
 
-                <b>Feature: When joining a session, any user should adopt the initial position.</b><br>
+                <p><b>Feature: When joining a session, any user should adopt the initial position.</b><br>
                 &emsp;As an authenticated user joining a game session<br>&emsp;I want the camera to work to be able to
                 perform the initial position<br>&emsp;So that the platform recognizes me and the game session can
                 start.<br>
@@ -426,17 +429,17 @@
                 &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I just joined a game
                 session,<br>&emsp;&emsp;When I perform the initial position(spread arms)<br>&emsp;&emsp;Then I should be
                 recognized by the platform<br>&emsp;&emsp;And if am the last user recognized, the game session should
-                start. <br><br>
+                start. <br><br></p>
 
-                <b>Feature: During a session, any user can request an immediate session stop by making a signal.</b><br>
+                <p><b>Feature: During a session, any user can request an immediate session stop by making a signal.</b><br>
                 &emsp;As an authenticated user in a game session<br>&emsp;I want to make the stop signal(cross arms over
                 head)<br>&emsp;So that session is immediately closed.<br>
                 &emsp;Scenario: User requests immediate session termination.<br>
                 &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I am in a game session,<br>&emsp;&emsp;When I
                 perform the stopping position(cross arms over head)<br>&emsp;&emsp;Then I should see the game session to
-                be immediately stopped. <br><br>
+                be immediately stopped. <br><br></p>
 
-                <b>Feature: During a session, any user can notify the admin by raising any hand over their head.</b><br>
+                <p><b>Feature: During a session, any user can notify the admin by raising any hand over their head.</b><br>
                 &emsp;As an authenticated user playing in a game session<br>&emsp;I want to be able to notify the
                 platform admin<br>&emsp;So that he can clear some game rule or help in any problem.<br>
                 &emsp;Scenario: User raises right hand.<br>
@@ -446,9 +449,9 @@
                 &emsp;Scenario: User raises left hand.<br>
                 &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I am in a game session,<br>&emsp;&emsp;When I
                 raise my left hand above my head<br>&emsp;&emsp;Then I should be notified that a message was send to the
-                admin<br>&emsp;&emsp;And short after I should see the admin in my game session. <br><br>
+                admin<br>&emsp;&emsp;And short after I should see the admin in my game session. <br><br></p>
 
-                <b>Feature: Users ask users to be their friends.</b><br>
+                <p><b>Feature: Users ask users to be their friends.</b><br>
                 &emsp;As an authenticated user<br>&emsp;I want to be able to ask other users to be my friends in the
                 platform<br>&emsp;So that I in the future can invite them to game sessions.<br>
                 &emsp;Scenario: User asserts that they can ask other users to be their friends.<br>
@@ -462,9 +465,9 @@
                 &emsp;Scenario: User gets notified that other user accepted their friendship request.<br>
                 &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;When I'm using the platform and other user accepts
                 my friendship request,<br>&emsp;&emsp;Then I should be notified that that user has accepted my
-                friendship request.<br><br>
+                friendship request.<br><br></p>
 
-                <b>Feature: Users can invite friends to join game sessions.</b><br>
+                <p><b>Feature: Users can invite friends to join game sessions.</b><br>
                 &emsp;As an authenticated user wanting to play a game with friends or family<br>&emsp;I want to be able
                 to invite friends to the game session I'm currently on<br>&emsp;So that I can play a game of charades
                 with my friends.<br>
@@ -472,7 +475,7 @@
                 &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I am at the game session
                 lobby,<br>&emsp;&emsp;And I see a friend I want to invite at the friends list,<br>&emsp;&emsp;When I
                 click the invite button related to that friend<br>&emsp;&emsp;Then I should be notified that a message
-                with the invitation was sent to my friend.<br><br>
+                with the invitation was sent to my friend.<br><br></p>
 
             </div>
         </div>
@@ -480,6 +483,7 @@
             <h2>Team</h2>
             <app-team></app-team>
             <h3>Weekly Newsletter</h3>
+            <p>Timesheet quick access: <a href="https://tinyurl.com/wqpn2pp" style="color:cornflowerblue"> https://tinyurl.com/wqpn2pp</a></p>
             <div class="timeline">
                 <p>Group's internal establishment of the project objective, goals, personas and main features.
                     Definition of a desktop and a web UI. Definition of Jakarta as the server technology and Postgres
@@ -540,5 +544,7 @@
             </div>
         </div>
     </div>
+
+    <app-footer></app-footer>
 
 </div>
