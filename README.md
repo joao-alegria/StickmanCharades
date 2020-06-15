@@ -13,15 +13,13 @@ Each milestone has a set of deliverables linked to it and the respective documen
 This documentation includes: reports, contracts, code and API documentation and possibly presentations.
 
 The deployment is done using Docker containers, automated with the help of Jenkins.
-The solution is built using Jakarta (formerly known as JavaEE) and uses technologies such as: PostgreSQL (for persistence), Kafka (for streaming and logging), JUnit and possibly Selenium (for testing), Unity Engine (for desktop UI) and AngularJS (for web UI).
+The solution is built using Springboot and uses technologies such as: PostgreSQL (for persistence), Kafka (for streaming and logging), JUnit and Cucumber (for testing), Unity Engine (for desktop UI) and AngularJS (for web UI).
 
 ## Authors
 
 André Pedrosa, nmec. 85098
 
 Filipe Pires, nmec. 85122
-
-Helder Paraense, nmec. 96307
 
 João Alegria, nmec. 85048
 
