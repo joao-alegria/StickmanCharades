@@ -12,7 +12,7 @@
 </div>
 
 <div class="container-fluid">
-    <div class="sidenav mt-150">
+    <div class="sidenav mt-100">
         <a href="/documentation#client">Client</a>
         <a href="/documentation#vision">Vision</a>
         <a href="/documentation#manual">Manual</a>
@@ -20,6 +20,7 @@
         <a href="/documentation#architecture">Architecture</a>
         <a href="/documentation#developer">Developer</a>
         <a href="/documentation#test">Test/Acceptance</a>
+        <a href="/documentation#considerations">Final Considerations</a>
         <a href="/documentation#team">Team</a>
     </div>
 
@@ -112,7 +113,9 @@
             <h2>Manual</h2>
             <p>This manual is mainly intended for the system's end-user. A detailed description of how to download,
                 install and make the first steps on our Charades platform.</p>
-            <p>Download here for offline reading: <a href="https://github.com/aspedrosa/StickmanCharades/blob/master/Documentation/Stickman%20Charades%20-%20User%20Manual.pdf" style="color:cornflowerblue"> Stickman Charades User Manual</a></p>
+            <p>Download here for offline reading: <a
+                    href="https://github.com/aspedrosa/StickmanCharades/blob/master/Documentation/Stickman%20Charades%20-%20User%20Manual.pdf"
+                    style="color:cornflowerblue"> Stickman Charades User Manual</a></p>
             <h3>Installation</h3>
             <p>Installing Stickman Charade’s desktop application is a very straightforward process, you only need to
                 have at least 50Mb of free disk space, access to the Internet and a web browser such as Brave installed.
@@ -193,93 +196,148 @@
                     which ends the turn of the actor and awards a point to Peter, or if it is incorrect, in which case
                     the turn keeps going and Peter may try another guess if the rules of the game session allow it.</p>
                 <p>Scenario 4 – Gesture Command Notify</p>
-                <p>The current actor performs a specific movement that is interpreted by the platform and notifies 
+                <p>The current actor performs a specific movement that is interpreted by the platform and notifies
                     system administrators that something might be wrong.</p>
                 <p>Scenario 5 – Gesture Command Pause</p>
                 <p>The current actor performs a specific movement that is interpreted by the platform and pauses the
                     game.</p>
                 <p>Scenario 6 – Automatic Ending Session
-                <p>The system ends the session according to the rules (e.g. all rounds have been completed) and presents
-                    the results to all session players, as well as the winner.</p>
+                    <p>The system ends the session according to the rules (e.g. all rounds have been completed) and
+                        presents
+                        the results to all session players, as well as the winner.</p>
             </div>
 
-            <p class="mb-20 mt-100">We now move on to the functional and non-functional requirements of the system. Consider
+            <p class="mb-20 mt-100">We now move on to the functional and non-functional requirements of the system.
+                Consider
                 functional requirements as the descriptions of ways the product must behave, whereas non-functional
                 requirements, also known as quality attributes, are descriptions of the general software
                 characteristics. These requirements are presented in the table below.</p>
             <div class="reqs">
                 <table style="width:90%">
                     <tr>
-                        <th><p><b>Functional (The solution must…)</b></p></th>
-                        <th><p><b>Non-Functional</b></p></th>
+                        <th>
+                            <p><b>Functional (The solution must…)</b></p>
+                        </th>
+                        <th>
+                            <p><b>Non-Functional</b></p>
+                        </th>
                     </tr>
                     <tr>
-                        <td><p>Be able to accept registrations and account deletions.</p></td>
-                        <td><p>Registration and authentication must be seamless to users.</p></td>
+                        <td>
+                            <p>Be able to accept registrations and account deletions.</p>
+                        </td>
+                        <td>
+                            <p>Registration and authentication must be seamless to users.</p>
+                        </td>
                     </tr>
                     <tr>
-                        <td><p>Be able to authenticate already registered users.</p></td>
-                        <td><p>Web interface must be very simple and intuitive.</p></td>
+                        <td>
+                            <p>Be able to authenticate already registered users.</p>
+                        </td>
+                        <td>
+                            <p>Web interface must be very simple and intuitive.</p>
+                        </td>
                     </tr>
                     <tr>
-                        <td><p>Store and make available the basic information of each user.</p></td>
-                        <td><p>User information must be quickly accessible.</p></td>
+                        <td>
+                            <p>Store and make available the basic information of each user.</p>
+                        </td>
+                        <td>
+                            <p>User information must be quickly accessible.</p>
+                        </td>
                     </tr>
                     <tr>
-                        <td><p>Allow the hosting (creation) of game sessions.</p></td>
-                        <td><p>Requests / invitations / notifications must not take longer than 5 seconds to be
-                            transmitted.</p></td>
+                        <td>
+                            <p>Allow the hosting (creation) of game sessions.</p>
+                        </td>
+                        <td>
+                            <p>Requests / invitations / notifications must not take longer than 5 seconds to be
+                                transmitted.</p>
+                        </td>
                     </tr>
                     <tr>
-                        <td><p>Allow the invitation / acceptance by a host of other users to a session.</p></td>
-                        <td><p>Open sessions listing must not take longer than 3 seconds to refresh.</p></td>
+                        <td>
+                            <p>Allow the invitation / acceptance by a host of other users to a session.</p>
+                        </td>
+                        <td>
+                            <p>Open sessions listing must not take longer than 3 seconds to refresh.</p>
+                        </td>
                     </tr>
                     <tr>
-                        <td><p>Allow the listing of open sessions.</p></td>
-                        <td><p>Avatar movement streaming must not have a delay longer than 1 second.</p></td>
+                        <td>
+                            <p>Allow the listing of open sessions.</p>
+                        </td>
+                        <td>
+                            <p>Avatar movement streaming must not have a delay longer than 1 second.</p>
+                        </td>
                     </tr>
                     <tr>
-                        <td><p>Allow requests for entering sessions.</p></td>
-                        <td><p>Results presentation must be done in less than 5 seconds.</p></td>
+                        <td>
+                            <p>Allow requests for entering sessions.</p>
+                        </td>
+                        <td>
+                            <p>Results presentation must be done in less than 5 seconds.</p>
+                        </td>
                     </tr>
                     <tr>
-                        <td><p>Allow the definition of a charade solution.</p></td>
+                        <td>
+                            <p>Allow the definition of a charade solution.</p>
+                        </td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td><p>Allow the starting/ending of a game by the host.</p></td>
+                        <td>
+                            <p>Allow the starting/ending of a game by the host.</p>
+                        </td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td><p>Automatically recognize input devices.</p></td>
+                        <td>
+                            <p>Automatically recognize input devices.</p>
+                        </td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td><p>Define users without camera as passive session players.</p></td>
+                        <td>
+                            <p>Define users without camera as passive session players.</p>
+                        </td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td><p>Accept attempts / suggestions by session players.</p></td>
+                        <td>
+                            <p>Accept attempts / suggestions by session players.</p>
+                        </td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td><p>Detect when a player solves the charade.</p></td>
+                        <td>
+                            <p>Detect when a player solves the charade.</p>
+                        </td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td><p>Notify players when the game ends.</p></td>
+                        <td>
+                            <p>Notify players when the game ends.</p>
+                        </td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td><p>Define the actor of the current round (either random or the winner of the previous round).
-                        </p></td>
+                        <td>
+                            <p>Define the actor of the current round (either random or the winner of the previous
+                                round).
+                            </p>
+                        </td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td><p>Present the session results at the end of each round.</p></td>
+                        <td>
+                            <p>Present the session results at the end of each round.</p>
+                        </td>
                         <td></td>
                     </tr>
-                    <caption><p>Table 1: Solution requirements of our system.</p></caption>
+                    <caption>
+                        <p>Table 1: Solution requirements of our system.</p>
+                    </caption>
                 </table>
             </div>
 
@@ -289,34 +347,60 @@
 
             <div class="">
                 <ul class="unordered-list">
-                    <li><p><b>Charade Session:</b> the core of the project, a Charade Session is a room in which people
-                        take turns being actors (the ones who receive a theme and must perform to the camera in order to
-                        give hints to the charade solution) and participants (the ones who take guesses while watching a
-                        video of an avatar mimicking the current actor’s movements);</p>
+                    <li>
+                        <p><b>Charade Session:</b> the core of the project, a Charade Session is a room in which people
+                            take turns being actors (the ones who receive a theme and must perform to the camera in
+                            order to
+                            give hints to the charade solution) and participants (the ones who take guesses while
+                            watching a
+                            video of an avatar mimicking the current actor’s movements);</p>
                         <ul style="padding-top: 5px">
-                            <li><p><b>Private Session:</b> a session can be private, as in only friends or people invited
-                                by the host player can participate or watch;</p></li>
-                            <li><p><b>Public Session:</b> a session can be public, in which anyone can request to enter the
-                                session and play or watch others play (as spectators), so it doesn’t need invitation nor
-                                do the players need to be friends.</p></li>
+                            <li>
+                                <p><b>Private Session:</b> a session can be private, as in only friends or people
+                                    invited
+                                    by the host player can participate or watch;</p>
+                            </li>
+                            <li>
+                                <p><b>Public Session:</b> a session can be public, in which anyone can request to enter
+                                    the
+                                    session and play or watch others play (as spectators), so it doesn’t need invitation
+                                    nor
+                                    do the players need to be friends.</p>
+                            </li>
                         </ul>
                     </li>
-                    <li><p><b>Avatar Creation:</b> for anonymity, shyness, or just to have fun, all players have Avatars
-                        (models that can be customized and are shown to others when a player is acting a charade) and
-                        have a menu where they can create or customize them;</p></li>
-                    <li><p><b>Seamless Interaction:</b> players can play a game of charade and interact with each other
-                        when in a session, having an Avatar representing them with a fast transmission and reliable GUI
-                        that is easy to learn and use;</p></li>
-                    <li><p><b>Streaming of Avatar:</b> in a Charade Session, all movements done in front of the camera are
-                        captured by it and replicated by the server in a video, represented by the actor’s Avatar, that
-                        it streams to all participants in the session so they can watch the movements and take their
-                        guesses;</p></li>
-                    <li><p><b>Hosting of Sessions:</b> any user can host a session of the game and decide the ruleset, if
-                        the session is Private or Public, and choose to invite friends. The host can decide when the
-                        game ends, and even remove players from the session if needed;</p></li>
-                    <li><p><b>List of Sessions:</b> all users will have access to a list that shows all public sessions
-                        that they can join, and even private sessions from their friends and family, to which they can
-                        request entry and await acceptance by the host of the private session.</p></li>
+                    <li>
+                        <p><b>Avatar Creation:</b> for anonymity, shyness, or just to have fun, all players have Avatars
+                            (models that can be customized and are shown to others when a player is acting a charade)
+                            and
+                            have a menu where they can create or customize them;</p>
+                    </li>
+                    <li>
+                        <p><b>Seamless Interaction:</b> players can play a game of charade and interact with each other
+                            when in a session, having an Avatar representing them with a fast transmission and reliable
+                            GUI
+                            that is easy to learn and use;</p>
+                    </li>
+                    <li>
+                        <p><b>Streaming of Avatar:</b> in a Charade Session, all movements done in front of the camera
+                            are
+                            captured by it and replicated by the server in a video, represented by the actor’s Avatar,
+                            that
+                            it streams to all participants in the session so they can watch the movements and take their
+                            guesses;</p>
+                    </li>
+                    <li>
+                        <p><b>Hosting of Sessions:</b> any user can host a session of the game and decide the ruleset,
+                            if
+                            the session is Private or Public, and choose to invite friends. The host can decide when the
+                            game ends, and even remove players from the session if needed;</p>
+                    </li>
+                    <li>
+                        <p><b>List of Sessions:</b> all users will have access to a list that shows all public sessions
+                            that they can join, and even private sessions from their friends and family, to which they
+                            can
+                            request entry and await acceptance by the host of the private session.</p>
+                    </li>
                 </ul>
             </div>
 
@@ -325,88 +409,331 @@
         <div id="architecture" style="padding-top: 100px;">
             <h2>Architecture</h2>
             <img style="width: 75%;" src="assets/img/diagrams/ArchitectureDiagram.png" alt="Architecture" />
+            <p>As shown by the figure, our system follows a commonly used client/server model and is composed of 2
+                entities, the User Interface and the Backend Server, both subdivided internally. Another core component
+                of our system is the message bus represented as “Broker” in the figure, a component requested by the
+                project guidelines but that our team quickly concluded to be the optimal solution. This bus, among other
+                responsibilities, is the communication channel used to receive the live skeleton data generated by our
+                playing users. The technology used in our scenario was Apache Kafka(<a href="https://kafka.apache.org/"
+                    style="color: aquamarine;">https://kafka.apache.org/</a>).
+            </p>
+            <p>In relation to the User Interface, our team decided to create two separate systems. The first one is a
+                desktop app developed in Unity(<a href="https://unity.com/"
+                    style="color: aquamarine;">https://unity.com/</a>) and created mainly
+                to serve as a data
+                collector. The
+                Orbbec(<a href="https://orbbec3d.com/" style="color: aquamarine;">https://orbbec3d.com/</a>) camera we
+                used had an SDK for unity, and since we from the beginning had
+                the idea of creating 3D visualizations, the native proposition of Unity to this scenario was enough to
+                convince us. This GUI is also the one intended for the normal user to access the system and play games,
+                enabling him to create and participate on self-created or other game sessions. Additionally,
+                a Web-based UI was created mainly for the system administrator. It is in this portal that the admin is
+                capable of receiving user notifications and monitoring the live sessions. This portal also served as an
+                hub for the normal user to register in our system and download the desktop app.</p>
+            <p>In relation to the Backend Server, we followed a microservices approach to allow segregation of
+                responsibilities, better maintainability and easier addition of new features and components. The
+                communication between all these components was assured by the already mentioned message bus. The main
+                server is composed of the following microservices:</p>
+            <p> - Gesture recognizer, implemented in the event_handler project that has the objective of observing
+                all
+                incoming skeleton information and evaluating if any relevant event was being performed.</p>
+            <p> - Translator, implemented in the kafka_translator project has the responsibility of mapping every
+                incoming
+                skeleton position from Kafka to a Websocket and if necessary sending managing messages to the
+                admin
+                personal websocket.</p>
+            <p> - Game Action, implemented in the session_commands project has the responsibility of executing
+                commands
+                over the entire system, sending the necessary messages to each component.</p>
+            <p> - Game Engine and Storage, implemented in the database_service project has the responsibility of
+                persisting all important information, supplying a CRUD interface for system users, user friends
+                and
+                game
+                sessions.</p>
+            <p>The Kafka message bus enables the creation of topics, channels that producers can produce too and
+                consumers consume from. In our system, we decided to create a topic for each session,
+                An option that seemed the most logic to us since it separated the session from one another. Additionally
+                a topic for each microservice was created to serve as an inbound communication channel. The channels
+                follow a naming convention, all starting with “esp54_”(our group identifiers) followed by a number if it
+                was a session topic, commandsServiceTopic for the session_commands inbound channel, eventHandlerTopic
+                for the event_handler inbound channel, kafkaTranslatorTopic for the kafka_translator inbound channel and
+                databaseServiceTopic for the database_service inbound channel. The messages exchanged within these
+                topics are all in JSON format. The session messages are mostly related to the collection of skeleton
+                information that contain the username of user captures, the position and orientation of each skeleton
+                joint. In relation to the messages exchanged in the management topics(the microservice inbound
+                channels), the message is specific to the intention of the message, but the session is always included
+                in the message. Fields like the event triggering the user when he/she performs a gesture, the command to
+                execute when the session_commands receives an instruction and has to relay it to other components may
+                also be used when necessary.</p>
+            <p>The websocket channels only consist of the session channels mapped by the Translator microservice in a 1
+                to 1 manner and an administrator channel. The connection to the websocket iself should be made at the
+                “/game/skeletons” endpoint and the subscription is what dictates what information will be received, if
+                the subscription is made to “/game/session/esp54_(gameId)” the exact same information of the kafka
+                topic
+                esp54_(gameId) will be received; if subscribed to “/game/admin” only administrative and management
+                messages will be received.</p>
+            <p>For the database_service, a database was necessary to persist all necessary information, such as the
+                users, game sessions and all related information. For that reason a technology needed to be selected,
+                and our team opted for using PostgresSQL. Any other relational database technology is adequate for this
+                task, but we selected this one for ease of use.
+
+                The system provides a REST API detailed in
+                <a htref="https://app.swaggerhub.com/apis-docs/joaoalegria/StickmanCharades/1.0.0"
+                    style="color: aquamarine;">https://app.swaggerhub.com/apis-docs/joaoalegria/StickmanCharades/1.0.0</a>.
+                This API is assured by both the
+                database_service and the session_commands.
+            </p>
         </div>
         <div id="developer" style="padding-top: 100px;">
             <h2>Developer</h2>
-            <p>This sidebar is as tall as its content (the links), and is always shown.</p>
-            <p>Scroll down the page to see the result.</p>
-            <p>Some text to enable scrolling.. Lorem ipsum dolor sit amet, illum definitiones no quo, maluisset
-                concludaturque et eum, altera fabulas ut quo. Atqui causae gloriatur ius te, id agam omnis evertitur
-                eum. Affert laboramus repudiandae nec et. Inciderint efficiantur his ad. Eum no molestiae
-                voluptatibus.
+            <p>This section will provide a deeper view and detail over the whole system.</p>
+            <h4>Desktop Application</h4>
+            <p>In order to run and work on our desktop application, some background knowledge of Unity and C# is
+                required. To open the project, you need to have installed Unity Hub and a version of Unity (preferably
+                of 2019 or upper). It is also recommended the installation of VSCode for easier code writing, but this
+                is optional. You do not need to install C#, as it already comes with Unity.
+                Once the project “Unity/StickmanCharades” is open in Unity, you can open the Main_Menu_Scene and click
+                on the run button to try out the application.
             </p>
-            <p>Some text to enable scrolling.. Lorem ipsum dolor sit amet, illum definitiones no quo, maluisset
-                concludaturque et eum, altera fabulas ut quo. Atqui causae gloriatur ius te, id agam omnis evertitur
-                eum. Affert laboramus repudiandae nec et. Inciderint efficiantur his ad. Eum no molestiae
-                voluptatibus.
+            <p>To build an executable of the desktop application, you can add the scenes you wish to the build settings.
+                There, you can also define the target platform and architecture and click on “Build”.
+                If you wish to contribute to the improvement of this project, there are 2 fronts to address:
             </p>
-            <p>Some text to enable scrolling.. Lorem ipsum dolor sit amet, illum definitiones no quo, maluisset
-                concludaturque et eum, altera fabulas ut quo. Atqui causae gloriatur ius te, id agam omnis evertitur
-                eum. Affert laboramus repudiandae nec et. Inciderint efficiantur his ad. Eum no molestiae
-                voluptatibus.
+            <p> 1. You can start by implementing the Join_Menu_Scene that is currently empty. The idea here is to make
+                available a list of sessions that are opened and accepting new players. Once one session is selected,
+                the user should be directed towards a waiting lobby until the game actually starts. You can retrieve the
+                list of open sessions through a GET in the endpoint “/session” (see our REST API
+                documentation for more information on this). The C# scripts you create for this feature should be placed
+                inside the “/assets/scripts” folder.
             </p>
-            <p>Some text to enable scrolling.. Lorem ipsum dolor sit amet, illum definitiones no quo, maluisset
-                concludaturque et eum, altera fabulas ut quo. Atqui causae gloriatur ius te, id agam omnis evertitur
-                eum. Affert laboramus repudiandae nec et. Inciderint efficiantur his ad. Eum no molestiae
-                voluptatibus.
+            <p>2. Although the gameplay logic is already implemented, there is not yet a means for users to send their
+                guesses during game sessions. This is crucial for a natural game flow and can be achieved by:
+                Creating a C# script that accepts inputs from users and compares them to the solutions defined by the
+                session creator.
+                Adapting the “SessionData.cs” and “SkeletonController.cs” scripts to support guesses.
             </p>
+
+            <h4>Backend Micro Services</h4>
+            <p>Our backend contains four micro services, every one implemented in Java, using Maven for dependency
+                management.
+                With this if one wants to compile a given micro service without running the tests he needs to to execute
+                ”mvn clean compile -Dmaven.test.skip=true” on the root folder of the given micro service.</p>
+            <p>To execute a specific micro service you first need to create a jar file with the command “mvn clean
+                package -Dmaven.test.skip=true” and then run the jar file with “java -jar target/JAR_FILENAME.jar”. To
+                allow an easy customization on where each micro service would be deployed we made use of environment
+                variables that specify IPs, ports and other fields to access other applications that a given depends on.
+                All micro services need the following variables KAFKA_BOOTSTRAP_SERVERS, LOGGING_HOST, LOGGING_PORT,
+                LOGGING_USER, LOGGING_PASSWORD and LOGGING_INDEX (ElasticSearch) and MONITORING_HOST, MONITORING_PORT
+                (Telegraf). The database_service also needs the variables PERSISTENCE_HOST, PERSISTENCE_PORT,
+                PERSISTENCE_DB, PERSISTENCE_USER and PERSISTENCE_PASSWORD.
+            </p>
+            <p>To deploy we make use of docker with a simple Dockerfile where we just copy the jar file, created on the
+                previous paragraph, into the docker container and then the entrypoint (command to execute when a
+                container is launched) of the container is to run the jar file. This approach was taken to reduce the
+                docker image size and the build time is much smaller this way since we don’t need to download the maven
+                dependencies with a “mvn package” command.
+            </p>
+            <p>All four micro services follow the same approach to communicate among them. A MainListener is in charge
+                of processing incoming messages directed to the specific microservice. Then each message can lead to
+                different actions. In the case of the kafka_translator and event_handler micro services if a
+                start_session message is received then a handler thread is launched to handle messages received on the
+                topic of a specific session.
+                In the case of the session_commands and database_service microservices, that expose an API, there is an
+                api package that contains the controllers where the endpoints are specified and parse the arguments and
+                a services package that applies the business logic.
+                On the session_commands, database_service and kafka_translator microservices there is a security package
+                that controls the access to the exposed endpoints. The database_services microservice contains an
+                entities package that contains all entities that define the database model and a repository package that
+                contains classes used to manipulate the entities on the database. The kafka_translator contains a
+                websocket package where all configs related to the websocket reside.
+            </p>
+
+            <h4>Create and admin account</h4>
+            <p>To generate an admin account we created a separate application that asks the user for the email and
+                password to be used for the new admin account. We followed this approach over registering via web to
+                avoid having to deal with making sure that was the real admin creating the account. The compilation and
+                execution follows the same flow as mentioned before for the other micro services, however the only
+                environment variables needed are PERSISTENCE_HOST, PERSISTENCE_PORT, PERSISTENCE_DB, PERSISTENCE_USER
+                and PERSISTENCE_PASSWORD.
+            </p>
+
+            <h4>Web Application</h4>
+            <p>In order to work with our web application, you’ll need to install the node package manager (npm) and the
+                angular cli. It is also advisable to install VS Code for easier code writing.
+                To run the project, you can simply execute “ng serve” (or “npm start”) inside the
+                “/Angular/stickman-charades” folder; this will start the web application at localhost:4200. If you
+                simply wish to compile the code, you can run “ng build”.
+                To deploy the application, there are 2 docker files on the project’s root folder (one for development
+                and the other for production). These create docker images with all of the required dependencies and
+                configuration files.
+            </p>
+            <p>Contributions on the web application currently are more needed for the admin dashboard. If you wish to
+                contribute on this front, you should have basic knowledge on Angular and Javascript in general. The
+                dashboard does not yet look much like a dashboard, you could start by inserting a template and placing
+                the skeleton viewer inside one tab. Then you could integrate our monitoring tools (ELK, etc.) with the
+                application for logging review, database management, and more. Inside the “/src/app” folder you will
+                find the existing services in typescript (for sockets and cookies), the “/pages” folder containing all
+                of the website’s pages, and the “/elements” folder containing reusable components (such as navbars,
+                etc.).</p>
+
+            <h4>Monitoring</h4>
+            <p>For monitoring, we have two sections: logs and numeric metrics.<br />
+                For logs we used an already deployed ELK stack and then used an appender to publish the logs of the four
+                micro services directly to the elasticsearch. We didn’t upload to the logstash because the ELK stack was
+                shared and defining an entry point for our logs implied reaching an agreement with all groups.<br />The
+                numeric metrics section was achieved using a TICK stack. We defined some simple counters that tell the
+                number of messages for each type of messages that every micro service received. Using Micrometer the
+                counters were uploaded to Telegraf that can then be consulted on Chronograf.
+            </p>
+
+            <h4>Implementation Critical Decisions</h4>
+            <p>During our system development there were points where the team needed to regroup and discuss next steps
+                and take critical decisions to ensure the correct evolution of the project. Those decisions were many
+                times fundamented by thorough tests, such as the decision of migrating to Springboot. This decision was
+                necessary since our initial developments in the Jakarta framework were always accompanied by integration
+                errors and lack of documentation and working examples. This migration cost us some precious time that we
+                could use in the logical progress of the Charades platform.
+            </p>
+            <p>Another critical decision was in relation to the testing phase. Our tests mainly focused on scenarios
+                where an event was triggered by a gesture performed by the user in a live game session, which meant that
+                a Kafka needed to be deployed. Several tests were made using Springboot’s testcontainers native
+                integration, but many inconsistencies were found, causing unwanted flakiness and errors that we could
+                not solve. For that reason we decided to when executing our tests in the CI/CD pipeline, we would deploy
+                a separate Kafka specifically dedicated to our tests. This option proved to generate stability in our
+                tests.
+            </p>
+            <p>Lastly, the most time consuming decision that we wish we had made right from the beginning of the project
+                was adoption of a microservices architecture. We assumed that the project requirements were met by
+                developing a modular system. In fact the aim of the project was to really create independent components
+                with clearly defined objectives that communicate between each other with events, in our case using a
+                message system to implement that event transmission. This meant that we needed to divide the modular
+                monolithic system we developed in the initial weeks. The modularity helped but nevertheless a certain
+                complexity was added and the testing of the whole system stopped being trivial. A note needed to be made
+                is that in fact, after the division and mapping was made and the system tested and fully functional as
+                before, the team quickly understood that this architecture really provides the benefits it claims.
+            </p>
+
         </div>
         <div id="test" style="padding-top: 100px;">
             <h2>Test</h2>
 
-            <p>As it was already mentioned on the developer area, the execution of our tests were automated by running them on Jenkins pipelines.
-            Since we have three main components on our system, a desktop application, a web application and a back end server, ideally each one should be on a separate repository. This would allow us to make commits to the specific repository and the tests would only be ran if code related to the specific application changed. With this solution there would be a multi-branch pipeline for each repository. However, since we were told that we should have only one repository, we created three multi-branch pipelines, one for each component, that point to the same repository. Our pipelines can be found here: <a href="http://192.168.160.87:9090/view/esp54/"> http://192.168.160.87:9090/view/esp54/</a>.</p>
+            <p>As it was already mentioned on the developer area, the execution of our tests were automated by running
+                them on Jenkins pipelines.
+                Since we have three main components on our system, a desktop application, a web application and a back
+                end server, ideally each one should be on a separate repository. This would allow us to make commits to
+                the specific repository and the tests would only be ran if code related to the specific application
+                changed. With this solution there would be a multi-branch pipeline for each repository. However, since
+                we were told that we should have only one repository, we created three multi-branch pipelines, one for
+                each component, that point to the same repository. Our pipelines can be found here: <a
+                    href="http://192.168.160.87:9090/view/esp54/"> http://192.168.160.87:9090/view/esp54/</a>.</p>
 
-            <p>On a normal workflow after a commit, the pipeline associated with the linked branch would run. Nonetheless, since Jenkins is not accessible to the outside would it can not received webhooks from github for example. A solution to this problem would be to periodically check if there was any commit done, but this brings load the Jenkins system so we opted with a manual solution.
-            With our approach, before running any pipelines, we first need to do a Manual Scan on the repository (the Suppress automatic SCM triggering property is activated on all multi-branch pipelines to avoid running the pipeline after code not relative to the associated component is committed) and then run the pipeline with the desired arguments.</p>
+            <p>On a normal workflow after a commit, the pipeline associated with the linked branch would run.
+                Nonetheless, since Jenkins is not accessible to the outside would it can not received webhooks from
+                github for example. A solution to this problem would be to periodically check if there was any commit
+                done, but this brings load the Jenkins system so we opted with a manual solution.
+                With our approach, before running any pipelines, we first need to do a Manual Scan on the repository
+                (the Suppress automatic SCM triggering property is activated on all multi-branch pipelines to avoid
+                running the pipeline after code not relative to the associated component is committed) and then run the
+                pipeline with the desired arguments.</p>
 
-            <p>Since tests with our desktop (Unity) and web (Angular) applications were out of the scope of this course the only pipeline used to run tests is the one associated with the back end server. As already mentioned in sections above, this server is divided into four micro services, where each one is tested separately.
-            Our tests are implemented in cucumber, where the features mentioned below were used as test scenarios for every micro service. It is important to notice that on normal execution our micro services rely on a broker solution (Kafka) to communicate between them, so, during tests a external broker component (Kafka) is launched.
-            With this, the main concept of the tests is to evaluate if a given message is sent to a specific micro service if it produces another message or does a certain action.</p>
+            <p>Since tests with our desktop (Unity) and web (Angular) applications were out of the scope of this course
+                the only pipeline used to run tests is the one associated with the back end server. As already mentioned
+                in sections above, this server is divided into four micro services, where each one is tested separately.
+                Our tests are implemented in cucumber, where the features mentioned below were used as test scenarios
+                for every micro service. It is important to notice that on normal execution our micro services rely on a
+                broker solution (Kafka) to communicate between them, so, during tests a external broker component
+                (Kafka) is launched.
+                With this, the main concept of the tests is to evaluate if a given message is sent to a specific micro
+                service if it produces another message or does a certain action.</p>
 
-            <p>In terms of results we had some trouble successfully running the tests on the pipelines. Locally we noticed that the tests were flaky, but most of the times they executed correctly, so we opted to add several tries on the pipeline but even that didn't work. We presume our unsuccess happened mainly because of the Jenkins infrastructure since all group members were able to run the tests locally with no problems.</p>
+            <p>In terms of results we had some trouble successfully running the tests on the pipelines. Locally we
+                noticed that the tests were flaky, but most of the times they executed correctly, so we opted to add
+                several tries on the pipeline but even that didn't work. We presume our unsuccess happened mainly
+                because of the Jenkins infrastructure since all group members were able to run the tests locally with no
+                problems.</p>
 
             <p class="mb-20">Below we present the cucumber tests defined for component integration.</p>
 
             <div id="cucumber">
 
                 <p><b>Feature: When joining a session, any user should adopt the initial position.</b><br>
-                &emsp;As an authenticated user joining a game session<br>&emsp;I want the camera to work to be able to
-                perform the initial position<br>&emsp;So that the platform recognizes me and the game session can
-                start.<br>
-                &emsp;Scenario: User joins the session.<br>
-                &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I just joined a game
-                session,<br>&emsp;&emsp;When I perform the initial position(spread arms)<br>&emsp;&emsp;Then I should be
-                recognized by the platform<br>&emsp;&emsp;And if am the last user recognized, the game session should
-                start. <br><br></p>
+                    &emsp;As an authenticated user joining a game session<br>&emsp;I want the camera to work to be able
+                    to
+                    perform the initial position<br>&emsp;So that the platform recognizes me and the game session can
+                    start.<br>
+                    &emsp;Scenario: User joins the session.<br>
+                    &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I just joined a game
+                    session,<br>&emsp;&emsp;When I perform the initial position(spread arms)<br>&emsp;&emsp;Then I
+                    should be
+                    recognized by the platform<br>&emsp;&emsp;And if am the last user recognized, the game session
+                    should
+                    start. <br><br></p>
 
-                <p><b>Feature: During a session, any user can request an immediate session stop by making a signal.</b><br>
-                &emsp;As an authenticated user in a game session<br>&emsp;I want to make the stop signal(cross arms over
-                head)<br>&emsp;So that session is immediately closed.<br>
-                &emsp;Scenario: User requests immediate session termination.<br>
-                &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I am in a game session,<br>&emsp;&emsp;When I
-                perform the stopping position(cross arms over head)<br>&emsp;&emsp;Then I should see the game session to
-                be immediately stopped. <br><br></p>
+                <p><b>Feature: During a session, any user can request an immediate session stop by making a
+                        signal.</b><br>
+                    &emsp;As an authenticated user in a game session<br>&emsp;I want to make the stop signal(cross arms
+                    over
+                    head)<br>&emsp;So that session is immediately closed.<br>
+                    &emsp;Scenario: User requests immediate session termination.<br>
+                    &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I am in a game
+                    session,<br>&emsp;&emsp;When I
+                    perform the stopping position(cross arms over head)<br>&emsp;&emsp;Then I should see the game
+                    session to
+                    be immediately stopped. <br><br></p>
 
-                <p><b>Feature: During a session, any user can notify the admin by raising any hand over their head.</b><br>
-                &emsp;As an authenticated user playing in a game session<br>&emsp;I want to be able to notify the
-                platform admin<br>&emsp;So that he can clear some game rule or help in any problem.<br>
-                &emsp;Scenario: User raises right hand.<br>
-                &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I am in a game session,<br>&emsp;&emsp;When I
-                raise my right hand above my head<br>&emsp;&emsp;Then I should be notified that a message was send to
-                the admin<br>&emsp;&emsp;And short after I should see the admin in my game session. <br>
-                &emsp;Scenario: User raises left hand.<br>
-                &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I am in a game session,<br>&emsp;&emsp;When I
-                raise my left hand above my head<br>&emsp;&emsp;Then I should be notified that a message was send to the
-                admin<br>&emsp;&emsp;And short after I should see the admin in my game session. <br><br></p>
+                <p><b>Feature: During a session, any user can notify the admin by raising any hand over their
+                        head.</b><br>
+                    &emsp;As an authenticated user playing in a game session<br>&emsp;I want to be able to notify the
+                    platform admin<br>&emsp;So that he can clear some game rule or help in any problem.<br>
+                    &emsp;Scenario: User raises right hand.<br>
+                    &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I am in a game
+                    session,<br>&emsp;&emsp;When I
+                    raise my right hand above my head<br>&emsp;&emsp;Then I should be notified that a message was send
+                    to
+                    the admin<br>&emsp;&emsp;And short after I should see the admin in my game session. <br>
+                    &emsp;Scenario: User raises left hand.<br>
+                    &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I am in a game
+                    session,<br>&emsp;&emsp;When I
+                    raise my left hand above my head<br>&emsp;&emsp;Then I should be notified that a message was send to
+                    the
+                    admin<br>&emsp;&emsp;And short after I should see the admin in my game session. <br><br></p>
 
             </div>
         </div>
+
+        <div id="considerations" style="padding-top: 100px;">
+            <h2>Final Considerations</h2>
+            <p>Our overall perspective on the achieved results is very positive, as we were able to achieve all of the
+                requirements established a priori. StickmanCharades presents itself as a medium sized system with a high
+                depth of complexity, as it uses standard technologies and enterprise level frameworks to provide several
+                microservices that when connected, along with the 2 user applications, make up an interesting prototype
+                of an online charades game.
+                With this work, we executed a structured process from thorough specification to fully automatic remote
+                deployment. We learned how to assess the most relevant software quality attributes and how to integrate
+                development with operation - taking full advantage of the DevOps environment. Our previous knowledge on
+                Docker and our balanced teamwork also had a great positive impact on the final outcome.
+            </p>
+            <p>From Stickman Charades, we take the importance of design patterns for robust implementations, the power
+                of microservices as an architecture strategy, a deep comprehension of 2 enterprise level frameworks:
+                J2EE (used in the beginning of the project) and Spring Boot (replacing J2EE after it was our
+                understanding that it was more adequate for our context). We also understood the advantages of keeping a
+                close contact with unit and integration tests (and testing in general), as in the end we believe they
+                actually saved valuable time that would otherwise have been wasted in debugging efforts.
+                It is worth mentioning that the workload attached to this project was above our expectations and far
+                harder to cope than in previous projects of different natures. It is our belief that the project scope
+                should have been smaller when considering the time dedicated to development.
+            </p>
+            <p>For developers wishing to continue the development of Stickman Charades, this manual is only meant to
+                provide an introduction. Our contacts are made available for more specific questions and future
+                collaborations. We thank you for your time and appreciate your interest.</p>
+        </div>
+
         <div id="team" style="padding-top: 100px;">
             <h2>Team</h2>
             <app-team></app-team>
             <h3>Weekly Newsletter</h3>
-            <p>Timesheet quick access: <a href="https://tinyurl.com/wqpn2pp" style="color:cornflowerblue"> https://tinyurl.com/wqpn2pp</a></p>
+            <p>Timesheet quick access: <a href="https://tinyurl.com/wqpn2pp" style="color:cornflowerblue">
+                    https://tinyurl.com/wqpn2pp</a></p>
             <div class="timeline">
                 <p>Group's internal establishment of the project objective, goals, personas and main features.
                     Definition of a desktop and a web UI. Definition of Jakarta as the server technology and Postgres
@@ -461,7 +788,8 @@
                 <p>Integration and support of REST requests in the Unity application. Development of the admin dashboard
                     in the Web-based UI. Execution of end to end tests and correction found errors. Final demo
                     preparation.</p>
-                <p>Full support of the immediate closeru of the game session event. Recording of a demostrational video.
+                <p>Full support of the immediate closure of the game session event. Recording of a demostrational video.
+                    Implementation of a reverse-proxy using Nginx.
                 </p>
                 <p>Update and completion of formal documentational files.</p>
             </div>
