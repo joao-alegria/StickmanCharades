@@ -192,51 +192,16 @@
                     the answer, so he types it and submits. All participants are notified if the answer is correct,
                     which ends the turn of the actor and awards a point to Peter, or if it is incorrect, in which case
                     the turn keeps going and Peter may try another guess if the rules of the game session allow it.</p>
-                <p>Scenario 4 – In-Game Commands</p>
+                <p>Scenario 4 – Gesture Command Notify</p>
+                <p>The current actor performs a specific movement that is interpreted by the platform and notifies 
+                    system administrators that something might be wrong.</p>
+                <p>Scenario 5 – Gesture Command Pause</p>
                 <p>The current actor performs a specific movement that is interpreted by the platform and pauses the
                     game.</p>
-                <p>Scenario 5 – Spectator Mode</p>
-                <p>Frances is tired of playing, but still wants to be in the game session and interact with her family,
-                    so she decides to change her status from player to spectator, so she can watch her family play and
-                    still have fun by spending time with them.</p>
-                <p>Scenario 6 – Exiting Session</p>
-                <p>Peter plays for a while in an open session but decides to search for a more crowded one, so he exits
-                    the current session he is in and goes back to the list of open sessions.</p>
-                <p>Scenario 7 – Automatic Ending Session
+                <p>Scenario 6 – Automatic Ending Session
                 <p>The system ends the session according to the rules (e.g. all rounds have been completed) and presents
                     the results to all session players, as well as the winner.</p>
-                <p>Scenario 8 – Ending Session</p>
-                <p>It’s late, so Jack and his family decide to stop playing, and Jack ends the game session they are in.
-                    With that, the session results and the winner are shown to all player.</p>
-                <p>Scenario 9 – Closing Session</p>
-                <p>Jack closes (deletes) session and all players are duly notified.</p>
-
-                <p><b>Generic</b></p>
-                <p>Scenario 1 – Registration</p>
-                <p>Jack creates an account for him, his wife and his mother-in-law so that they can play together.</p>
-                <p>Scenario 2 – Authentication</p>
-                <p>Frances logs in with her credentials so that Jack can identify her when creating a session.</p>
-                <p>Scenario 3 – Private Session Creation</p>
-                <p>Jack creates a game session open only to players invited by him.</p>
-                <p>Scenario 4 – Session Configuration</p>
-                <p>Jack decides the rules of the session (such as how the actors are chosen, how many points are needed
-                    for a player to win, how many rounds, etc.) through the configuration panel.</p>
-                <p>Scenario 5 – Session Invitation</p>
-                <p>Jack invites his wife, her siblings and his mother-in-law through their usernames.</p>
-                <p>Scenario 6 – Invitation Acceptance</p>
-                <p>Frances accepts the invitation received by Jack and joins the session created by him.</p>
-                <p>Scenario 7 – Public Session Creation</p>
-                <p>Peter creates a game session open to anyone.</p>
-                <p>Scenario 8 – Public Session Listing</p>
-                <p>Jack checks the list of currently open sessions (created by friends or anonymous users) so that he
-                    can practice before playing with his mother-in-law.</p>
-                <p>Scenario 9 – Public Session Entrance</p>
-                <p>Jack enters Peter’s game session and waits for the game to start.</p>
-                <p>Scenario 10 – Avatar Choice</p>
-                <p>Peter customizes an avatar that will represent him in game sessions, choosing between options such as
-                    color of the avatar (and perhaps height or event 3D model).</p>
             </div>
-
 
             <p class="mb-20 mt-100">We now move on to the functional and non-functional requirements of the system. Consider
                 functional requirements as the descriptions of ways the product must behave, whereas non-functional
@@ -389,37 +354,21 @@
         <div id="test" style="padding-top: 100px;">
             <h2>Test</h2>
 
-            <p class="mb-20">This section contains the cucumber tests defined for component integration.</p>
+            <p>As it was already mentioned on the developer area, the execution of our tests were automated by running them on Jenkins pipelines.
+            Since we have three main components on our system, a desktop application, a web application and a back end server, ideally each one should be on a separate repository. This would allow us to make commits to the specific repository and the tests would only be ran if code related to the specific application changed. With this solution there would be a multi-branch pipeline for each repository. However, since we were told that we should have only one repository, we created three multi-branch pipelines, one for each component, that point to the same repository. Our pipelines can be found here: <a href="http://192.168.160.87:9090/view/esp54/"> http://192.168.160.87:9090/view/esp54/</a>.</p>
+
+            <p>On a normal workflow after a commit, the pipeline associated with the linked branch would run. Nonetheless, since Jenkins is not accessible to the outside would it can not received webhooks from github for example. A solution to this problem would be to periodically check if there was any commit done, but this brings load the Jenkins system so we opted with a manual solution.
+            With our approach, before running any pipelines, we first need to do a Manual Scan on the repository (the Suppress automatic SCM triggering property is activated on all multi-branch pipelines to avoid running the pipeline after code not relative to the associated component is committed) and then run the pipeline with the desired arguments.</p>
+
+            <p>Since tests with our desktop (Unity) and web (Angular) applications were out of the scope of this course the only pipeline used to run tests is the one associated with the back end server. As already mentioned in sections above, this server is divided into four micro services, where each one is tested separately.
+            Our tests are implemented in cucumber, where the features mentioned below were used as test scenarios for every micro service. It is important to notice that on normal execution our micro services rely on a broker solution (Kafka) to communicate between them, so, during tests a external broker component (Kafka) is launched.
+            With this, the main concept of the tests is to evaluate if a given message is sent to a specific micro service if it produces another message or does a certain action.</p>
+
+            <p>In terms of results we had some trouble successfully running the tests on the pipelines. Locally we noticed that the tests were flaky, but most of the times they executed correctly, so we opted to add several tries on the pipeline but even that didn't work. We presume our unsuccess happened mainly because of the Jenkins infrastructure since all group members were able to run the tests locally with no problems.</p>
+
+            <p class="mb-20">Below we present the cucumber tests defined for component integration.</p>
 
             <div id="cucumber">
-
-                <p><b>Feature: Users can create a new game session</b><br>
-                &emsp;As an authenticated user wanting to play a game with friends or family<br>&emsp;I want to be able
-                to create a new game session on the platform<br>&emsp;So that I can invite friends or have random people
-                join and play with me.<br>
-                &emsp;Scenario: User asserts that it's possible to create a session.<br>
-                &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I have access to home lobby
-                page,<br>&emsp;&emsp;When I choose the option to create a game session<br>&emsp;&emsp;Then I should see
-                a form to be filled.<br>
-                &emsp;Scenario: User creates a game session, both correctly and without necessary fields.<br>
-                &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;When I execute the previous
-                steps<br>&emsp;&emsp;And I fill in and submit the form,<br>&emsp;&emsp;Then I should see a message
-                informing me about the success/failure of the operation<br>&emsp;&emsp;And (if successful) I should be
-                redirected to the session lobby.<br><br></p>
-
-                <p><b>Feature: Users can join a game session</b><br>
-                &emsp;As an authenticated user wanting to play a game with friends or family<br>&emsp;I want to be able
-                to join a game session on the platform<br>&emsp;So that I can play a game of charades with my
-                friends.<br>
-                &emsp;Scenario: Session creator joins its own session.<br>
-                &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I see the game session I created that I want
-                to join in the game sessions list,<br>&emsp;&emsp;When I click the join button of that game
-                session<br>&emsp;&emsp;Then I should see the game session lobby<br>&emsp;&emsp;And I should be the
-                admin. <br>
-                &emsp;Scenario: User joins session of another user.<br>
-                &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I see the game session I want in the game
-                session list,<br>&emsp;&emsp;When I click the join button of that session,<br>&emsp;&emsp;Then I should
-                see the game session lobby.<br><br></p>
 
                 <p><b>Feature: When joining a session, any user should adopt the initial position.</b><br>
                 &emsp;As an authenticated user joining a game session<br>&emsp;I want the camera to work to be able to
@@ -450,32 +399,6 @@
                 &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I am in a game session,<br>&emsp;&emsp;When I
                 raise my left hand above my head<br>&emsp;&emsp;Then I should be notified that a message was send to the
                 admin<br>&emsp;&emsp;And short after I should see the admin in my game session. <br><br></p>
-
-                <p><b>Feature: Users ask users to be their friends.</b><br>
-                &emsp;As an authenticated user<br>&emsp;I want to be able to ask other users to be my friends in the
-                platform<br>&emsp;So that I in the future can invite them to game sessions.<br>
-                &emsp;Scenario: User asserts that they can ask other users to be their friends.<br>
-                &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;When I click the invite user as friend
-                button<br>&emsp;&emsp;Then I should see a form that allows the user to insert another user's
-                username.<br>
-                &emsp;Scenario: User ask other users to be their friends.<br>
-                &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I'm in the invite user as friend
-                form<br>&emsp;&emsp;When I click the send notification button,<br>&emsp;&emsp;Then I should be notified
-                that a message with my friendship request was sent.<br>
-                &emsp;Scenario: User gets notified that other user accepted their friendship request.<br>
-                &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;When I'm using the platform and other user accepts
-                my friendship request,<br>&emsp;&emsp;Then I should be notified that that user has accepted my
-                friendship request.<br><br></p>
-
-                <p><b>Feature: Users can invite friends to join game sessions.</b><br>
-                &emsp;As an authenticated user wanting to play a game with friends or family<br>&emsp;I want to be able
-                to invite friends to the game session I'm currently on<br>&emsp;So that I can play a game of charades
-                with my friends.<br>
-                &emsp;Scenario: User invites friend to game session.<br>
-                &emsp;&emsp;Given that I am logged in,<br>&emsp;&emsp;And I am at the game session
-                lobby,<br>&emsp;&emsp;And I see a friend I want to invite at the friends list,<br>&emsp;&emsp;When I
-                click the invite button related to that friend<br>&emsp;&emsp;Then I should be notified that a message
-                with the invitation was sent to my friend.<br><br></p>
 
             </div>
         </div>
