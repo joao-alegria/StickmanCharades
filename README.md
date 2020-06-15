@@ -39,9 +39,4 @@ In order to “gamify” the concept, instead of simply streaming the live video
 This way, players will not only be able to play with their dear friends but will also practice with other players while maintaining their anonymity.
 Also, by analysing the movements on the server, we are able to detect special combinations that trigger actions like 'Pause Game' and others.
 
-## Instructions on how to run the code
-
-(Under construction)
-
-
 
