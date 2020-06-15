@@ -10,6 +10,8 @@ import { ContactComponent } from './pages/contact/contact.component';
 import { DownloadComponent } from './pages/download/download.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { DocumentationComponent } from './pages/documentation/documentation.component';
+import { DemoComponent } from './pages/demo/demo.component';
+
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -20,6 +22,7 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'download', component: DownloadComponent },
   { path: 'dashboard', component: DashboardComponent },
+  { path: 'demo', component: DemoComponent },
 ];
 
 @NgModule({

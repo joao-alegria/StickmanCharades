@@ -21,6 +21,7 @@ import { SkeletonComponent } from './elements/skeleton/skeleton.component';
 
 import { NotifierModule } from "angular-notifier";
 import { DocumentationComponent } from './pages/documentation/documentation.component';
+import { DemoComponent } from './pages/demo/demo.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { DocumentationComponent } from './pages/documentation/documentation.comp
     routingComponents,
     SkeletonComponent,
     DocumentationComponent,
+    DemoComponent,
 
   ],
   imports: [

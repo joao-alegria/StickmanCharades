@@ -8,7 +8,7 @@ The app has access to users' Orbbec devices connected to their computers and, wi
 
 ## Instructions on how to run the code
 
-(Under construction)
+Please resort to the Unity framework guidelines.
 
 ## Instructions for developers
 
@@ -36,3 +36,10 @@ Finally, the 'NuitrackSDK' dir is an imported Unity package containing the SDK u
 It supports other depth cameras like Microsoft Azure's Kinect camera, so, in theory, the app should work with these as well.
 However, this has not been tested.
 
+## Authors
+
+André Pedrosa, nmec. 85098
+
+Filipe Pires, nmec. 85122
+
+João Alegria, nmec. 85048
