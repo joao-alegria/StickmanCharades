@@ -1,4 +1,5 @@
-# Stickman Charades - An Online Privacy-Concerned Depth-Sensor-Based Game Platform 
+# Stickman Charades
+An online privacy-concerned depth-sensor-based game. 
 
 ![homepage](https://github.com/FilipePires98/StickmanCharades/blob/master/Documentation/HomePage-Screenshot.png)
 
