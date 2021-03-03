@@ -47,4 +47,4 @@ Filipe Pires
 
 João Alegria
 
-For further information, please read our [user manual](https://github.com/FilipePires98/StickmanCharades/blob/master/Documentation/Stickman%20Charades%20-%20User%20Manual.pdf) or contact us directly.
+For further information, please check out our [demo](https://github.com/FilipePires98/StickmanCharades/blob/master/Demo.mp4), read our [user manual](https://github.com/FilipePires98/StickmanCharades/blob/master/Documentation/Stickman%20Charades%20-%20User%20Manual.pdf) or contact us directly.
