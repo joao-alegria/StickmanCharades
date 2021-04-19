@@ -3,6 +3,23 @@ An online privacy-concerned depth-sensor-based game.
 
 ![homepage](https://github.com/FilipePires98/StickmanCharades/blob/master/Documentation/HomePage-Screenshot.png)
 
+![](https://img.shields.io/badge/Academical%20Project-Yes-success)
+![](https://img.shields.io/badge/Maintained-No-red)
+![](https://img.shields.io/badge/License-MIT-lightgrey)
+
+![](https://img.shields.io/badge/Jenkins%20Build-passing-success)
+![](https://img.shields.io/badge/Unit%20Tests-passing-success)
+![](https://img.shields.io/badge/Deployment-Docker-blue)
+![](https://img.shields.io/badge/Platform-Web-blue)
+![](https://img.shields.io/badge/Platform-Windows-blue)
+
+![](https://img.shields.io/badge/Made%20With-Java-lightgrey)
+![](https://img.shields.io/badge/Made%20With-Angular-lightgrey)
+![](https://img.shields.io/badge/Made%20With-Unity-lightgrey)
+![](https://img.shields.io/badge/Persistence-PostgreSQL-lightgrey)
+![](https://img.shields.io/badge/Streaming%20&%20Logging-Kafka-lightgrey)
+[![](https://img.shields.io/badge/Hardware-Orbbec%20Astra-lightgrey)](https://orbbec3d.com/product-astra-pro/)
+
 ## About Stickman Charades
 
 Group activities such as the famous Trivial Pursuit and other games not requiring boards or cards are a very common way of spending quality time with close family and friends. 
@@ -41,10 +58,6 @@ The solution is built using Springboot and uses technologies such as: PostgreSQL
 
 ## Authors
 
-André Pedrosa
-
-Filipe Pires
-
-João Alegria
+The authors of this repository are André Pedrosa, Filipe Pires and João Alegria, and the project was developed for the Software Engineering Course of the Master's degree in Informatics Engineering of the University of Aveiro.
 
 For further information, please check out our [demo](https://github.com/FilipePires98/StickmanCharades/blob/master/Demo.mp4), read our [user manual](https://github.com/FilipePires98/StickmanCharades/blob/master/Documentation/Stickman%20Charades%20-%20User%20Manual.pdf) or contact us directly.
