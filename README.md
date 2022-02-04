@@ -44,7 +44,9 @@ The assignment is focused on all the main concepts and technological solutions a
 - Work as a team of software developers
 
 The deployment is done using Docker containers, automated with the help of Jenkins.
-The solution is built using Springboot and uses technologies such as: PostgreSQL (for persistence), Kafka (for streaming and logging), JUnit and Cucumber (for testing), Unity Engine (for desktop UI) and AngularJS (for web UI).
+The solution is built using Springboot and uses technologies such as: PostgreSQL (for persistence), Kafka (for streaming and logging), JUnit and Cucumber (for testing), Unity Engine (for desktop UI) and AngularJS (for web UI). The final architecture is the one presented below.
+
+![](https://github.com/joao-alegria/StickmanCharades/blob/master/Angular/stickman-charades/src/assets/img/diagrams/ArchitectureDiagram.png)
 
 ## Repository Structure:
 
